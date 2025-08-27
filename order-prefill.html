@@ -11,7 +11,6 @@
   h1{margin:0 0 6px}
   .sub{color:var(--muted);margin-bottom:18px}
   .card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0}
-  .row{display:grid;grid-template-columns:2fr .8fr .8fr .4fr;gap:8px;align-items:center;margin-bottom:8px}
   input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0e1530;color:#fff}
   .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
   button,a.btn{border:0;padding:11px 14px;border-radius:12px;font-weight:800;cursor:pointer;text-decoration:none}
@@ -21,7 +20,8 @@
   .badge{display:inline-block;background:#1b2447;border-radius:999px;padding:6px 10px;font-weight:700;margin-right:6px;color:var(--muted)}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-  .hint{color:var(--muted);font-size:13px;margin-top:6px}
+  .hint{color:var(--muted);font-size:13px;margin-top:6px;white-space:pre-line}
+  .row{display:grid;grid-template-columns:2fr .8fr .8fr .4fr;gap:8px;align-items:center;margin-bottom:8px}
   @media(max-width:900px){.grid3{grid-template-columns:1fr 1fr}}
   @media(max-width:720px){.grid2,.grid3{grid-template-columns:1fr}}
 </style>
@@ -68,7 +68,7 @@
       <input id="landmark" placeholder="Landmark">
       <input id="pincode" placeholder="Pincode">
     </div>
-    <div id="deliveryEstimate" class="hint" style="white-space:pre-line;margin-top:8px"></div>
+    <div id="deliveryEstimate" class="hint"></div>
     <div class="grid3" style="margin-top:8px">
       <input id="state" placeholder="State" readonly>
       <input id="city" placeholder="District/City" readonly>
@@ -76,20 +76,20 @@
     </div>
   </div>
 
+  <!-- Items -->
+  <div class="card">
+    <span class="badge">Items</span>
+    <div id="items"></div>
+    <button class="ghost" onclick="addRow()">+ Add Row</button>
+  </div>
+
   <!-- Order Details -->
   <div class="card">
     <span class="badge">Order Details</span>
-    <div class="grid2">
-      <input id="product" placeholder="Product">
-      <input id="variant" placeholder="Variant">
-    </div>
     <input id="basePrice" type="number" placeholder="Base Price (₹)">
-    <!-- Prepaid only -->
     <input id="discountAmount" type="number" placeholder="Discount Applied" readonly style="display:none">
-    <!-- COD only -->
     <input id="codCharges" type="number" placeholder="COD Charges" readonly style="display:none">
     <input id="restAmount" type="number" placeholder="Rest on Delivery" readonly style="display:none">
-    <!-- Both -->
     <input id="amountPaid" type="number" placeholder="Amount Paid">
     <div class="hint" id="ruleNote"></div>
   </div>
@@ -118,6 +118,15 @@ const UPI_ID="paytmqr5hyx5o@ptys";
 const UPI_NAME="Surender Kaur";
 let discountValue=0,mode="prepaid";
 
+/* Add Row in Items */
+function addRow(name="",price="",qty=1){
+  const box=document.getElementById("items");
+  const row=document.createElement("div");
+  row.className="row";
+  row.innerHTML=`<input placeholder="Item" value="${name}"><input type="number" placeholder="Price" value="${price}"><input type="number" placeholder="Qty" value="${qty}"><button onclick="this.parentNode.remove()">✕</button>`;
+  box.appendChild(row);
+}
+
 /* Coupon */
 function applyCoupon(){
   const code=(document.getElementById("couponCode").value||"").trim().toLowerCase();
@@ -126,10 +135,7 @@ function applyCoupon(){
       const base=+document.getElementById("basePrice").value||0;
       discountValue=Math.round(base*0.05);
       document.getElementById("couponNote").innerText=`✅ Coupon applied: -₹${discountValue}`;
-    }else{
-      discountValue=0;
-      document.getElementById("couponNote").innerText="❌ Coupon only valid on Prepaid";
-    }
+    }else{discountValue=0;document.getElementById("couponNote").innerText="❌ Coupon only valid on Prepaid";}
   }else{discountValue=0;document.getElementById("couponNote").innerText="❌ Invalid coupon";}
   computeTotals();
 }
@@ -146,7 +152,7 @@ function setMode(m){
 /* Totals */
 function computeCodCharge(base){
   if(mode!=="cod")return 0;
-  const isOptional=/optional/i.test((document.getElementById("variant").value||""));
+  const isOptional=/optional/i.test(getValue("variant"));
   if(isOptional)return 99;
   return base>2000?0:99;
 }
@@ -173,48 +179,62 @@ function computeTotals(){
 
 /* Utils */
 function rs(n){return "₹"+(Number(n)||0).toLocaleString("en-IN");}
+function getValue(id){return document.getElementById(id)?.value||"";}
 function upiLink(amount,note){const p=new URLSearchParams({pa:UPI_ID,pn:UPI_NAME,am:String(amount||0),cu:"INR",tn:note});return "upi://pay?"+p;}
-function orderIdNow(){const d=new Date();return d.getDate().toString().padStart(2,"0")+ (d.getMonth()+1).toString().padStart(2,"0")+d.getFullYear()+d.getHours()+d.getMinutes()+d.getSeconds()+"00";}
+function orderIdNow(){const d=new Date();return d.getDate().toString().padStart(2,"0")+(d.getMonth()+1).toString().padStart(2,"0")+d.getFullYear()+d.getHours()+d.getMinutes()+d.getSeconds()+"00";}
 
 /* WhatsApp */
 function sendWhatsApp(){
-  const id=document.getElementById("orderId").value||orderIdNow();
+  const id=getValue("orderId")||orderIdNow();
   const lines=[
     mode==="prepaid"?"🟢 Prepaid Order on WhatsApp":"🔴 COD Order on WhatsApp","",
     `Order ID: ${id}`,
-    `Name: ${document.getElementById("name").value}`,
-    `Mobile: ${document.getElementById("mobile").value}`,
-    `Alt Mobile: ${document.getElementById("altMobile").value}`,
-    `Email: ${document.getElementById("email").value}`,
-    `Address: ${document.getElementById("address").value}`,
-    `House number: ${document.getElementById("house").value}`,
-    `Landmark: ${document.getElementById("landmark").value}`,
-    `Pincode: ${document.getElementById("pincode").value}`,
-    `State: ${document.getElementById("state").value}`,
-    `District/City: ${document.getElementById("city").value}`,
-    `Post office: ${document.getElementById("postoffice").value}`,"",
-    `Product: ${document.getElementById("product").value}`,
-    `Variant: ${document.getElementById("variant").value}`,
-    `Base Price: ${rs(+document.getElementById("basePrice").value)}`,
+    `Name: ${getValue("name")}`,
+    `Mobile: ${getValue("mobile")}`,
+    `Alt Mobile: ${getValue("altMobile")}`,
+    `Email: ${getValue("email")}`,
+    `Address: ${getValue("address")}`,
+    `House number: ${getValue("house")}`,
+    `Landmark: ${getValue("landmark")}`,
+    `Pincode: ${getValue("pincode")}`,
+    `State: ${getValue("state")}`,
+    `District/City: ${getValue("city")}`,
+    `Post office: ${getValue("postoffice")}`,"",
+    `Product: ${getValue("product")}`,
+    `Variant: ${getValue("variant")}`,
+    `Base Price: ${rs(+getValue("basePrice"))}`,
     (mode==="prepaid"&&discountValue>0)?`Discount Applied: -${rs(discountValue)}`:null,
-    mode==="prepaid"?`Amount Paid: ${rs(+document.getElementById("amountPaid").value)}`:
-    `Advance Paid: ${rs(+document.getElementById("amountPaid").value)}\nCOD Charges: ${rs(+document.getElementById("codCharges").value)}\nRest on Delivery: ${rs(+document.getElementById("restAmount").value)}`,
+    mode==="prepaid"?`Amount Paid: ${rs(+getValue("amountPaid"))}`:
+    `Advance Paid: ${rs(+getValue("amountPaid"))}\nCOD Charges: ${rs(+getValue("codCharges"))}\nRest on Delivery: ${rs(+getValue("restAmount"))}`,
     "",
-    `📏 Distance: ${document.getElementById("distance").value}`,
-    `⏳ ETA: ${document.getElementById("etaText").value}`,
-    `📅 Estimated Delivery: ${document.getElementById("dateRange").value}`,"",
+    `📏 Distance: ${getValue("distance")}`,
+    `⏳ ETA: ${getValue("etaText")}`,
+    `📅 Estimated Delivery: ${getValue("dateRange")}`,"",
     `💳 Pay Link: ${document.getElementById("payNow").href}`
   ].filter(Boolean).join("\n");
   window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(lines)}`,'_blank');
 }
 
-/* Pincode auto fill (India Post) + ETA */
+/* Prefill from URL */
+(function(){
+  const p=new URLSearchParams(window.location.search);
+  if(p.has("product")) document.getElementById("product").value=p.get("product");
+  if(p.has("variant")) document.getElementById("variant").value=p.get("variant");
+  if(p.has("base")) document.getElementById("basePrice").value=p.get("base");
+  if(p.has("item")){ // seed one item
+    addRow(p.get("item"),p.get("price")||"",p.get("qty")||1);
+  }
+  document.getElementById("orderId").value=orderIdNow();
+  setMode("prepaid");
+  computeTotals();
+})();
+
+/* Pincode API + ETA */
 let pincodeLatLng={};
 fetch('pincode_data.json').then(r=>r.json()).then(j=>pincodeLatLng=j);
 function haversine(lat1,lon1,lat2,lon2){const R=6371;const dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
 function etaByDist(d){if(d<=30)return"1 day";if(d<=60)return"1-2 days";if(d<=100)return"2-3 days";if(d<=200)return"3-4 days";if(d<=500)return"4-5 days";if(d<=1000)return"4-6 days";if(d<=1500)return"5–7 days";if(d<=2000)return"6–8 days";if(d<=3000)return"6–10 days";return"8–12 days";}
-function dateRange(eta){const n=(eta.match(/\d+/g)||[]).map(Number);if(!n.length)return"";const min=Math.min(...n),max=Math.max(...n);const s=new Date(),e=new Date();s.setDate(s.getDate()+min);e.setDate(e.getDate()+max);return `${s.getDate()}-${e.getDate()} ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][s.getMonth()]}`;}
-
+function dateRange(eta){const n=(eta.match(/\d+/g)||[]).map(Number);if(!n.length)return"";const min=Math.min(...n),max=Math.max(...n);const s=new Date(),e=new Date();s.setDate(s.getDate()+min);e.setDate(e.getDate()+max);const m=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][s.getMonth()];return `${s.getDate()}-${e.getDate()} ${m}`;}
 document.getElementById("pincode").addEventListener("input",function(){
   const pin=this.value.trim();
   if(pin.length===6){
@@ -226,22 +246,13 @@ document.getElementById("pincode").addEventListener("input",function(){
         const sel=document.getElementById("postoffice");sel.innerHTML='<option value="">Select Post Office</option>';
         data[0].PostOffice.forEach(p=>{const o=document.createElement("option");o.value=p.Name;o.text=p.Name;sel.appendChild(o);});
         if(pincodeLatLng[pin]){const baseLat=28.8,baseLng=79.0;const {lat,lng}=pincodeLatLng[pin];const d=haversine(baseLat,baseLng,lat,lng).toFixed(0);const eta=etaByDist(d);const rng=dateRange(eta);
-          document.getElementById("distance").value=`${d} km`;
-          document.getElementById("etaText").value=eta;
-          document.getElementById("dateRange").value=rng;
+          document.getElementById("distance").value=`${d} km`;document.getElementById("etaText").value=eta;document.getElementById("dateRange").value=rng;
           document.getElementById("deliveryEstimate").innerText=`📍 Distance: ${d} km\n⏳ ETA: ${eta}\n📅 Delivery: ${rng}`;
         }
       }
     });
   }
 });
-
-/* Prefill defaults */
-(function(){
-  document.getElementById("orderId").value=orderIdNow();
-  setMode("prepaid");
-  computeTotals();
-})();
 </script>
 </body>
 </html>
