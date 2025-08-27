@@ -21,7 +21,9 @@
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
   .hint{color:var(--muted);font-size:13px;margin-top:6px;white-space:pre-line}
-  .row{display:grid;grid-template-columns:2fr .8fr .8fr .4fr;gap:8px;align-items:center;margin-bottom:8px}
+  .row{display:grid;grid-template-columns:1.8fr .9fr .9fr .4fr;gap:8px;align-items:center;margin-bottom:8px}
+  .inline{display:flex;gap:8px;flex-wrap:wrap}
+  .readonly{opacity:.9}
   @media(max-width:900px){.grid3{grid-template-columns:1fr 1fr}}
   @media(max-width:720px){.grid2,.grid3{grid-template-columns:1fr}}
 </style>
@@ -45,7 +47,7 @@
   <div class="card" id="couponCard" style="display:none">
     <span class="badge">Coupon</span>
     <div class="grid2">
-      <input id="couponCode" placeholder="Enter Coupon Code">
+      <input id="couponCode" placeholder="Enter Coupon Code (gpz2025)">
       <button class="ghost" onclick="applyCoupon()">Apply</button>
     </div>
     <div class="hint" id="couponNote"></div>
@@ -76,22 +78,53 @@
     </div>
   </div>
 
-  <!-- Items -->
+  <!-- Product -->
   <div class="card">
-    <span class="badge">Items</span>
-    <div id="items"></div>
-    <button class="ghost" onclick="addRow()">+ Add Row</button>
+    <span class="badge">Product</span>
+    <div class="grid2">
+      <input id="product" placeholder="Product">
+      <input id="variant" placeholder="Variant">
+    </div>
+    <div class="inline" style="margin-top:8px">
+      <input id="basePrice" type="number" placeholder="Base Price (₹)">
+      <input id="addonsTotal" class="readonly" type="number" placeholder="Add-ons Total (auto)" readonly>
+      <input id="subtotal" class="readonly" type="number" placeholder="Subtotal (auto)" readonly>
+    </div>
+    <div class="hint" id="ruleNote"></div>
   </div>
 
-  <!-- Order Details -->
+  <!-- Add-ons -->
   <div class="card">
-    <span class="badge">Order Details</span>
-    <input id="basePrice" type="number" placeholder="Base Price (₹)">
-    <input id="discountAmount" type="number" placeholder="Discount Applied" readonly style="display:none">
-    <input id="codCharges" type="number" placeholder="COD Charges" readonly style="display:none">
-    <input id="restAmount" type="number" placeholder="Rest on Delivery" readonly style="display:none">
-    <input id="amountPaid" type="number" placeholder="Amount Paid">
-    <div class="hint" id="ruleNote"></div>
+    <span class="badge">Add-ons</span>
+    <div id="items"></div>
+    <div class="inline">
+      <select id="addonSelect">
+        <option value="" data-price="0">Choose an add-on…</option>
+        <option value="Wire Gamepad" data-price="399">Wire Gamepad — ₹399</option>
+        <option value="Wireless Gamepad" data-price="749">Wireless Gamepad — ₹749</option>
+        <option value="PS2 Slim Sticker/Skin" data-price="60">PS2 Slim Sticker/Skin — ₹60</option>
+        <option value="HDMI Converter" data-price="499">HDMI Converter — ₹499</option>
+        <option value="HDMI Cable" data-price="99">HDMI Cable — ₹99</option>
+        <option value="Best HDMI Cable" data-price="349">Best HDMI Cable — ₹349</option>
+        <option value="Blank Memory Card 8MB" data-price="549">Blank Memory Card 8MB — ₹549</option>
+      </select>
+      <input id="addonPrice" type="number" placeholder="Price (auto)" />
+      <input id="addonQty" type="number" min="1" step="1" value="1" />
+      <button class="ghost" onclick="addAddonFromPicker()">+ Add Add-on</button>
+    </div>
+    <div class="hint">Tip: Price field editable है — जरूरत हो तो manually change कर सकते हैं.</div>
+  </div>
+
+  <!-- Payment summary -->
+  <div class="card">
+    <span class="badge">Payment Summary</span>
+    <!-- Prepaid only -->
+    <input id="discountAmount" type="number" placeholder="Discount Applied (auto)" readonly style="display:none">
+    <!-- COD only -->
+    <input id="codCharges" type="number" placeholder="COD Charges (auto)" readonly style="display:none">
+    <input id="restAmount" type="number" placeholder="Rest on Delivery (auto)" readonly style="display:none">
+    <!-- Both -->
+    <input id="amountPaid" type="number" placeholder="Amount Paid (auto)">
   </div>
 
   <!-- Delivery Meta -->
@@ -118,29 +151,57 @@ const UPI_ID="paytmqr5hyx5o@ptys";
 const UPI_NAME="Surender Kaur";
 let discountValue=0,mode="prepaid";
 
-/* Add Row in Items */
+/* ===== Items (Add-ons) rows ===== */
 function addRow(name="",price="",qty=1){
   const box=document.getElementById("items");
   const row=document.createElement("div");
   row.className="row";
-  row.innerHTML=`<input placeholder="Item" value="${name}"><input type="number" placeholder="Price" value="${price}"><input type="number" placeholder="Qty" value="${qty}"><button onclick="this.parentNode.remove()">✕</button>`;
+  row.innerHTML=`
+    <input class="i-name" placeholder="Add-on name" value="${name}">
+    <input class="i-price" type="number" placeholder="Price" value="${price}">
+    <input class="i-qty" type="number" placeholder="Qty" min="1" step="1" value="${qty}">
+    <button class="ghost" onclick="this.parentNode.remove(); recomputeAddons()">✕</button>`;
+  // recalc on change
+  row.querySelectorAll("input").forEach(inp=>inp.addEventListener("input",recomputeAddons));
   box.appendChild(row);
+  recomputeAddons();
 }
 
-/* Coupon */
+function addAddonFromPicker(){
+  const sel=document.getElementById("addonSelect");
+  const name=sel.value;
+  const pr=Number(document.getElementById("addonPrice").value||0);
+  const qty=Number(document.getElementById("addonQty").value||1);
+  if(!name){ alert("Please choose an add-on."); return; }
+  addRow(name, pr, qty);
+  // reset picker qty only
+  document.getElementById("addonQty").value=1;
+}
+
+document.getElementById("addonSelect").addEventListener("change", e=>{
+  const opt=e.target.selectedOptions[0];
+  const price=Number(opt?.dataset?.price||0);
+  document.getElementById("addonPrice").value=price||"";
+});
+
+/* ===== Coupon ===== */
 function applyCoupon(){
   const code=(document.getElementById("couponCode").value||"").trim().toLowerCase();
   if(code==="gpz2025"){
     if(mode==="prepaid"){
-      const base=+document.getElementById("basePrice").value||0;
-      discountValue=Math.round(base*0.05);
-      document.getElementById("couponNote").innerText=`✅ Coupon applied: -₹${discountValue}`;
-    }else{discountValue=0;document.getElementById("couponNote").innerText="❌ Coupon only valid on Prepaid";}
-  }else{discountValue=0;document.getElementById("couponNote").innerText="❌ Invalid coupon";}
+      const sub=getSubtotal();
+      discountValue=Math.round(sub*0.05); // 5% of subtotal (base + add-ons)
+      document.getElementById("couponNote").innerText=`✅ Coupon applied: -₹${discountValue} (5% off)`;
+    }else{
+      discountValue=0; document.getElementById("couponNote").innerText="❌ Coupon only valid on Prepaid";
+    }
+  }else{
+    discountValue=0; document.getElementById("couponNote").innerText="❌ Invalid coupon";
+  }
   computeTotals();
 }
 
-/* Mode toggle */
+/* ===== Mode toggle ===== */
 function setMode(m){
   mode=m;
   document.getElementById("btn-prepaid").className=(m==="prepaid"?"ghost act":"ghost");
@@ -149,87 +210,170 @@ function setMode(m){
   computeTotals();
 }
 
-/* Totals */
-function computeCodCharge(base){
-  if(mode!=="cod")return 0;
-  const isOptional=/optional/i.test(getValue("variant"));
-  if(isOptional)return 99;
-  return base>2000?0:99;
+/* ===== Sum helpers ===== */
+function sumAddons(){
+  let total=0;
+  document.querySelectorAll("#items .row").forEach(r=>{
+    const p=Number(r.querySelector(".i-price").value||0);
+    const q=Number(r.querySelector(".i-qty").value||0);
+    total += p*q;
+  });
+  return total;
 }
-function computeTotals(){
+function getSubtotal(){
   const base=+document.getElementById("basePrice").value||0;
-  let codC=0,paid=0,rest=0;
+  return base + sumAddons();
+}
+
+/* ===== COD Rules ===== */
+function computeCodCharge(subtotal){
+  if(mode!=="cod") return 0;
+  const isOptional=/optional/i.test((document.getElementById("variant").value||""));
+  if(isOptional) return 99;                      // Optional → ₹99 always
+  return subtotal>2000 ? 0 : 99;                 // Top → threshold on subtotal
+}
+
+/* ===== Totals & recompute ===== */
+function recomputeAddons(){
+  const addons = sumAddons();
+  document.getElementById("addonsTotal").value = addons;
+  document.getElementById("subtotal").value = getSubtotal();
+  computeTotals();
+}
+
+function computeTotals(){
+  const subtotal = getSubtotal(); // base + add-ons
+  const base = +document.getElementById("basePrice").value||0;
+
+  // Rule note
+  const isOptional=/optional/i.test((document.getElementById("variant").value||""));
+  document.getElementById("ruleNote").innerText =
+    isOptional ? "Optional Pack: COD charge ₹99 (any amount) • Prepaid delivery free."
+               : "Top Pack: Subtotal > ₹2000 → COD ₹0; otherwise COD ₹99 • Prepaid delivery free.";
+
+  // toggle fields
   document.getElementById("discountAmount").style.display=(mode==="prepaid")?"block":"none";
   document.getElementById("codCharges").style.display=(mode==="cod")?"block":"none";
   document.getElementById("restAmount").style.display=(mode==="cod")?"block":"none";
+
+  let codC=0, paid=0, rest=0;
+
   if(mode==="prepaid"){
-    let eff=base;
-    if(discountValue>0){eff=base-discountValue;document.getElementById("discountAmount").value=discountValue;}
-    else document.getElementById("discountAmount").value="";
-    paid=eff;
+    // discount on subtotal
+    if(discountValue>0){
+      document.getElementById("discountAmount").value = discountValue;
+      paid = Math.max(0, subtotal - discountValue);
+    }else{
+      document.getElementById("discountAmount").value = "";
+      paid = subtotal;
+    }
   }else{
-    discountValue=0;document.getElementById("discountAmount").value="";
-    codC=computeCodCharge(base);document.getElementById("codCharges").value=codC;
-    paid=Math.max(500,Math.ceil((base+codC)*0.10));
-    rest=base+codC-paid;document.getElementById("restAmount").value=rest;
+    // COD
+    discountValue=0; document.getElementById("discountAmount").value="";
+    codC = computeCodCharge(subtotal);
+    document.getElementById("codCharges").value = codC;
+    paid = Math.max(500, Math.ceil((subtotal + codC) * 0.10)); // advance 10% or ₹500 min
+    rest = Math.max(0, subtotal + codC - paid);
+    document.getElementById("restAmount").value = rest;
   }
-  document.getElementById("amountPaid").value=paid;
-  document.getElementById("payNow").href=upiLink(paid,(mode==="prepaid"?"Prepaid":"Advance")+" for Games Planet Order");
+
+  document.getElementById("amountPaid").value = paid;
+
+  // UPI link
+  const note=(mode==="prepaid")?"Prepaid for Games Planet Order":"Advance for Games Planet Order";
+  document.getElementById("payNow").href = upiLink(paid, note);
+
+  // Update readonly displays
+  document.getElementById("addonsTotal").value = sumAddons();
+  document.getElementById("subtotal").value = subtotal;
 }
 
-/* Utils */
+/* ===== Utils ===== */
 function rs(n){return "₹"+(Number(n)||0).toLocaleString("en-IN");}
-function getValue(id){return document.getElementById(id)?.value||"";}
-function upiLink(amount,note){const p=new URLSearchParams({pa:UPI_ID,pn:UPI_NAME,am:String(amount||0),cu:"INR",tn:note});return "upi://pay?"+p;}
-function orderIdNow(){const d=new Date();return d.getDate().toString().padStart(2,"0")+(d.getMonth()+1).toString().padStart(2,"0")+d.getFullYear()+d.getHours()+d.getMinutes()+d.getSeconds()+"00";}
+function upiLink(amount,note){
+  const p=new URLSearchParams({pa:UPI_ID,pn:UPI_NAME,am:String(amount||0),cu:"INR",tn:note});
+  return "upi://pay?"+p.toString();
+}
+function orderIdNow(){
+  const d=new Date();
+  const pad=n=>String(n).padStart(2,"0");
+  return pad(d.getDate())+pad(d.getMonth()+1)+d.getFullYear()+pad(d.getHours())+pad(d.getMinutes())+pad(d.getSeconds())+"00";
+}
 
-/* WhatsApp */
+/* ===== WhatsApp ===== */
 function sendWhatsApp(){
-  const id=getValue("orderId")||orderIdNow();
-  const lines=[
-    mode==="prepaid"?"🟢 Prepaid Order on WhatsApp":"🔴 COD Order on WhatsApp","",
+  const id=document.getElementById("orderId").value || orderIdNow();
+  const base = +document.getElementById("basePrice").value||0;
+  const addons = sumAddons();
+  const subtotal = getSubtotal();
+  const paid = +document.getElementById("amountPaid").value||0;
+  const codc = +document.getElementById("codCharges").value||0;
+  const rest = +document.getElementById("restAmount").value||0;
+
+  const header = (mode==="prepaid") ? "🟢 Prepaid Order on WhatsApp" : "🔴 COD Order on WhatsApp";
+
+  const lines = [
+    header, "",
     `Order ID: ${id}`,
-    `Name: ${getValue("name")}`,
-    `Mobile: ${getValue("mobile")}`,
-    `Alt Mobile: ${getValue("altMobile")}`,
-    `Email: ${getValue("email")}`,
-    `Address: ${getValue("address")}`,
-    `House number: ${getValue("house")}`,
-    `Landmark: ${getValue("landmark")}`,
-    `Pincode: ${getValue("pincode")}`,
-    `State: ${getValue("state")}`,
-    `District/City: ${getValue("city")}`,
-    `Post office: ${getValue("postoffice")}`,"",
-    `Product: ${getValue("product")}`,
-    `Variant: ${getValue("variant")}`,
-    `Base Price: ${rs(+getValue("basePrice"))}`,
-    (mode==="prepaid"&&discountValue>0)?`Discount Applied: -${rs(discountValue)}`:null,
-    mode==="prepaid"?`Amount Paid: ${rs(+getValue("amountPaid"))}`:
-    `Advance Paid: ${rs(+getValue("amountPaid"))}\nCOD Charges: ${rs(+getValue("codCharges"))}\nRest on Delivery: ${rs(+getValue("restAmount"))}`,
+    `Name: ${document.getElementById("name").value}`,
+    `Mobile: ${document.getElementById("mobile").value}`,
+    `Alt Mobile: ${document.getElementById("altMobile").value}`,
+    `Email: ${document.getElementById("email").value}`,
+    `Address: ${document.getElementById("address").value}`,
+    `House number: ${document.getElementById("house").value}`,
+    `Landmark: ${document.getElementById("landmark").value}`,
+    `Pincode: ${document.getElementById("pincode").value}`,
+    `State: ${document.getElementById("state").value}`,
+    `District/City: ${document.getElementById("city").value}`,
+    `Post office: ${document.getElementById("postoffice").value}`,
     "",
-    `📏 Distance: ${getValue("distance")}`,
-    `⏳ ETA: ${getValue("etaText")}`,
-    `📅 Estimated Delivery: ${getValue("dateRange")}`,"",
+    `Product: ${document.getElementById("product").value}`,
+    `Variant: ${document.getElementById("variant").value}`,
+    `Base Price: ${rs(base)}`,
+    addons ? `Add-ons Total: ${rs(addons)}` : null,
+    `Subtotal: ${rs(subtotal)}`,
+    (mode==="prepaid" && discountValue>0) ? `Discount Applied: -${rs(discountValue)}` : null,
+    (mode==="prepaid") ? `Amount Paid: ${rs(paid)}` : `Amount Paid (Advance): ${rs(paid)}\nCOD Charges: ${rs(codc)}\nRest on Delivery: ${rs(rest)}`,
+    "",
+    `📏 Distance: ${document.getElementById("distance").value}`,
+    `⏳ ETA: ${document.getElementById("etaText").value}`,
+    `📅 Estimated Delivery: ${document.getElementById("dateRange").value}`,
+    "",
     `💳 Pay Link: ${document.getElementById("payNow").href}`
   ].filter(Boolean).join("\n");
-  window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(lines)}`,'_blank');
+
+  window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(lines)}`,'_blank','noopener,noreferrer');
 }
 
-/* Prefill from URL */
+/* ===== Prefill from URL ===== */
 (function(){
-  const p=new URLSearchParams(window.location.search);
+  const p=new URLSearchParams(location.search);
+  // product/variant/base
   if(p.has("product")) document.getElementById("product").value=p.get("product");
   if(p.has("variant")) document.getElementById("variant").value=p.get("variant");
   if(p.has("base")) document.getElementById("basePrice").value=p.get("base");
-  if(p.has("item")){ // seed one item
-    addRow(p.get("item"),p.get("price")||"",p.get("qty")||1);
+
+  // seed single add-on row if provided
+  if(p.has("item")){
+    addRow(p.get("item"), p.get("price")||"", p.get("qty")||1);
   }
-  document.getElementById("orderId").value=orderIdNow();
+
+  // rule banner (optional)
+  const variantVal=(document.getElementById("variant").value||"");
+  const isOptional=/optional/i.test(variantVal);
+  document.getElementById("ruleNote").innerText =
+    isOptional ? "Optional Pack: COD charge ₹99 (any amount) • Prepaid delivery free."
+               : "Top Pack: Subtotal > ₹2000 → COD ₹0; otherwise COD ₹99 • Prepaid delivery free.";
+
+  // order id
+  document.getElementById("orderId").value = orderIdNow();
+
+  // default mode
   setMode("prepaid");
-  computeTotals();
+  recomputeAddons();
 })();
 
-/* Pincode API + ETA */
+/* ===== Pincode API + ETA ===== */
 let pincodeLatLng={};
 fetch('pincode_data.json').then(r=>r.json()).then(j=>pincodeLatLng=j);
 function haversine(lat1,lon1,lat2,lon2){const R=6371;const dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
@@ -245,8 +389,15 @@ document.getElementById("pincode").addEventListener("input",function(){
         document.getElementById("city").value=po.District;
         const sel=document.getElementById("postoffice");sel.innerHTML='<option value="">Select Post Office</option>';
         data[0].PostOffice.forEach(p=>{const o=document.createElement("option");o.value=p.Name;o.text=p.Name;sel.appendChild(o);});
-        if(pincodeLatLng[pin]){const baseLat=28.8,baseLng=79.0;const {lat,lng}=pincodeLatLng[pin];const d=haversine(baseLat,baseLng,lat,lng).toFixed(0);const eta=etaByDist(d);const rng=dateRange(eta);
-          document.getElementById("distance").value=`${d} km`;document.getElementById("etaText").value=eta;document.getElementById("dateRange").value=rng;
+        if(pincodeLatLng[pin]){
+          const baseLat=28.8,baseLng=79.0; // Rampur 244901 approx
+          const {lat,lng}=pincodeLatLng[pin];
+          const d=haversine(baseLat,baseLng,lat,lng).toFixed(0);
+          const eta=etaByDist(d);
+          const rng=dateRange(eta);
+          document.getElementById("distance").value=`${d} km`;
+          document.getElementById("etaText").value=eta;
+          document.getElementById("dateRange").value=rng;
           document.getElementById("deliveryEstimate").innerText=`📍 Distance: ${d} km\n⏳ ETA: ${eta}\n📅 Delivery: ${rng}`;
         }
       }
