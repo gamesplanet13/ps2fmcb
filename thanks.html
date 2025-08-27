@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GamesPlanet Final Order Converter (Full Product + Variant List)</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    textarea { width: 100%; height: 250px; font-size: 14px; }
+    pre { background: #f0f0f0; padding: 10px; white-space: pre-wrap; font-size: 14px; }
+    button { padding: 10px 15px; font-size: 14px; margin: 4px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<h2>GamesPlanet Final Order Converter (Full Product + Variant List)</h2>
+
+<textarea id="input" placeholder="Paste order details here"></textarea><br><br>
+
+<button onclick="selectAll()">Select All</button>
+<button onclick="clearText()">Clear</button>
+<button onclick="convert()">Convert</button>
+<button onclick="copyAll()">Copy All</button>
+<button onclick="sendToCustomer()">Send to Customer WhatsApp</button>
+<button onclick="sendToOwn()">Send to Own WhatsApp</button>
+<button onclick="sendThanks()">Send Thanks</button>
+<button onclick="sendAbandonedCart()">Send Abandoned Cart WhatsApp</button>
+<button onclick="generateElMessage()">EL Message</button>
+
+<pre id="output"></pre>
+
+<script>
+// Load pincode data
+let pincodeLatLng = {};
+fetch('pincode_data.json')
+  .then(response => response.json())
+  .then(data => { pincodeLatLng = data; })
+  .catch(error => console.log("Error loading pincode data:", error));
+
+// Full product list
+const products = [...]; // Keep your entire product array here
+
+// Full variant list
+const variants = [...]; // Keep your entire variant array here
+
+function selectAll() { let input = document.getElementById("input"); input.focus(); input.select(); }
+function clearText() { document.getElementById("input").value = ""; document.getElementById("output").textContent = ""; }
+
+function haversine(lat1, lon1, lat2, lon2) {
+  const R = 6371; const dLat = (lat2 - lat1) * Math.PI / 180; const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)*Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c;
+}
+
+function estimateDeliveryByDistance(distance) {
+  if (distance <= 30) return "1 day";
+  else if (distance <= 60) return "1-2 days";
+  else if (distance <= 100) return "2-3 days";
+  else if (distance <= 200) return "3-4 days";
+  else if (distance <= 500) return "4-5 days";
+  else if (distance <= 1000) return "4-6 days";
+  else if (distance <= 1500) return "5–7 days";
+  else if (distance <= 2000) return "6–8 days";
+  else if (distance <= 3000) return "6–10 days";
+  else return "8–12 days (sometimes up to 15 days)";
+}
+
+function convert() {
+  // your full original convert function goes here without any change
+}
+
+function copyAll() {
+  navigator.clipboard.writeText(document.getElementById("output").textContent).then(() => alert("Output copied to clipboard!"));
+}
+
+function sendToCustomer() {
+  let mobile = document.getElementById("input").value.match(/\+91[-\s]?[0-9]{10}/)?.[0].replace(/\s|-/g,"") || "";
+  let msg = encodeURIComponent(document.getElementById("output").textContent);
+  if(mobile) window.open(`https://wa.me/${mobile}?text=${msg}`, "_blank");
+  else alert("Customer mobile number not found in input.");
+}
+
+function sendToOwn() {
+  let msg = encodeURIComponent(document.getElementById("output").textContent);
+  window.open(`https://wa.me/917983624797?text=${msg}`, "_blank");
+}
+
+function sendThanks() {
+  // your full original sendThanks function
+}
+
+function sendAbandonedCart() {
+  // your full original sendAbandonedCart function
+}
+
+// ✅ NEW: EL Message Function
+function generateElMessage() {
+  const input = document.getElementById("input").value;
+  const o = input;
+
+  let name = o.match(/Name:\s*([^\n]+)/)?.[1]?.trim() || "Customer";
+  let orderId = o.match(/Order ID:\s*([^\n]+)/)?.[1]?.trim() || "Not found";
+  let mobile = o.match(/Mobile:\s*([^\n]+)/)?.[1]?.trim() || "";
+  let product = o.match(/Product:\s*([^\n]+)/)?.[1]?.trim() || "Product";
+  let variant = o.match(/Variant:\s*([^\n]+)/)?.[1]?.trim() || "";
+  let pincode = o.match(/Pincode:\s*([^\n]+)/)?.[1]?.trim() || "";
+  let paid = o.match(/Amount paid:\s*₹([\d,]+)/)?.[1]?.replace(/,/g, '') || "0";
+
+  let city = "Unknown", state = "Unknown", distance = "N/A", eta = "N/A", deliveryDate = "Unknown";
+  if (pincodeLatLng[pincode]) {
+    const dest = pincodeLatLng[pincode];
+    city = dest.city;
+    state = dest.state;
+    const dist = haversine(28.8, 79.0, dest.lat, dest.lng);
+    distance = dist.toFixed(0);
+    eta = estimateDeliveryByDistance(dist);
+
+    const now = new Date();
+    let dayCount = 6;
+    const match = eta.match(/\d+/g);
+    if (match) {
+      dayCount = Math.max(...match.map(n => parseInt(n)));
+    }
+    now.setDate(now.getDate() + dayCount);
+    const options = { weekday: 'short', day: 'numeric', month: 'short' };
+    deliveryDate = now.toLocaleDateString('en-IN', options);
+  }
+
+  const msg = 
+`🌟 GamesPlanet
+
+🟢 *Prepaid Order on WhatsApp*
+
+🙏 Hello ${name} ji, thank you for ordering via WhatsApp.
+
+🛒 Product: ${product} (${variant})
+📦 Amount Paid: ₹${paid}
+📍 City: ${city} | 📏 Distance: ${distance} km
+⏳ Estimated Delivery: ${eta}
+📅 Estimated Delivery Date: ${deliveryDate}
+
+🚚 Your order will be dispatched between *8PM–10PM* today.
+
+🖼️ On request, we can send parcel pic & tracking after dispatch here on WhatsApp.
+
+💚 Team GamesPlanet`;
+
+  document.getElementById("output").textContent = msg;
+}
+</script>
+
+</body>
+</html>

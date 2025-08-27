@@ -1,0 +1,94 @@
+[
+  {
+    "city": "Delhi",
+    "state": "Delhi"
+  },
+  {
+    "city": "Mumbai",
+    "state": "Maharashtra"
+  },
+  {
+    "city": "Kolkata",
+    "state": "West Bengal"
+  },
+  {
+    "city": "Chennai",
+    "state": "Tamil Nadu"
+  },
+  {
+    "city": "Lucknow",
+    "state": "Uttar Pradesh"
+  },
+  {
+    "city": "Patna",
+    "state": "Bihar"
+  },
+  {
+    "city": "Jaipur",
+    "state": "Rajasthan"
+  },
+  {
+    "city": "Bhopal",
+    "state": "Madhya Pradesh"
+  },
+  {
+    "city": "Ahmedabad",
+    "state": "Gujarat"
+  },
+  {
+    "city": "Hyderabad",
+    "state": "Telangana"
+  },
+  {
+    "city": "Bengaluru",
+    "state": "Karnataka"
+  },
+  {
+    "city": "Pune",
+    "state": "Maharashtra"
+  },
+  {
+    "city": "Surat",
+    "state": "Gujarat"
+  },
+  {
+    "city": "Kanpur",
+    "state": "Uttar Pradesh"
+  },
+  {
+    "city": "Nagpur",
+    "state": "Maharashtra"
+  },
+  {
+    "city": "Indore",
+    "state": "Madhya Pradesh"
+  },
+  {
+    "city": "Thane",
+    "state": "Maharashtra"
+  },
+  {
+    "city": "Agra",
+    "state": "Uttar Pradesh"
+  },
+  {
+    "city": "Varanasi",
+    "state": "Uttar Pradesh"
+  },
+  {
+    "city": "Amritsar",
+    "state": "Punjab"
+  },
+  {
+    "city": "Chandigarh",
+    "state": "Chandigarh"
+  },
+  {
+    "city": "Ludhiana",
+    "state": "Punjab"
+  },
+  {
+    "city": "Jalandhar",
+    "state": "Punjab"
+  }
+]
