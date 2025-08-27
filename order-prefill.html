@@ -1,320 +1,379 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Games Planet – Quick Order (Prefilled)</title>
-  <style>
-    :root{--bg:#0b1020;--card:#121a33;--muted:#9fb0d3;--text:#eaf1ff;--ok:#3ddc84}
-    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
-    .wrap{max-width:900px;margin:0 auto;padding:22px 16px 60px}
-    h1{margin:0 0 6px}
-    .sub{color:var(--muted);margin-bottom:18px}
-    .card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0}
-    .row{display:grid;grid-template-columns:2fr .8fr .8fr .4fr;gap:8px;align-items:center;margin-bottom:8px}
-    input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0e1530;color:#fff}
-    .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
-    button,a.btn{border:0;padding:11px 14px;border-radius:12px;font-weight:800;cursor:pointer;text-decoration:none}
-    .act{background:var(--ok);color:#04190b}
-    .alt{background:#ffd54f;color:#2b2100}
-    .ghost{background:transparent;border:1px solid rgba(255,255,255,.2);color:#fff}
-    .badge{display:inline-block;background:#1b2447;border-radius:999px;padding:6px 10px;font-weight:700;margin-right:6px;color:var(--muted)}
-    .pill{display:inline-block;background:#1b2447;border-radius:999px;padding:4px 8px;font-weight:800;font-size:12px;margin-left:6px;color:var(--muted)}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-    .totals{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
-    .totals > div{background:#0e1530;border:1px solid rgba(255,255,255,.1);padding:10px;border-radius:10px;min-width:160px}
-    .hint{color:var(--muted);font-size:13px;margin-top:6px}
-    @media(max-width:900px){.grid3{grid-template-columns:1fr 1fr}}
-    @media(max-width:720px){
-      .row{grid-template-columns:1fr 1fr 1fr .3fr}
-      .grid2{grid-template-columns:1fr}
-      .grid3{grid-template-columns:1fr}
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Games Planet – Quick Order (Prefilled)</title>
+<style>
+  :root{--bg:#0b1020;--card:#121a33;--muted:#9fb0d3;--text:#eaf1ff;--ok:#3ddc84}
+  body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
+  .wrap{max-width:900px;margin:0 auto;padding:22px 16px 60px}
+  h1{margin:0 0 6px}
+  .sub{color:var(--muted);margin-bottom:18px}
+  .card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0}
+  .row{display:grid;grid-template-columns:2fr .8fr .8fr .4fr;gap:8px;align-items:center;margin-bottom:8px}
+  input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0e1530;color:#fff}
+  .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+  button,a.btn{border:0;padding:11px 14px;border-radius:12px;font-weight:800;cursor:pointer;text-decoration:none}
+  .act{background:var(--ok);color:#04190b}
+  .alt{background:#ffd54f;color:#2b2100}
+  .ghost{background:transparent;border:1px solid rgba(255,255,255,.2);color:#fff}
+  .badge{display:inline-block;background:#1b2447;border-radius:999px;padding:6px 10px;font-weight:700;margin-right:6px;color:var(--muted)}
+  .pill{display:inline-block;background:#1b2447;border-radius:999px;padding:4px 8px;font-weight:800;font-size:12px;margin-left:6px;color:var(--muted)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .hint{color:var(--muted);font-size:13px;margin-top:6px}
+  @media(max-width:900px){.grid3{grid-template-columns:1fr 1fr}}
+  @media(max-width:720px){
+    .row{grid-template-columns:1fr 1fr 1fr .3fr}
+    .grid2{grid-template-columns:1fr}
+    .grid3{grid-template-columns:1fr}
+  }
+</style>
 </head>
 <body>
 <div class="wrap">
   <h1>Games Planet — Quick Order</h1>
-  <div class="sub">Same logic as your index page (India Post API + distance/ETA) • Pay & send on WhatsApp</div>
+  <div class="sub">Prefilled from main page • India Post pincode autofill • Payment rules applied here</div>
 
-  <!-- Mode -->
   <div class="card">
     <span class="badge">Payment Mode</span>
     <div class="btns">
       <button id="btn-prepaid" class="ghost" onclick="setMode('prepaid')">🟢 Prepaid</button>
       <button id="btn-cod" class="ghost" onclick="setMode('cod')">🔴 COD</button>
     </div>
+    <div class="hint">Note: <b>Prepaid delivery free</b>. FMCB cards are <b>Prepaid only</b>.</div>
   </div>
 
-  <!-- Buyer details (exact fields/order as your sample) -->
   <div class="card">
-    <span class="badge">Customer Details</span>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">
+      <div><span class="badge">Items</span><span class="pill">item + price + qty</span></div>
+      <button class="ghost" onclick="addRow()">+ Add Row</button>
+    </div>
+    <div id="items"></div>
+  </div>
+
+  <div class="card">
+    <span class="badge">Customer</span>
     <div class="grid2">
-      <input type="text" id="name" placeholder="Name" required>
-      <input type="text" id="mobile" placeholder="Mobile" required>
+      <input id="name" placeholder="Name">
+      <input id="mobile" placeholder="Mobile">
     </div>
     <div class="grid2">
-      <input type="text" id="altmobile" placeholder="Alt Mobile">
-      <input type="email" id="email" placeholder="Email">
+      <input id="altMobile" placeholder="Alt Mobile">
+      <input id="email" placeholder="Email">
     </div>
-    <textarea id="address" placeholder="Address (Area/Village/Street)"></textarea>
+    <textarea id="address" placeholder="Address (Area/Village/Street)" rows="3"></textarea>
     <div class="grid3" style="margin-top:8px">
-      <input type="text" id="house" placeholder="House number">
-      <input type="text" id="landmark" placeholder="Landmark">
-      <input type="text" id="pincode" placeholder="Pincode">
+      <input id="house" placeholder="House number">
+      <input id="landmark" placeholder="Landmark">
+      <input id="pincode" placeholder="Pincode">
     </div>
 
-    <!-- auto-filled from India Post API -->
     <div id="deliveryEstimate" class="hint" style="white-space:pre-line;margin-top:8px"></div>
+
     <div class="grid3" style="margin-top:8px">
-      <input type="text" id="state" placeholder="State" readonly>
-      <input type="text" id="city" placeholder="District/City" readonly>
+      <input id="state" placeholder="State" readonly>
+      <input id="city" placeholder="District/City" readonly>
       <select id="postoffice" required>
         <option value="">Select Post Office</option>
       </select>
     </div>
   </div>
 
-  <!-- Product -->
   <div class="card">
     <span class="badge">Order Details</span>
     <div class="grid2">
-      <input type="text" id="product" placeholder="Product (e.g., Fmcb+ USB ssd)">
-      <input type="text" id="variant" placeholder="Variant (e.g., 256 top 7xxxx)">
+      <input id="product" placeholder="Product">
+      <input id="variant" placeholder="Variant">
     </div>
     <div class="grid3" style="margin-top:8px">
-      <input type="number" id="baseprice" placeholder="Base Price (₹)">
-      <input type="number" id="amountpaid" placeholder="Amount Paid">
-      <input type="number" id="codchargeComputed" placeholder="COD Charges (auto)" readonly>
+      <input id="basePrice" type="number" placeholder="Base Price (₹)">
+      <input id="amountPaid" type="number" placeholder="Amount Paid (auto)">
+      <input id="codCharges" type="number" placeholder="COD Charges (auto)" readonly>
     </div>
-    <input type="number" id="restamount" placeholder="Rest on Delivery (auto if COD)" readonly>
+    <input id="restAmount" type="number" placeholder="Rest on Delivery (auto if COD)" readonly>
+    <div class="hint" id="ruleNote"></div>
   </div>
 
-  <!-- Pay + Send -->
+  <div class="card">
+    <span class="badge">Delivery Meta</span>
+    <div class="grid3">
+      <input id="distance" placeholder="Distance (auto)">
+      <input id="etaText" placeholder="ETA (auto)">
+      <input id="dateRange" placeholder="Estimated Delivery (auto)">
+    </div>
+    <input id="orderId" placeholder="Order ID (auto)" readonly style="margin-top:8px">
+  </div>
+
   <div class="btns">
     <a id="payNow" class="btn act" href="#" target="_blank" rel="noopener">Pay Now</a>
-    <button class="alt" onclick="sendOrder()">Send on WhatsApp</button>
+    <button class="alt" onclick="sendWhatsApp()">Send on WhatsApp</button>
   </div>
-
-  <!-- Optional QR display -->
-  <img src="https://gamesplanet13.github.io/Ordernow/Qr.jpg" alt="Paytm QR" id="qr-image" style="width:240px;margin-top:12px"/>
 </div>
 
 <script>
-/* ====== Config (patched) ====== */
-const WHATSAPP_PHONE = "917983624797";
-const UPI_ID   = "paytmqr5hyx5o@ptys";
-const UPI_NAME = "Surender Kaur";
+/* ===== Config ===== */
+const WHATSAPP_PHONE="917983624797";
+const UPI_ID="paytmqr5hyx5o@ptys";
+const UPI_NAME="Surender Kaur";
 
-/* ====== State ====== */
-let paymentMode = "prepaid";
-let pincodeLatLng = {};
-let globalDistance = "N/A";
-let globalETA = "N/A";
-let globalEstimatedDate = "N/A";
+/* ===== State from URL ===== */
+const qs=new URLSearchParams(location.search);
+let category = (qs.get("category")||"").trim();      // FMCB | USB | Combo
+let pack     = (qs.get("pack")||"Top").trim();       // Top | Optional
+let allowCod = (qs.get("allowCod")||"true")==="true";
 
-/* ====== Load pincode lat/lng JSON (same file as index) ====== */
-fetch('pincode_data.json')
-  .then(res => res.json())
-  .then(data => { pincodeLatLng = data; })
-  .catch(err => console.log("Failed to load pincode_data.json", err)); // from your index file logic 
-
-/* ====== Helpers (from your index) ====== */
+/* ===== Utils ===== */
+const rs=n=>"₹"+(Number(n)||0).toLocaleString("en-IN");
 function pad(n){return n<10?"0"+n:String(n);}
-
-function orderIdNow(){ // DDMMYYYYHHMMSS00 (matches your style)
-  const now = new Date();
-  return pad(now.getDate())+pad(now.getMonth()+1)+now.getFullYear()
-       + pad(now.getHours())+pad(now.getMinutes())+pad(now.getSeconds())+'00';
+function orderIdNow(){
+  const d=new Date();
+  return pad(d.getDate())+pad(d.getMonth()+1)+d.getFullYear()+pad(d.getHours())+pad(d.getMinutes())+pad(d.getSeconds())+'00';
+}
+function upiLink(amount,note){
+  const p=new URLSearchParams({pa:UPI_ID,pn:UPI_NAME,am:String(amount||0),cu:"INR",tn:note||"Games Planet Order"});
+  return "upi://pay?"+p.toString();
 }
 
-// Rampur (244901) → dest pincode distance using Haversine
+/* ===== India Post (auto-fill) + distance/ETA like your index ===== */
+let pincodeLatLng={};
+fetch('pincode_data.json').then(r=>r.json()).then(j=>pincodeLatLng=j).catch(()=>{});
+
 function haversine(lat1, lon1, lat2, lon2) {
-  const R = 6371;
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat / 2) ** 2 +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon / 2) ** 2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
+  const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
-
-// Distance → ETA rules (exactly like index)
-function estimateDeliveryByDistance(distance) {
-  if (distance <= 30) return "1 day";
-  else if (distance <= 60) return "1-2 days";
-  else if (distance <= 100) return "2-3 days";
-  else if (distance <= 200) return "3-4 days";
-  else if (distance <= 500) return "4-5 days";
-  else if (distance <= 1000) return "4-6 days";
-  else if (distance <= 1500) return "5–7 days";
-  else if (distance <= 2000) return "6–8 days";
-  else if (distance <= 3000) return "6–10 days";
+function estimateDeliveryByDistance(distance){
+  const d=Number(distance)||0;
+  if (d<=30) return "1 day";
+  else if (d<=60) return "1-2 days";
+  else if (d<=100) return "2-3 days";
+  else if (d<=200) return "3-4 days";
+  else if (d<=500) return "4-5 days";
+  else if (d<=1000) return "4-6 days";
+  else if (d<=1500) return "5–7 days";
+  else if (d<=2000) return "6–8 days";
+  else if (d<=3000) return "6–10 days";
   else return "8–12 days (sometimes up to 15 days)";
 }
-
-// ETA text → date range
-function calculateEstimatedDate(etaText) {
-  const numbers = etaText.match(/\d+/g);
-  if (!numbers || numbers.length === 0) return "N/A";
-
-  const minDays = Math.min(...numbers.map(Number));
-  const maxDays = Math.max(...numbers.map(Number));
-
-  const start = new Date();
-  const end = new Date();
-  start.setDate(start.getDate() + minDays);
-  end.setDate(end.getDate() + maxDays);
-
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","July","Aug","Sep","Oct","Nov","Dec"];
-  const fmt = (d)=> `${d.getDate()} ${months[d.getMonth()]}`;
+function calcDateRangeFromEta(etaText){
+  const nums=(etaText||"").match(/\d+/g);
+  if(!nums) return "";
+  const minD=Math.min(...nums.map(Number));
+  const maxD=Math.max(...nums.map(Number));
+  const start=new Date(), end=new Date();
+  start.setDate(start.getDate()+minD); end.setDate(end.getDate()+maxD);
+  const mo=["Jan","Feb","Mar","Apr","May","Jun","July","Aug","Sep","Oct","Nov","Dec"];
+  const fmt=d=>`${d.getDate()} ${mo[d.getMonth()]}`;
   return `${fmt(start)} to ${fmt(end)}`;
 }
 
-/* ====== Mode toggle ====== */
-function setMode(m){
-  paymentMode = m;
-  document.getElementById("btn-prepaid").className = (m==="prepaid" ? "ghost act" : "ghost");
-  document.getElementById("btn-cod").className     = (m==="cod"     ? "ghost act" : "ghost");
-  recomputeMoney();
-}
-
-/* ====== India Post API hookup (copied from your index) ====== */
 document.getElementById("pincode").addEventListener("input", function(){
-  let pincode = this.value.trim();
-  if (pincode.length === 6) {
-    fetch(`https://api.postalpincode.in/pincode/${pincode}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data[0].Status === "Success") {
-          let po = data[0].PostOffice[0];
-          document.getElementById("state").value = po.State;
-          document.getElementById("city").value = po.District;
+  const pin=this.value.trim();
+  if(pin.length===6){
+    fetch(`https://api.postalpincode.in/pincode/${pin}`)
+      .then(r=>r.json()).then(data=>{
+        if(data[0].Status==="Success"){
+          const po=data[0].PostOffice[0];
+          document.getElementById("state").value=po.State;
+          document.getElementById("city").value=po.District;
 
-          let sel = document.getElementById("postoffice");
-          sel.innerHTML = '<option value="">Select Post Office</option>';
-          data[0].PostOffice.forEach(p => {
-            let opt = document.createElement("option");
-            opt.value = p.Name;
-            opt.text  = p.Name;
-            sel.appendChild(opt);
+          const sel=document.getElementById("postoffice");
+          sel.innerHTML='<option value="">Select Post Office</option>';
+          data[0].PostOffice.forEach(p=>{
+            const opt=document.createElement("option");
+            opt.value=p.Name; opt.text=p.Name; sel.appendChild(opt);
           });
 
-          // distance & ETA from your JSON
-          if (pincodeLatLng[pincode]) {
-            const rampurLat = 28.8, rampurLng = 79.0; // Rampur 244901 approx
-            const dest = pincodeLatLng[pincode];
-            const distance = haversine(rampurLat, rampurLng, dest.lat, dest.lng).toFixed(0);
-            const eta = estimateDeliveryByDistance(distance);
-            const deliveryDate = calculateEstimatedDate(eta);
+          if(pincodeLatLng[pin]){
+            const baseLat=28.8, baseLng=79.0; // Rampur 244901 approx
+            const {lat,lng}=pincodeLatLng[pin];
+            const distKm=haversine(baseLat,baseLng,lat,lng).toFixed(0);
+            const eta=estimateDeliveryByDistance(distKm);
+            const dateRng=calcDateRangeFromEta(eta);
+            document.getElementById("distance").value=`${distKm} km`;
+            document.getElementById("etaText").value=eta;
+            document.getElementById("dateRange").value=dateRng;
 
-            globalDistance = `${distance} km`;
-            globalETA = eta;
-            globalEstimatedDate = deliveryDate;
-
-            document.getElementById("deliveryEstimate").innerText =
-              `📍 Pincode found – Distance: ${globalDistance}
-⏳ ETA: ${globalETA}
-📅 Estimated Delivery: ${globalEstimatedDate}
-
-📝 Delivery timeline is based on past experience. Sometimes it may delay by 1–3 days due to unforeseen circumstances.`;
-          } else {
-            globalDistance = "N/A";
-            globalETA = "N/A";
-            globalEstimatedDate = "N/A";
-            document.getElementById("deliveryEstimate").innerText = "📍 Pincode found, but no distance data.";
+            document.getElementById("deliveryEstimate").innerText=
+`📍 Pincode found – Distance: ${distKm} km
+⏳ ETA: ${eta}
+📅 Estimated Delivery: ${dateRng}`;
           }
         }
       });
   }
 });
 
-/* ====== Money logic (same behavior as index) ====== */
-function recomputeMoney(){
-  const base = parseInt(document.getElementById("baseprice").value)||0;
-  // Your index cod charge example: <1500 => 99 else 0 (we keep this generic rule here)
-  const cod = (paymentMode === "cod" && base < 1500) ? 99 : 0;
-  document.getElementById("codchargeComputed").value = cod;
-
-  let paid = parseInt(document.getElementById("amountpaid").value)||0;
-  if(!paid){
-    paid = (paymentMode==="prepaid") ? base : Math.max(500, Math.ceil((base+cod)*0.10));
-    document.getElementById("amountpaid").value = paid;
-  }
-
-  const rest = (paymentMode==="cod") ? (base + cod - paid) : 0;
-  document.getElementById("restamount").value = Math.max(0, rest);
-
-  // update Pay Now link
-  const note = (paymentMode==="prepaid") ? "Prepaid for Games Planet Order" : "Advance for Games Planet Order";
-  const upi = new URLSearchParams({pa:UPI_ID,pn:UPI_NAME,am:String(paid),cu:"INR",tn:note});
-  document.getElementById("payNow").href = "upi://pay?"+upi.toString();
+/* ===== Items UI (just to show list; basePrice drives charges) ===== */
+function addRow(item="",price="",qty="1"){
+  const el=document.createElement("div");
+  el.className="row";
+  el.innerHTML=`
+    <input class="i-name" placeholder="Item name" value="${item}">
+    <input class="i-price" type="number" placeholder="Price" value="${price}">
+    <input class="i-qty" type="number" min="1" step="1" placeholder="Qty" value="${qty}">
+    <button class="ghost" title="Remove">✕</button>`;
+  el.querySelector("button").onclick=()=>{el.remove()};
+  document.getElementById("items").appendChild(el);
 }
 
-["baseprice","amountpaid"].forEach(id=>{
-  document.getElementById(id).addEventListener("input",recomputeMoney);
-});
+/* ===== Mode toggle (respect allowCod) ===== */
+function setMode(m){
+  if(m==="cod" && !allowCod){
+    alert("COD not available for this product. Please use Prepaid.");
+    return;
+  }
+  document.getElementById("btn-prepaid").className=(m==="prepaid"?"ghost act":"ghost");
+  document.getElementById("btn-cod").className=(m==="cod"?"ghost act":"ghost");
+  mode=m; computeTotals();
+}
 
-/* ====== WhatsApp message (exact style you gave + Pay link only) ====== */
-function sendOrder(){
-  const id = orderIdNow();
-  const val = id => (document.getElementById(id)?.value||"").trim();
+let mode="prepaid";
 
-  // COD ETA bump (same as your index logic): +2 to min, +3 to max
-  let eta = globalETA, est = globalEstimatedDate;
-  if (paymentMode === "cod" && /\d/.test(globalETA||"")) {
-    const nums = globalETA.match(/\d+/g).map(Number);
-    const newMin = nums[0] + 2;
-    const newMax = (nums[1] || nums[0]) + 3;
-    eta = `${newMin}–${newMax} days`;
-    est = calculateEstimatedDate(eta);
+/* ===== COD rules per your spec =====
+   - FMCB: COD not allowed
+   - USB/Combo + Optional: COD charge = ₹99
+   - USB/Combo + Top: base > 2000 → 0, else 99
+   - Prepaid delivery free (no extra)
+*/
+function computeCodCharge(base){
+  if(mode!=="cod") return 0;
+  if(category==="FMCB") return 0; // won't be used since COD blocked; safety
+  const isOptional = /optional/i.test(pack);
+  if(isOptional) return 99;
+  return base>2000 ? 0 : 99;
+}
+
+function computeTotals(){
+  const base = Number(document.getElementById("basePrice").value)||0;
+
+  // enforce FMCB -> no COD
+  if(category==="FMCB"){
+    allowCod=false;
+    document.getElementById("btn-cod").setAttribute("disabled","disabled");
+    if(mode==="cod"){ mode="prepaid"; }
+    document.getElementById("btn-prepaid").className="ghost act";
+    document.getElementById("btn-cod").className="ghost";
+    document.getElementById("ruleNote").innerHTML="FMCB: <b>COD not available</b>. Prepaid delivery free.";
+  }else{
+    document.getElementById("btn-cod").removeAttribute("disabled");
+    const isOptional=/optional/i.test(pack);
+    const noteTop  ="Top pack: > ₹2000 → COD ₹0; ≤ ₹2000 → COD ₹99";
+    const noteOpt  ="Optional pack: COD charge ₹99 (any amount)";
+    document.getElementById("ruleNote").innerHTML = (isOptional?noteOpt:noteTop) + " • Prepaid delivery free.";
   }
 
-  const base = parseInt(val("baseprice"))||0;
-  const paid = parseInt(val("amountpaid"))||0;
-  const codc = parseInt(val("codchargeComputed"))||0;
-  const rest = Math.max(0, (paymentMode==="cod" ? base+codc - paid : 0));
+  const codC = computeCodCharge(base);
+  document.getElementById("codCharges").value = codC;
 
-  const header = (paymentMode==="prepaid") ? "🟢 Prepaid Order on WhatsApp" : "🔴 COD Order on WhatsApp";
+  // default paid
+  let paid = Number(document.getElementById("amountPaid").value);
+  if(!paid){
+    paid = (mode==="prepaid") ? base : Math.max(500, Math.ceil((base+codC)*0.10));
+    document.getElementById("amountPaid").value = paid;
+  }
+  const rest = (mode==="cod") ? Math.max(0, base+codC - paid) : 0;
+  document.getElementById("restAmount").value = rest;
+
+  // Pay link
+  const note=(mode==="prepaid")?"Prepaid for Games Planet Order":"Advance for Games Planet Order";
+  document.getElementById("payNow").href = upiLink(paid, note);
+}
+
+["basePrice","amountPaid"].forEach(id=>{
+  document.getElementById(id).addEventListener("input",computeTotals);
+});
+
+/* ===== WhatsApp message (your style) ===== */
+function sendWhatsApp(){
+  const id = document.getElementById("orderId").value || (document.getElementById("orderId").value=orderIdNow());
+  const name=(document.getElementById("name").value||"").trim();
+  const mobile=(document.getElementById("mobile").value||"").trim();
+  const alt=(document.getElementById("altMobile").value||"").trim();
+  const email=(document.getElementById("email").value||"").trim();
+  const addr=(document.getElementById("address").value||"").trim();
+  const house=(document.getElementById("house").value||"").trim();
+  const land=(document.getElementById("landmark").value||"").trim();
+  const pin=(document.getElementById("pincode").value||"").trim();
+  const state=(document.getElementById("state").value||"").trim();
+  const city=(document.getElementById("city").value||"").trim();
+  const po=(document.getElementById("postoffice").value||"").trim();
+
+  const product=(document.getElementById("product").value||"").trim();
+  const variant=(document.getElementById("variant").value||"").trim();
+  const base=Number(document.getElementById("basePrice").value)||0;
+  const paid=Number(document.getElementById("amountPaid").value)||0;
+  const codc=Number(document.getElementById("codCharges").value)||0;
+  const rest=Number(document.getElementById("restAmount").value)||0;
+
+  const dist=(document.getElementById("distance").value||"").trim();
+  const eta=(document.getElementById("etaText").value||"").trim();
+  const dateRng=(document.getElementById("dateRange").value||"").trim();
+
+  const payLink=document.getElementById("payNow").href;
+  const header = (mode==="prepaid") ? "🟢 Prepaid Order on WhatsApp" : "🔴 COD Order on WhatsApp";
 
   const lines = [
     `${header}`,
     ``,
     `Order ID: ${id}`,
-    `Name: ${val("name")}`,
-    `Mobile: ${val("mobile")}`,
-    `Alt Mobile: ${val("altmobile")}`,
-    `Email: ${val("email")}`,
-    `Address: ${val("address")}`,
-    `House number: ${val("house")}`,
-    `Landmark: ${val("landmark")}`,
-    `Pincode: ${val("pincode")}`,
-    `State: ${val("state")}`,
-    `District/City: ${val("city")}`,
-    `Post office: ${val("postoffice")}`,
+    `Name: ${name}`,
+    `Mobile: ${mobile}`,
+    `Alt Mobile: ${alt}`,
+    `Email: ${email}`,
+    `Address: ${addr}`,
+    `House number: ${house}`,
+    `Landmark: ${land}`,
+    `Pincode: ${pin}`,
+    `State: ${state}`,
+    `District/City: ${city}`,
+    `Post office: ${po}`,
     ``,
-    `Product: ${val("product")}`,
-    `Variant: ${val("variant")}`,
-    `Base Price: ₹${base}`,
-    (paymentMode==="prepaid")
-      ? `Amount Paid: ₹${paid}`
-      : `Amount Paid: ₹${paid}\nCOD Charges: ₹${codc}\nRest Amount on Delivery: ₹${rest}`,
+    `Product: ${product}`,
+    `Variant: ${variant}`,
+    `Base Price: ${rs(base)}`,
+    (mode==="prepaid")
+      ? `Amount Paid: ${rs(paid)}`
+      : `Amount Paid: ${rs(paid)}\nCOD Charges: ${rs(codc)}\nRest Amount on Delivery: ${rs(rest)}`,
     ``,
-    `📏 Distance: ${globalDistance}`,
-    `⏳ ${paymentMode==="prepaid"?"Prepaid":"COD"} Order ETA: ${eta}`,
-    `📅 Estimated Delivery: ${est}`,
+    `📏 Distance: ${dist}`,
+    `⏳ ${mode==="prepaid"?"Prepaid":"COD"} Order ETA: ${eta}`,
+    `📅 Estimated Delivery: ${dateRng}`,
     ``,
     `💳 Pay Link:`,
-    document.getElementById("payNow").href
+    `${payLink}`
   ].join("\n");
 
-  window.location.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(lines)}`;
+  window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(lines)}`,'_blank','noopener,noreferrer');
 }
 
-/* init */
-setMode("prepaid");
+/* ===== Prefill from main page ===== */
+(function prefill(){
+  const product=qs.get("product"); if(product) document.getElementById("product").value=product;
+  const variant=qs.get("variant"); if(variant) document.getElementById("variant").value=variant;
+  const base=qs.get("base"); if(base) document.getElementById("basePrice").value=base;
+
+  // initial order id
+  document.getElementById("orderId").value=orderIdNow();
+
+  // seed items row (optional)
+  const items=qs.getAll("item"), prices=qs.getAll("price"), qtys=qs.getAll("qty");
+  if(items.length){ items.forEach((it,i)=> addRow(it, prices[i]||"", qtys[i]||"1")); }
+
+  // default mode: prepaid; if FMCB -> disable COD
+  if(category==="FMCB" || !allowCod){
+    allowCod=false;
+    document.getElementById("btn-cod").setAttribute("disabled","disabled");
+    setMode("prepaid");
+  }else{
+    setMode("prepaid"); // user may tap COD if they want
+  }
+
+  computeTotals();
+})();
 </script>
 </body>
 </html>
