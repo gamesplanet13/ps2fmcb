@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Games Planet – Quick Order (Prefilled)</title>
+<style>
+  :root{--bg:#0b1020;--card:#121a33;--muted:#9fb0d3;--text:#eaf1ff;--accent:#7c4dff;--ok:#3ddc84}
+  body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
+  .wrap{max-width:900px;margin:0 auto;padding:22px 16px 60px}
+  h1{margin:0 0 6px}
+  .sub{color:var(--muted);margin-bottom:18px}
+  .card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0}
+  .row{display:grid;grid-template-columns:2fr .8fr .8fr .4fr;gap:8px;align-items:center;margin-bottom:8px}
+  input,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0e1530;color:#fff}
+  .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+  button,a.btn{border:0;padding:11px 14px;border-radius:12px;font-weight:800;cursor:pointer;text-decoration:none}
+  .act{background:var(--ok);color:#04190b}
+  .alt{background:#ffd54f;color:#2b2100}
+  .ghost{background:transparent;border:1px solid rgba(255,255,255,.2);color:#fff}
+  .badge{display:inline-block;background:#1b2447;border-radius:999px;padding:6px 10px;font-weight:700;margin-right:6px;color:var(--muted)}
+  .pill{display:inline-block;background:#1b2447;border-radius:999px;padding:4px 8px;font-weight:800;font-size:12px;margin-left:6px;color:var(--muted)}
+  .totals{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+  .totals > div{background:#0e1530;border:1px solid rgba(255,255,255,.1);padding:10px;border-radius:10px;min-width:140px}
+  .hint{color:var(--muted);font-size:13px;margin-top:6px}
+  @media(max-width:720px){.row{grid-template-columns:1fr 1fr 1fr .3fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Games Planet — Quick Order</h1>
+  <div class="sub">Prefilled items from URL • Edit if needed • Pay & send on WhatsApp</div>
+
+  <div class="card">
+    <span class="badge">Payment Mode</span>
+    <div class="btns">
+      <button id="btn-prepaid" class="ghost" onclick="setMode('prepaid')">🟢 Prepaid</button>
+      <button id="btn-cod" class="ghost" onclick="setMode('cod')">🔴 COD</button>
+    </div>
+    <div class="hint">URL param: <code>mode=prepaid</code> or <code>mode=cod</code> (default prepaid)</div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">
+      <div><span class="badge">Items</span><span class="pill">item + price + qty</span></div>
+      <button class="ghost" onclick="addRow()">+ Add Row</button>
+    </div>
+    <div id="items"></div>
+    <div class="totals">
+      <div><b>Subtotal:</b> <span id="subTotal">₹0</span></div>
+      <div><b>COD Charge:</b> <span id="codFee">₹0</span></div>
+      <div id="advBox" style="display:none;"><b>Advance (10% or ₹500):</b> <span id="advance">₹0</span></div>
+      <div><b>Total Payable:</b> <span id="grandTotal">₹0</span></div>
+      <div id="restBox" style="display:none;"><b>Rest on Delivery:</b> <span id="restAmount">₹0</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge">Buyer Details</span>
+    <div class="row" style="grid-template-columns:1fr 1fr">
+      <input id="name" placeholder="Name">
+      <input id="mobile" placeholder="Mobile">
+    </div>
+    <textarea id="address" placeholder="Address"></textarea>
+    <div class="row" style="grid-template-columns:1fr 1fr">
+      <input id="city" placeholder="City">
+      <input id="pincode" placeholder="Pincode">
+    </div>
+  </div>
+
+  <div class="btns">
+    <a id="payNow" class="btn act" href="#" target="_blank" rel="noopener">Pay Now</a>
+    <button class="alt" onclick="sendWhatsApp()">Send on WhatsApp</button>
+    <button class="ghost" onclick="copyLink()">Copy Prefilled Link</button>
+  </div>
+
+  <div class="hint">
+    Example prefill:  
+    <code>order-prefill.html?mode=prepaid&item=FMCB%20Card&price=999&qty=1&item=128GB%20PD%20USB%20(Top)&price=1499&qty=1&name=Rahul&mobile=98xxxxxx&address=Delhi&city=Delhi&pincode=110001</code>
+  </div>
+</div>
+
+<script>
+const WHATSAPP_PHONE="917983624797";
+const UPI_ID="paytmqr5hyx5o@ptys";
+const UPI_NAME="Surender Kaur";
+
+let mode="prepaid";
+const rs=n=>"₹"+(Number(n)||0).toLocaleString("en-IN");
+const qs=new URLSearchParams(location.search);
+
+function upiLink(amount,note){
+  const p=new URLSearchParams({pa:UPI_ID,pn:UPI_NAME,am:String(amount||0),cu:"INR",tn:note||"Games Planet Order"});
+  return "upi://pay?"+p.toString();
+}
+
+function addRow(item="",price="",qty="1"){
+  const el=document.createElement("div");
+  el.className="row";
+  el.innerHTML=`
+    <input class="i-name" placeholder="Item name" value="${item}">
+    <input class="i-price" type="number" placeholder="Price" value="${price}">
+    <input class="i-qty" type="number" min="1" step="1" placeholder="Qty" value="${qty}">
+    <button class="ghost" title="Remove">✕</button>`;
+  el.querySelector("button").onclick=()=>{el.remove();calc();};
+  ["input","change"].forEach(e=>{
+    el.querySelector(".i-price").addEventListener(e,calc);
+    el.querySelector(".i-qty").addEventListener(e,calc);
+  });
+  document.getElementById("items").appendChild(el);
+  calc();
+}
+
+function setMode(m){
+  mode=m;
+  document.getElementById("btn-prepaid").className=(m==="prepaid"?"ghost act":"ghost");
+  document.getElementById("btn-cod").className=(m==="cod"?"ghost act":"ghost");
+  calc();
+}
+
+function calc(){
+  const rows=[...document.querySelectorAll("#items .row")];
+  let sub=0;
+  rows.forEach(r=>{
+    const p=Number(r.querySelector(".i-price").value)||0;
+    const q=Math.max(1,Number(r.querySelector(".i-qty").value)||1);
+    sub+=p*q;
+  });
+  let codFee=0,grand=sub,adv=0,rest=0;
+  if(mode==="cod"){
+    codFee=(sub>2000)?0:99;
+    grand=sub+codFee;
+    adv=Math.max(500,Math.ceil(grand*0.10));
+    rest=grand-adv;
+    document.getElementById("advBox").style.display="";
+    document.getElementById("restBox").style.display="";
+  }else{
+    document.getElementById("advBox").style.display="none";
+    document.getElementById("restBox").style.display="none";
+  }
+  document.getElementById("subTotal").textContent=rs(sub);
+  document.getElementById("codFee").textContent=rs(codFee);
+  document.getElementById("grandTotal").textContent=rs(grand);
+  document.getElementById("advance").textContent=rs(adv);
+  document.getElementById("restAmount").textContent=rs(rest);
+
+  const payAmt=(mode==="prepaid")?grand:adv;
+  const note=(mode==="prepaid")?"Prepaid for Games Planet Order":"Advance for Games Planet Order";
+  document.getElementById("payNow").href=upiLink(payAmt,note);
+}
+
+function makeLink(){
+  const p=new URLSearchParams();
+  p.set("mode",mode);
+  ["name","mobile","address","city","pincode"].forEach(id=>{
+    const v=document.getElementById(id).value.trim(); if(v) p.set(id,v);
+  });
+  const rows=[...document.querySelectorAll("#items .row")];
+  rows.forEach(r=>{
+    const name=r.querySelector(".i-name").value.trim();
+    const price=r.querySelector(".i-price").value;
+    const qty=r.querySelector(".i-qty").value;
+    if(name) p.append("item",name);
+    if(price) p.append("price",price);
+    if(qty) p.append("qty",qty);
+  });
+  return location.pathname.replace(/[^/]+$/,"")+"order-prefill.html?"+p.toString();
+}
+async function copyLink(){
+  const url=location.origin+makeLink();
+  try{await navigator.clipboard.writeText(url);alert("Prefilled link copied!");}
+  catch{prompt("Copy this link:",url);}
+}
+
+function sendWhatsApp(){
+  const rows=[...document.querySelectorAll("#items .row")];
+  const itemsList=rows.map(r=>{
+    const n=r.querySelector(".i-name").value.trim()||"(item)";
+    const p=Number(r.querySelector(".i-price").value)||0;
+    const q=Math.max(1,Number(r.querySelector(".i-qty").value)||1);
+    const s=p*q;
+    return `• ${n}  —  ${q} × ₹${p.toLocaleString('en-IN')} = ₹${s.toLocaleString('en-IN')}`;
+  }).join("\n");
+
+  const totalsText=document.getElementById("grandTotal").textContent;
+  const subText=document.getElementById("subTotal").textContent;
+  const codText=document.getElementById("codFee").textContent;
+  const advText=document.getElementById("advance").textContent;
+  const restText=document.getElementById("restAmount").textContent;
+
+  const payAmt=(mode==="prepaid")?totalsText:advText;
+  const payLink=document.getElementById("payNow").href;
+  const formLink=location.origin+makeLink();
+
+  const msg=[
+    `🛒 *Order Details — Games Planet*`,
+    ``,
+    `👤 Name: ${document.getElementById("name").value||"-"}`,
+    `📱 Mobile: ${document.getElementById("mobile").value||"-"}`,
+    `🏠 Address: ${document.getElementById("address").value||"-"}`,
+    `🏙️ City: ${document.getElementById("city").value||"-"}  •  Pincode: ${document.getElementById("pincode").value||"-"}`,
+    ``,
+    `🎁 Items:`,
+    itemsList || "• (none)",
+    ``,
+    `💳 Mode: ${mode==="prepaid"?"🟢 Prepaid":"🔴 COD"}`,
+    `Subtotal: ${subText}   •   COD Charge: ${codText}`,
+    `✅ Total: ${totalsText}`,
+    ...(mode==="cod"?[`🔐 Advance: ${advText}`,`🚚 Rest on Delivery: ${restText}`]:[]),
+    ``,
+    `👉 Tap to Pay ${mode==="prepaid"?"Now":"Advance"} (${payAmt}):`,
+    payLink,
+    ``,
+    `📝 Edit/Confirm details link:`,
+    formLink
+  ].join("\n");
+
+  window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+function prefillFromURL(){
+  const m=(qs.get("mode")||"prepaid").toLowerCase();
+  setMode(m==="cod"?"cod":"prepaid");
+  ["name","mobile","address","city","pincode"].forEach(id=>{
+    const v=qs.get(id); if(v) document.getElementById(id).value=v;
+  });
+  const items=qs.getAll("item"), prices=qs.getAll("price"), qtys=qs.getAll("qty");
+  if(items.length){
+    items.forEach((it,i)=> addRow(it, prices[i]||"", qtys[i]||"1"));
+  }else{
+    addRow();
+  }
+}
+prefillFromURL();
+</script>
+</body>
+</html>
