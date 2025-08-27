@@ -1,237 +1,320 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Games Planet – Quick Order (Prefilled)</title>
-<style>
-  :root{--bg:#0b1020;--card:#121a33;--muted:#9fb0d3;--text:#eaf1ff;--accent:#7c4dff;--ok:#3ddc84}
-  body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
-  .wrap{max-width:900px;margin:0 auto;padding:22px 16px 60px}
-  h1{margin:0 0 6px}
-  .sub{color:var(--muted);margin-bottom:18px}
-  .card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0}
-  .row{display:grid;grid-template-columns:2fr .8fr .8fr .4fr;gap:8px;align-items:center;margin-bottom:8px}
-  input,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0e1530;color:#fff}
-  .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
-  button,a.btn{border:0;padding:11px 14px;border-radius:12px;font-weight:800;cursor:pointer;text-decoration:none}
-  .act{background:var(--ok);color:#04190b}
-  .alt{background:#ffd54f;color:#2b2100}
-  .ghost{background:transparent;border:1px solid rgba(255,255,255,.2);color:#fff}
-  .badge{display:inline-block;background:#1b2447;border-radius:999px;padding:6px 10px;font-weight:700;margin-right:6px;color:var(--muted)}
-  .pill{display:inline-block;background:#1b2447;border-radius:999px;padding:4px 8px;font-weight:800;font-size:12px;margin-left:6px;color:var(--muted)}
-  .totals{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
-  .totals > div{background:#0e1530;border:1px solid rgba(255,255,255,.1);padding:10px;border-radius:10px;min-width:140px}
-  .hint{color:var(--muted);font-size:13px;margin-top:6px}
-  @media(max-width:720px){.row{grid-template-columns:1fr 1fr 1fr .3fr}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Games Planet – Quick Order (Prefilled)</title>
+  <style>
+    :root{--bg:#0b1020;--card:#121a33;--muted:#9fb0d3;--text:#eaf1ff;--ok:#3ddc84}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
+    .wrap{max-width:900px;margin:0 auto;padding:22px 16px 60px}
+    h1{margin:0 0 6px}
+    .sub{color:var(--muted);margin-bottom:18px}
+    .card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0}
+    .row{display:grid;grid-template-columns:2fr .8fr .8fr .4fr;gap:8px;align-items:center;margin-bottom:8px}
+    input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0e1530;color:#fff}
+    .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    button,a.btn{border:0;padding:11px 14px;border-radius:12px;font-weight:800;cursor:pointer;text-decoration:none}
+    .act{background:var(--ok);color:#04190b}
+    .alt{background:#ffd54f;color:#2b2100}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,.2);color:#fff}
+    .badge{display:inline-block;background:#1b2447;border-radius:999px;padding:6px 10px;font-weight:700;margin-right:6px;color:var(--muted)}
+    .pill{display:inline-block;background:#1b2447;border-radius:999px;padding:4px 8px;font-weight:800;font-size:12px;margin-left:6px;color:var(--muted)}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+    .totals{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+    .totals > div{background:#0e1530;border:1px solid rgba(255,255,255,.1);padding:10px;border-radius:10px;min-width:160px}
+    .hint{color:var(--muted);font-size:13px;margin-top:6px}
+    @media(max-width:900px){.grid3{grid-template-columns:1fr 1fr}}
+    @media(max-width:720px){
+      .row{grid-template-columns:1fr 1fr 1fr .3fr}
+      .grid2{grid-template-columns:1fr}
+      .grid3{grid-template-columns:1fr}
+    }
+  </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Games Planet — Quick Order</h1>
-  <div class="sub">Prefilled items from URL • Edit if needed • Pay & send on WhatsApp</div>
+  <div class="sub">Same logic as your index page (India Post API + distance/ETA) • Pay & send on WhatsApp</div>
 
+  <!-- Mode -->
   <div class="card">
     <span class="badge">Payment Mode</span>
     <div class="btns">
       <button id="btn-prepaid" class="ghost" onclick="setMode('prepaid')">🟢 Prepaid</button>
       <button id="btn-cod" class="ghost" onclick="setMode('cod')">🔴 COD</button>
     </div>
-    <div class="hint">URL param: <code>mode=prepaid</code> or <code>mode=cod</code> (default prepaid)</div>
   </div>
 
+  <!-- Buyer details (exact fields/order as your sample) -->
   <div class="card">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">
-      <div><span class="badge">Items</span><span class="pill">item + price + qty</span></div>
-      <button class="ghost" onclick="addRow()">+ Add Row</button>
+    <span class="badge">Customer Details</span>
+    <div class="grid2">
+      <input type="text" id="name" placeholder="Name" required>
+      <input type="text" id="mobile" placeholder="Mobile" required>
     </div>
-    <div id="items"></div>
-    <div class="totals">
-      <div><b>Subtotal:</b> <span id="subTotal">₹0</span></div>
-      <div><b>COD Charge:</b> <span id="codFee">₹0</span></div>
-      <div id="advBox" style="display:none;"><b>Advance (10% or ₹500):</b> <span id="advance">₹0</span></div>
-      <div><b>Total Payable:</b> <span id="grandTotal">₹0</span></div>
-      <div id="restBox" style="display:none;"><b>Rest on Delivery:</b> <span id="restAmount">₹0</span></div>
+    <div class="grid2">
+      <input type="text" id="altmobile" placeholder="Alt Mobile">
+      <input type="email" id="email" placeholder="Email">
+    </div>
+    <textarea id="address" placeholder="Address (Area/Village/Street)"></textarea>
+    <div class="grid3" style="margin-top:8px">
+      <input type="text" id="house" placeholder="House number">
+      <input type="text" id="landmark" placeholder="Landmark">
+      <input type="text" id="pincode" placeholder="Pincode">
+    </div>
+
+    <!-- auto-filled from India Post API -->
+    <div id="deliveryEstimate" class="hint" style="white-space:pre-line;margin-top:8px"></div>
+    <div class="grid3" style="margin-top:8px">
+      <input type="text" id="state" placeholder="State" readonly>
+      <input type="text" id="city" placeholder="District/City" readonly>
+      <select id="postoffice" required>
+        <option value="">Select Post Office</option>
+      </select>
     </div>
   </div>
 
+  <!-- Product -->
   <div class="card">
-    <span class="badge">Buyer Details</span>
-    <div class="row" style="grid-template-columns:1fr 1fr">
-      <input id="name" placeholder="Name">
-      <input id="mobile" placeholder="Mobile">
+    <span class="badge">Order Details</span>
+    <div class="grid2">
+      <input type="text" id="product" placeholder="Product (e.g., Fmcb+ USB ssd)">
+      <input type="text" id="variant" placeholder="Variant (e.g., 256 top 7xxxx)">
     </div>
-    <textarea id="address" placeholder="Address"></textarea>
-    <div class="row" style="grid-template-columns:1fr 1fr">
-      <input id="city" placeholder="City">
-      <input id="pincode" placeholder="Pincode">
+    <div class="grid3" style="margin-top:8px">
+      <input type="number" id="baseprice" placeholder="Base Price (₹)">
+      <input type="number" id="amountpaid" placeholder="Amount Paid">
+      <input type="number" id="codchargeComputed" placeholder="COD Charges (auto)" readonly>
     </div>
+    <input type="number" id="restamount" placeholder="Rest on Delivery (auto if COD)" readonly>
   </div>
 
+  <!-- Pay + Send -->
   <div class="btns">
     <a id="payNow" class="btn act" href="#" target="_blank" rel="noopener">Pay Now</a>
-    <button class="alt" onclick="sendWhatsApp()">Send on WhatsApp</button>
-    <button class="ghost" onclick="copyLink()">Copy Prefilled Link</button>
+    <button class="alt" onclick="sendOrder()">Send on WhatsApp</button>
   </div>
 
-  <div class="hint">
-    Example prefill:  
-    <code>order-prefill.html?mode=prepaid&item=FMCB%20Card&price=999&qty=1&item=128GB%20PD%20USB%20(Top)&price=1499&qty=1&name=Rahul&mobile=98xxxxxx&address=Delhi&city=Delhi&pincode=110001</code>
-  </div>
+  <!-- Optional QR display -->
+  <img src="https://gamesplanet13.github.io/Ordernow/Qr.jpg" alt="Paytm QR" id="qr-image" style="width:240px;margin-top:12px"/>
 </div>
 
 <script>
-const WHATSAPP_PHONE="917983624797";
-const UPI_ID="paytmqr5hyx5o@ptys";
-const UPI_NAME="Surender Kaur";
+/* ====== Config (patched) ====== */
+const WHATSAPP_PHONE = "917983624797";
+const UPI_ID   = "paytmqr5hyx5o@ptys";
+const UPI_NAME = "Surender Kaur";
 
-let mode="prepaid";
-const rs=n=>"₹"+(Number(n)||0).toLocaleString("en-IN");
-const qs=new URLSearchParams(location.search);
+/* ====== State ====== */
+let paymentMode = "prepaid";
+let pincodeLatLng = {};
+let globalDistance = "N/A";
+let globalETA = "N/A";
+let globalEstimatedDate = "N/A";
 
-function upiLink(amount,note){
-  const p=new URLSearchParams({pa:UPI_ID,pn:UPI_NAME,am:String(amount||0),cu:"INR",tn:note||"Games Planet Order"});
-  return "upi://pay?"+p.toString();
+/* ====== Load pincode lat/lng JSON (same file as index) ====== */
+fetch('pincode_data.json')
+  .then(res => res.json())
+  .then(data => { pincodeLatLng = data; })
+  .catch(err => console.log("Failed to load pincode_data.json", err)); // from your index file logic 
+
+/* ====== Helpers (from your index) ====== */
+function pad(n){return n<10?"0"+n:String(n);}
+
+function orderIdNow(){ // DDMMYYYYHHMMSS00 (matches your style)
+  const now = new Date();
+  return pad(now.getDate())+pad(now.getMonth()+1)+now.getFullYear()
+       + pad(now.getHours())+pad(now.getMinutes())+pad(now.getSeconds())+'00';
 }
 
-function addRow(item="",price="",qty="1"){
-  const el=document.createElement("div");
-  el.className="row";
-  el.innerHTML=`
-    <input class="i-name" placeholder="Item name" value="${item}">
-    <input class="i-price" type="number" placeholder="Price" value="${price}">
-    <input class="i-qty" type="number" min="1" step="1" placeholder="Qty" value="${qty}">
-    <button class="ghost" title="Remove">✕</button>`;
-  el.querySelector("button").onclick=()=>{el.remove();calc();};
-  ["input","change"].forEach(e=>{
-    el.querySelector(".i-price").addEventListener(e,calc);
-    el.querySelector(".i-qty").addEventListener(e,calc);
-  });
-  document.getElementById("items").appendChild(el);
-  calc();
+// Rampur (244901) → dest pincode distance using Haversine
+function haversine(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
 }
 
+// Distance → ETA rules (exactly like index)
+function estimateDeliveryByDistance(distance) {
+  if (distance <= 30) return "1 day";
+  else if (distance <= 60) return "1-2 days";
+  else if (distance <= 100) return "2-3 days";
+  else if (distance <= 200) return "3-4 days";
+  else if (distance <= 500) return "4-5 days";
+  else if (distance <= 1000) return "4-6 days";
+  else if (distance <= 1500) return "5–7 days";
+  else if (distance <= 2000) return "6–8 days";
+  else if (distance <= 3000) return "6–10 days";
+  else return "8–12 days (sometimes up to 15 days)";
+}
+
+// ETA text → date range
+function calculateEstimatedDate(etaText) {
+  const numbers = etaText.match(/\d+/g);
+  if (!numbers || numbers.length === 0) return "N/A";
+
+  const minDays = Math.min(...numbers.map(Number));
+  const maxDays = Math.max(...numbers.map(Number));
+
+  const start = new Date();
+  const end = new Date();
+  start.setDate(start.getDate() + minDays);
+  end.setDate(end.getDate() + maxDays);
+
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","July","Aug","Sep","Oct","Nov","Dec"];
+  const fmt = (d)=> `${d.getDate()} ${months[d.getMonth()]}`;
+  return `${fmt(start)} to ${fmt(end)}`;
+}
+
+/* ====== Mode toggle ====== */
 function setMode(m){
-  mode=m;
-  document.getElementById("btn-prepaid").className=(m==="prepaid"?"ghost act":"ghost");
-  document.getElementById("btn-cod").className=(m==="cod"?"ghost act":"ghost");
-  calc();
+  paymentMode = m;
+  document.getElementById("btn-prepaid").className = (m==="prepaid" ? "ghost act" : "ghost");
+  document.getElementById("btn-cod").className     = (m==="cod"     ? "ghost act" : "ghost");
+  recomputeMoney();
 }
 
-function calc(){
-  const rows=[...document.querySelectorAll("#items .row")];
-  let sub=0;
-  rows.forEach(r=>{
-    const p=Number(r.querySelector(".i-price").value)||0;
-    const q=Math.max(1,Number(r.querySelector(".i-qty").value)||1);
-    sub+=p*q;
-  });
-  let codFee=0,grand=sub,adv=0,rest=0;
-  if(mode==="cod"){
-    codFee=(sub>2000)?0:99;
-    grand=sub+codFee;
-    adv=Math.max(500,Math.ceil(grand*0.10));
-    rest=grand-adv;
-    document.getElementById("advBox").style.display="";
-    document.getElementById("restBox").style.display="";
-  }else{
-    document.getElementById("advBox").style.display="none";
-    document.getElementById("restBox").style.display="none";
+/* ====== India Post API hookup (copied from your index) ====== */
+document.getElementById("pincode").addEventListener("input", function(){
+  let pincode = this.value.trim();
+  if (pincode.length === 6) {
+    fetch(`https://api.postalpincode.in/pincode/${pincode}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data[0].Status === "Success") {
+          let po = data[0].PostOffice[0];
+          document.getElementById("state").value = po.State;
+          document.getElementById("city").value = po.District;
+
+          let sel = document.getElementById("postoffice");
+          sel.innerHTML = '<option value="">Select Post Office</option>';
+          data[0].PostOffice.forEach(p => {
+            let opt = document.createElement("option");
+            opt.value = p.Name;
+            opt.text  = p.Name;
+            sel.appendChild(opt);
+          });
+
+          // distance & ETA from your JSON
+          if (pincodeLatLng[pincode]) {
+            const rampurLat = 28.8, rampurLng = 79.0; // Rampur 244901 approx
+            const dest = pincodeLatLng[pincode];
+            const distance = haversine(rampurLat, rampurLng, dest.lat, dest.lng).toFixed(0);
+            const eta = estimateDeliveryByDistance(distance);
+            const deliveryDate = calculateEstimatedDate(eta);
+
+            globalDistance = `${distance} km`;
+            globalETA = eta;
+            globalEstimatedDate = deliveryDate;
+
+            document.getElementById("deliveryEstimate").innerText =
+              `📍 Pincode found – Distance: ${globalDistance}
+⏳ ETA: ${globalETA}
+📅 Estimated Delivery: ${globalEstimatedDate}
+
+📝 Delivery timeline is based on past experience. Sometimes it may delay by 1–3 days due to unforeseen circumstances.`;
+          } else {
+            globalDistance = "N/A";
+            globalETA = "N/A";
+            globalEstimatedDate = "N/A";
+            document.getElementById("deliveryEstimate").innerText = "📍 Pincode found, but no distance data.";
+          }
+        }
+      });
   }
-  document.getElementById("subTotal").textContent=rs(sub);
-  document.getElementById("codFee").textContent=rs(codFee);
-  document.getElementById("grandTotal").textContent=rs(grand);
-  document.getElementById("advance").textContent=rs(adv);
-  document.getElementById("restAmount").textContent=rs(rest);
+});
 
-  const payAmt=(mode==="prepaid")?grand:adv;
-  const note=(mode==="prepaid")?"Prepaid for Games Planet Order":"Advance for Games Planet Order";
-  document.getElementById("payNow").href=upiLink(payAmt,note);
+/* ====== Money logic (same behavior as index) ====== */
+function recomputeMoney(){
+  const base = parseInt(document.getElementById("baseprice").value)||0;
+  // Your index cod charge example: <1500 => 99 else 0 (we keep this generic rule here)
+  const cod = (paymentMode === "cod" && base < 1500) ? 99 : 0;
+  document.getElementById("codchargeComputed").value = cod;
+
+  let paid = parseInt(document.getElementById("amountpaid").value)||0;
+  if(!paid){
+    paid = (paymentMode==="prepaid") ? base : Math.max(500, Math.ceil((base+cod)*0.10));
+    document.getElementById("amountpaid").value = paid;
+  }
+
+  const rest = (paymentMode==="cod") ? (base + cod - paid) : 0;
+  document.getElementById("restamount").value = Math.max(0, rest);
+
+  // update Pay Now link
+  const note = (paymentMode==="prepaid") ? "Prepaid for Games Planet Order" : "Advance for Games Planet Order";
+  const upi = new URLSearchParams({pa:UPI_ID,pn:UPI_NAME,am:String(paid),cu:"INR",tn:note});
+  document.getElementById("payNow").href = "upi://pay?"+upi.toString();
 }
 
-function makeLink(){
-  const p=new URLSearchParams();
-  p.set("mode",mode);
-  ["name","mobile","address","city","pincode"].forEach(id=>{
-    const v=document.getElementById(id).value.trim(); if(v) p.set(id,v);
-  });
-  const rows=[...document.querySelectorAll("#items .row")];
-  rows.forEach(r=>{
-    const name=r.querySelector(".i-name").value.trim();
-    const price=r.querySelector(".i-price").value;
-    const qty=r.querySelector(".i-qty").value;
-    if(name) p.append("item",name);
-    if(price) p.append("price",price);
-    if(qty) p.append("qty",qty);
-  });
-  return location.pathname.replace(/[^/]+$/,"")+"order-prefill.html?"+p.toString();
-}
-async function copyLink(){
-  const url=location.origin+makeLink();
-  try{await navigator.clipboard.writeText(url);alert("Prefilled link copied!");}
-  catch{prompt("Copy this link:",url);}
-}
+["baseprice","amountpaid"].forEach(id=>{
+  document.getElementById(id).addEventListener("input",recomputeMoney);
+});
 
-function sendWhatsApp(){
-  const rows=[...document.querySelectorAll("#items .row")];
-  const itemsList=rows.map(r=>{
-    const n=r.querySelector(".i-name").value.trim()||"(item)";
-    const p=Number(r.querySelector(".i-price").value)||0;
-    const q=Math.max(1,Number(r.querySelector(".i-qty").value)||1);
-    const s=p*q;
-    return `• ${n}  —  ${q} × ₹${p.toLocaleString('en-IN')} = ₹${s.toLocaleString('en-IN')}`;
-  }).join("\n");
+/* ====== WhatsApp message (exact style you gave + Pay link only) ====== */
+function sendOrder(){
+  const id = orderIdNow();
+  const val = id => (document.getElementById(id)?.value||"").trim();
 
-  const totalsText=document.getElementById("grandTotal").textContent;
-  const subText=document.getElementById("subTotal").textContent;
-  const codText=document.getElementById("codFee").textContent;
-  const advText=document.getElementById("advance").textContent;
-  const restText=document.getElementById("restAmount").textContent;
+  // COD ETA bump (same as your index logic): +2 to min, +3 to max
+  let eta = globalETA, est = globalEstimatedDate;
+  if (paymentMode === "cod" && /\d/.test(globalETA||"")) {
+    const nums = globalETA.match(/\d+/g).map(Number);
+    const newMin = nums[0] + 2;
+    const newMax = (nums[1] || nums[0]) + 3;
+    eta = `${newMin}–${newMax} days`;
+    est = calculateEstimatedDate(eta);
+  }
 
-  const payAmt=(mode==="prepaid")?totalsText:advText;
-  const payLink=document.getElementById("payNow").href;
-  const formLink=location.origin+makeLink();
+  const base = parseInt(val("baseprice"))||0;
+  const paid = parseInt(val("amountpaid"))||0;
+  const codc = parseInt(val("codchargeComputed"))||0;
+  const rest = Math.max(0, (paymentMode==="cod" ? base+codc - paid : 0));
 
-  const msg=[
-    `🛒 *Order Details — Games Planet*`,
+  const header = (paymentMode==="prepaid") ? "🟢 Prepaid Order on WhatsApp" : "🔴 COD Order on WhatsApp";
+
+  const lines = [
+    `${header}`,
     ``,
-    `👤 Name: ${document.getElementById("name").value||"-"}`,
-    `📱 Mobile: ${document.getElementById("mobile").value||"-"}`,
-    `🏠 Address: ${document.getElementById("address").value||"-"}`,
-    `🏙️ City: ${document.getElementById("city").value||"-"}  •  Pincode: ${document.getElementById("pincode").value||"-"}`,
+    `Order ID: ${id}`,
+    `Name: ${val("name")}`,
+    `Mobile: ${val("mobile")}`,
+    `Alt Mobile: ${val("altmobile")}`,
+    `Email: ${val("email")}`,
+    `Address: ${val("address")}`,
+    `House number: ${val("house")}`,
+    `Landmark: ${val("landmark")}`,
+    `Pincode: ${val("pincode")}`,
+    `State: ${val("state")}`,
+    `District/City: ${val("city")}`,
+    `Post office: ${val("postoffice")}`,
     ``,
-    `🎁 Items:`,
-    itemsList || "• (none)",
+    `Product: ${val("product")}`,
+    `Variant: ${val("variant")}`,
+    `Base Price: ₹${base}`,
+    (paymentMode==="prepaid")
+      ? `Amount Paid: ₹${paid}`
+      : `Amount Paid: ₹${paid}\nCOD Charges: ₹${codc}\nRest Amount on Delivery: ₹${rest}`,
     ``,
-    `💳 Mode: ${mode==="prepaid"?"🟢 Prepaid":"🔴 COD"}`,
-    `Subtotal: ${subText}   •   COD Charge: ${codText}`,
-    `✅ Total: ${totalsText}`,
-    ...(mode==="cod"?[`🔐 Advance: ${advText}`,`🚚 Rest on Delivery: ${restText}`]:[]),
+    `📏 Distance: ${globalDistance}`,
+    `⏳ ${paymentMode==="prepaid"?"Prepaid":"COD"} Order ETA: ${eta}`,
+    `📅 Estimated Delivery: ${est}`,
     ``,
-    `👉 Tap to Pay ${mode==="prepaid"?"Now":"Advance"} (${payAmt}):`,
-    payLink,
-    ``,
-    `📝 Edit/Confirm details link:`,
-    formLink
+    `💳 Pay Link:`,
+    document.getElementById("payNow").href
   ].join("\n");
 
-  window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`,'_blank');
+  window.location.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(lines)}`;
 }
 
-function prefillFromURL(){
-  const m=(qs.get("mode")||"prepaid").toLowerCase();
-  setMode(m==="cod"?"cod":"prepaid");
-  ["name","mobile","address","city","pincode"].forEach(id=>{
-    const v=qs.get(id); if(v) document.getElementById(id).value=v;
-  });
-  const items=qs.getAll("item"), prices=qs.getAll("price"), qtys=qs.getAll("qty");
-  if(items.length){
-    items.forEach((it,i)=> addRow(it, prices[i]||"", qtys[i]||"1"));
-  }else{
-    addRow();
-  }
-}
-prefillFromURL();
+/* init */
+setMode("prepaid");
 </script>
 </body>
 </html>
