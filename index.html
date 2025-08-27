@@ -3,7 +3,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Games Planet • PS2 Quick Buy -- FMCB, USB & Combo</title>
-  <meta name="description" content="Buy FMCB card, USB-only, or FMCB+USB Combo for PlayStation 2. One-tap to prefilled order form. All payment logic handled on the form page."/>
+  <meta name="description" content="Buy FMCB card, USB-only, or FMCB+USB Combo for PS2. One-tap to prefilled order form; all payment logic handled on the form page."/>
   <style>
     :root{
       --bg:#0b1020; --card:#121a33; --muted:#9fb0d3; --text:#eaf1ff;
@@ -37,7 +37,7 @@
 
     .variants{margin-top:14px;display:grid;gap:10px}
     .row{display:grid;grid-template-columns:1.2fr .8fr .8fr;gap:8px;align-items:center}
-    .row.one{grid-template-columns:1.2fr .8fr} /* FMCB rows with single button */
+    .row.one{grid-template-columns:1.2fr .8fr}
     .name{font-weight:700}
     .pill{display:inline-flex;align-items:center;gap:6px;background:var(--chip);padding:6px 10px;border-radius:999px;font-weight:800;font-size:12px}
     .cta{display:flex;gap:8px}
@@ -56,7 +56,7 @@
       <div class="logo">GPZ</div>
       <div>
         <h1>PS2 Quick Buy -- FMCB, USB & Combo</h1>
-        <div class="sub">Tap a button to go to the prefilled order form. All payment rules are handled there.</div>
+        <div class="sub">Tap a button to open the prefilled order form. (All payment logic handled there.)</div>
       </div>
     </div>
 
@@ -74,15 +74,15 @@
         <div class="variants" id="fmcbCard">
           <div class="row one">
             <div class="name">PS2 Fat (All Models) — <b>FMCB</b> <span class="pill">₹999</span></div>
-            <div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Fat (All Models) — FMCB',999)">Buy</button></div>
+            <div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Fat (All Models) — FMCB',999,'FMCB','Top',false)">Buy</button></div>
           </div>
           <div class="row one">
             <div class="name">PS2 Slim 7xxxx (All) — <b>FMCB</b> <span class="pill">₹999</span></div>
-            <div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 7xxxx (All) — FMCB',999)">Buy</button></div>
+            <div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 7xxxx (All) — FMCB',999,'FMCB','Top',false)">Buy</button></div>
           </div>
           <div class="row one">
             <div class="name">PS2 Slim 9xxxx (All) — <b>FunTuna</b> <span class="pill">₹999</span></div>
-            <div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 9xxxx (All) — FunTuna',999)">Buy</button></div>
+            <div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 9xxxx (All) — FunTuna',999,'FMCB','Top',false)">Buy</button></div>
           </div>
         </div>
       </section>
@@ -111,18 +111,45 @@
       </section>
     </div>
 
-    <!-- Important notes -->
+    <!-- ========= RULES / INSTRUCTIONS ========= -->
     <div class="section">
-      <h3>⚠️ Important Notes</h3>
+      <h3>⚠️ Important</h3>
       <ul class="list">
-        <li>Do <b>not</b> delete FMCB / OPL / ELF / system (blue icon) files.</li>
-        <li>USB works with PS2 Fat & Slim (7xxxx / 9xxxx). Plug directly into PS2 (no hub/splitter).</li>
-        <li>For Slim 9xxxx, <b>FunTuna</b> is used automatically with the combo.</li>
+        <li>🔸 Works with PS2 Fat / Slim 7xxxx / 9xxxx</li>
+        <li>🔸 Do <b>NOT</b> delete OPL / ELF / system (blue icon) files</li>
+        <li>🔸 Plug USB directly into PS2 (no hub/splitter)</li>
       </ul>
     </div>
 
     <div class="section">
-      <h3>⚠️ Chip Condition (Read Before Order)</h3>
+      <h3>💡 Warranty</h3>
+      <ul class="list">
+        <li>🔹 64GB / 128GB / 128GB SSD – <b>1 Year</b></li>
+        <li>🔹 256GB / 500GB SSD – <b>1 Year</b></li>
+        <li>🔹 500GB HDD – <b>6 Months</b></li>
+        <li>🔸 USB Enclosure – <b>❌ No Warranty</b></li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>🛠️ Service</h3>
+      <ul class="list">
+        <li>🛠️ <b>1 Month Free Software Reinstallation</b></li>
+        <li>📦 (Courier both sides by customer)</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>📌 Policy</h3>
+      <ul class="list">
+        <li>❌ <b>No Return</b></li>
+        <li>❌ <b>No Replacement</b></li>
+        <li>✔️ <b>Confirm OPL compatibility before ordering</b></li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>🧩 Chip Condition (Read Before Order)</h3>
       <ul class="list">
         <li>🟢 FMCB & FunTuna both work without any modding chip.</li>
         <li>🟢 If your PS2 has <b>Matrix</b> or <b>Sumo Lite</b> chip → usually OK.</li>
@@ -131,11 +158,11 @@
       </ul>
     </div>
 
-    <p class="foot">© Games Planet — WhatsApp: +91 79836 24797 • This page sends you to a prefilled order form. Prices in INR.</p>
+    <p class="foot">© Games Planet — WhatsApp: +91 79836 24797 • This page opens the prefilled order form. Prices in INR.</p>
   </div>
 
 <script>
-  // ===== Variants/pricing (no payment logic here) =====
+  /* ===== Variants / Pricing ===== */
   const usbVariants = [
     { v:'64GB PD',     top:  999, opt: 1099, count: 21 },
     { v:'128GB PD',    top: 1499, opt: 1649, count: 41 },
@@ -156,28 +183,27 @@
 
   const fmt = n => `₹${n.toLocaleString('en-IN')}`;
 
-  // ===== Build prefill URL to order form (all payment logic handled there) =====
-  function buildPrefillURL({product, variant, base}){
+  function buildPrefillURL({product, variant, base, category, pack, allowCod}){
     const p = new URLSearchParams();
-    // default mode empty -> user selects on form
     p.set('product', product);
     p.set('variant', variant);
     p.set('base', base);
-    // (Optional) seed one item row for clarity
+    p.set('category', category);          // FMCB | USB | Combo
+    p.set('pack', pack);                  // Top | Optional
+    p.set('allowCod', String(allowCod));  // true | false
+    // seed item row (optional)
     p.append('item', `${product} — ${variant}`);
     p.append('price', base);
     p.append('qty', 1);
-    // No paid/cod here; the form computes COD charges/advance etc.
     const basePath = location.pathname.replace(/[^/]+$/, '');
     return `${basePath}order-prefill.html?${p.toString()}`;
   }
 
-  function goPrefill(product, variant, base){
-    const url = buildPrefillURL({product, variant, base});
+  function goPrefill(product, variant, base, category, pack, allowCod){
+    const url = buildPrefillURL({product, variant, base, category, pack, allowCod});
     window.location.href = url;
   }
 
-  // ===== Renderers =====
   function renderUSB(){
     const box=document.getElementById('usbList'); box.innerHTML='';
     usbVariants.forEach(({v,top,opt,count})=>{
@@ -186,8 +212,8 @@
         <div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
         <div class="cta"><button class="btn buy" title="Top Games">Buy (Top • ${fmt(top)})</button></div>
         <div class="cta"><button class="btn alt" title="Optional Games">Buy (Optional • ${fmt(opt)})</button></div>`;
-      row.querySelector('.btn.buy').onclick=()=>goPrefill('USB for PS2', `${v} — Top Games`, top);
-      row.querySelector('.btn.alt').onclick=()=>goPrefill('USB for PS2', `${v} — Optional Games`, opt);
+      row.querySelector('.btn.buy').onclick=()=>goPrefill('USB for PS2', `${v} — Top Games`, top, 'USB', 'Top', true);
+      row.querySelector('.btn.alt').onclick=()=>goPrefill('USB for PS2', `${v} — Optional Games`, opt, 'USB', 'Optional', true);
       box.appendChild(row);
     });
   }
@@ -200,8 +226,8 @@
         <div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
         <div class="cta"><button class="btn buy">Buy (Top • ${fmt(top)})</button></div>
         <div class="cta"><button class="btn alt">Buy (Optional • ${fmt(opt)})</button></div>`;
-      row.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo', `${v} — Top Games`, top);
-      row.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo', `${v} — Optional Games`, opt);
+      row.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo', `${v} — Top Games`, top, 'Combo', 'Top', true);
+      row.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo', `${v} — Optional Games`, opt, 'Combo', 'Optional', true);
       box.appendChild(row);
     });
   }
