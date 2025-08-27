@@ -1,286 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Games Planet Order Form – ETA Final</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Games Planet • PS2 Quick Buy -- FMCB, USB & Combo</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-    input, select, textarea {
-      width: 90%; max-width: 400px; margin: 5px auto; padding: 10px;
-      font-size: 16px; display: block; border-radius: 5px; border: 1px solid #ccc;
+    :root{
+      --bg:#0b1020; --card:#121a33; --muted:#9fb0d3; --text:#eaf1ff;
+      --accent:#7c4dff; --accent2:#3ddc84; --accent3:#ffd54f;
+      --chip:#1b2447; --ring: rgba(124,77,255,.35); --ring2: rgba(61,220,132,.35);
+      --shadow:0 10px 30px rgba(0,0,0,.35);
     }
-    button {
-      padding: 15px 25px; font-size: 18px; margin: 10px;
-      border: none; border-radius: 5px; cursor: pointer;
-    }
-    .pay-btn { background-color: #00b9f5; color: white; }
-    .order-btn { background-color: #28a745; color: white; }
-    img { width: 250px; margin: 20px 0; }
-    #deliveryEstimate { font-size: 16px; color: green; margin-top: 10px; white-space: pre-line; }
+    @media(prefers-color-scheme:light){:root{--bg:#f7f8ff;--card:#ffffff;--text:#0b1020;--muted:#51607e;--chip:#eef2ff;--shadow:0 8px 20px rgba(11,16,32,.08)}}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
+    .wrap{max-width:1100px;margin:0 auto;padding:28px 18px 60px}
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+    .logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-weight:900;background:linear-gradient(135deg,var(--accent),#5ecbff);color:#fff;box-shadow:var(--shadow)}
+    h1{font-size:clamp(22px,3.5vw,34px);margin:0}
+    .sub{color:var(--muted);margin:6px 0 22px}
+    .controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:6px 0 22px}
+    .seg{display:flex;background:var(--chip);padding:6px;border-radius:16px;box-shadow:var(--shadow)}
+    .seg button{border:0;background:transparent;color:var(--muted);padding:8px 14px;border-radius:12px;cursor:pointer;font-weight:700}
+    .seg button.active{background:var(--accent);color:#fff;box-shadow:0 0 0 6px var(--ring)}
+    .linkbtn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid rgba(255,255,255,.12);padding:9px 12px;border-radius:12px;color:var(--text);text-decoration:none;font-weight:700}
+    .linkbtn:hover{box-shadow:0 0 0 6px var(--ring2)}
+    .grid{display:grid;gap:18px;grid-template-columns:1fr}
+    .card{background:var(--card);border-radius:20px;padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+    .card:after{content:"";position:absolute;inset:auto -30% -30% auto;width:220px;height:220px;background:radial-gradient(90px 90px at 70% 30%, var(--ring), transparent 60%)}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;background:var(--chip);color:var(--muted);border-radius:999px;font-size:12px;font-weight:700;margin-right:6px}
+    .title{margin:10px 0 6px;font-size:20px}
+    .muted{color:var(--muted);font-size:14px}
+    .variants{margin-top:14px;display:grid;gap:10px}
+    .row{display:grid;grid-template-columns:1.2fr .8fr .8fr;gap:8px;align-items:center}
+    .name{font-weight:700}
+    .pill{display:inline-flex;align-items:center;gap:6px;background:var(--chip);padding:6px 10px;border-radius:999px;font-weight:800;font-size:12px}
+    .cta{display:flex;gap:8px}
+    .btn{flex:1;border:0;padding:10px 12px;border-radius:12px;font-weight:800;cursor:pointer}
+    .btn.whatsapp{background:var(--accent2);color:#08210f}
+    .btn.alt{background:var(--accent3);color:#241a00}
+    .section{margin-top:28px}
+    .list{margin:10px 0 0 0;padding-left:18px}
+    .foot{opacity:.85;margin-top:34px;font-size:12px;color:var(--muted)}
   </style>
 </head>
 <body>
+<div class="wrap">
+  <div class="brand">
+    <div class="logo">GPZ</div>
+    <div>
+      <h1>PS2 Quick Buy -- FMCB, USB & Combo</h1>
+      <div class="sub">One-tap WhatsApp redirect • Top & Optional packs</div>
+    </div>
+  </div>
+  <div class="controls">
+    <span class="badge">Payment Mode</span>
+    <div class="seg">
+      <button class="active" data-mode="Prepaid" onclick="setMode(this)">🟢 Prepaid</button>
+      <button data-mode="COD" onclick="setMode(this)">🔴 COD</button>
+    </div>
+  </div>
 
-<h1>GAMES PLANET</h1>
-<h2>Manual Order Page – Fill your details</h2>
+  <div class="grid">
+    <!-- FMCB -->
+    <section class="card">
+      <span class="badge">FMCB / FunTuna Card</span>
+      <h2 class="title">Memory Card for PS2</h2>
+      <div class="variants" id="fmcbCard">
+        <div class="row"><div class="name">PS2 Fat — FMCB</div><div class="pill fmcb-pill"></div><div class="cta"><button class="btn whatsapp" onclick="buyFmcbModel('PS2 Fat','FMCB')">Buy</button></div></div>
+        <div class="row"><div class="name">PS2 Slim 7xxxx — FMCB</div><div class="pill fmcb-pill"></div><div class="cta"><button class="btn whatsapp" onclick="buyFmcbModel('PS2 Slim 7xxxx','FMCB')">Buy</button></div></div>
+        <div class="row"><div class="name">PS2 Slim 9xxxx — FunTuna</div><div class="pill fmcb-pill"></div><div class="cta"><button class="btn whatsapp" onclick="buyFmcbModel('PS2 Slim 9xxxx','FunTuna')">Buy</button></div></div>
+      </div>
+    </section>
 
-<input type="text" id="name" placeholder="Name" required>
-<input type="text" id="mobile" placeholder="Mobile" required>
-<input type="text" id="altmobile" placeholder="Alt Mobile">
-<input type="email" id="email" placeholder="Email">
-<textarea id="address" placeholder="Address"></textarea>
-<input type="text" id="landmark" placeholder="Landmark">
-<input type="text" id="pincode" placeholder="Pincode">
+    <!-- USB -->
+    <section class="card">
+      <span class="badge">USB Only</span>
+      <h2 class="title">USB for PlayStation 2</h2>
+      <div class="variants" id="usbList"></div>
+    </section>
 
-<div id="deliveryEstimate"></div>
+    <!-- Combo -->
+    <section class="card">
+      <span class="badge">Combo Best Value</span>
+      <h2 class="title">FMCB + USB Combo</h2>
+      <div class="variants" id="comboList"></div>
+    </section>
+  </div>
 
-<input type="text" id="state" placeholder="State" readonly>
-<input type="text" id="city" placeholder="District/City" readonly>
-
-<select id="postoffice" required>
-  <option value="">Select Post Office</option>
-</select>
-
-<input type="text" id="product" placeholder="Product">
-<input type="text" id="variant" placeholder="Variant">
-<input type="text" id="coupon" placeholder="Coupon Code (if any)">
-<select id="paymentmode">
-  <option value="prepaid">Prepaid</option>
-  <option value="cod">Cash on Delivery</option>
-</select>
-
-<input type="text" id="discount" placeholder="Discount Applied" readonly>
-<input type="text" id="restamount" placeholder="Rest on Delivery (if COD)" readonly>
-
-<input type="number" id="baseprice" placeholder="Base Price">
-<input type="number" id="amountpaid" placeholder="Amount Paid">
-
-<button class="pay-btn" onclick="payNow()">Pay Now</button>
-<button class="order-btn" onclick="sendOrder()">Submit Order Now</button>
-
-<img src="https://gamesplanet13.github.io/Ordernow/Qr.jpg" alt="Paytm QR" id="qr-image"/>
+  <!-- Info Sections -->
+  <div class="section"><h3>⚠️ Important</h3><ul class="list"><li>Works with PS2 Fat / Slim 7xxxx / 9xxxx</li><li>Do not delete OPL/ELF/system files</li><li>Plug USB directly (no hub)</li></ul></div>
+  <div class="section"><h3>🛡️ Warranty</h3><ul class="list"><li>64GB/128GB/128GB SSD – 1 Year</li><li>256GB/500GB SSD – 1 Year</li><li>500GB HDD – 6 Months</li><li>USB Enclosure – ❌ No Warranty</li></ul></div>
+  <div class="section"><h3>🧰 Service</h3><ul class="list"><li>1 Month free software reinstall (courier both sides)</li></ul></div>
+  <div class="section"><h3>📌 Policy</h3><ul class="list"><li>❌ No Return</li><li>❌ No Replacement</li><li>✔ Confirm OPL compatibility before ordering</li></ul></div>
+</div>
 
 <script>
-let pincodeLatLng = {};
-let globalDistance = "N/A";
-let globalETA = "N/A";
-let globalEstimatedDate = "N/A";
+const PHONE='917983624797';
+let paymentMode='Prepaid';
+const UPI_ID='paytmqr5hyx5o@ptys';
+const UPI_NAME='Surender Kaur';
 
-fetch('pincode_data.json')
-  .then(res => res.json())
-  .then(data => { pincodeLatLng = data; })
-  .catch(err => console.log("Failed to load cities.json", err));
+const usbVariants=[{v:'64GB PD',top:999,opt:1099,count:21},{v:'128GB PD',top:1499,opt:1649,count:41},{v:'128GB SSD',top:1999,opt:2199,count:41},{v:'256GB SSD',top:2999,opt:3299,count:71},{v:'500GB HDD',top:2999,opt:3299,count:175},{v:'500GB SSD',top:3999,opt:4399,count:175}];
+const comboVariants=[{v:'64GB PD',top:1499,opt:1649,count:21},{v:'128GB PD',top:1999,opt:2199,count:41},{v:'128GB SSD',top:2499,opt:2699,count:41},{v:'256GB SSD',top:3499,opt:3849,count:71},{v:'500GB HDD',top:3699,opt:4049,count:175},{v:'500GB SSD',top:4699,opt:5149,count:175}];
 
-function haversine(lat1, lon1, lat2, lon2) {
-  const R = 6371;
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat / 2) ** 2 +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon / 2) ** 2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-}
-
-function estimateDeliveryByDistance(distance) {
-  if (distance <= 30) return "1 day";
-  else if (distance <= 60) return "1-2 days";
-  else if (distance <= 100) return "2-3 days";
-  else if (distance <= 200) return "3-4 days";
-  else if (distance <= 500) return "4-5 days";
-  else if (distance <= 1000) return "4-6 days";
-  else if (distance <= 1500) return "5–7 days";
-  else if (distance <= 2000) return "6–8 days";
-  else if (distance <= 3000) return "6–10 days";
-  else return "8–12 days (sometimes up to 15 days)";
-}
-
-function calculateEstimatedDate(etaText) {
-  const numbers = etaText.match(/\d+/g);
-  if (!numbers || numbers.length === 0) return "N/A";
-
-  const minDays = Math.min(...numbers.map(Number));
-  const maxDays = Math.max(...numbers.map(Number));
-
-  const start = new Date();
-  const end = new Date();
-  start.setDate(start.getDate() + minDays);
-  end.setDate(end.getDate() + maxDays);
-
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const formatDate = (d) => `${d.getDate()} ${months[d.getMonth()]}`;
-
-  return `${formatDate(start)} to ${formatDate(end)}`;
-}
-
-document.getElementById("pincode").addEventListener("input", function(){
-  let pincode = this.value.trim();
-  if (pincode.length === 6) {
-    fetch(`https://api.postalpincode.in/pincode/${pincode}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data[0].Status === "Success") {
-          let po = data[0].PostOffice[0];
-          document.getElementById("state").value = po.State;
-          document.getElementById("city").value = po.District;
-
-          let sel = document.getElementById("postoffice");
-          sel.innerHTML = '<option value="">Select Post Office</option>';
-          data[0].PostOffice.forEach(p => {
-            let opt = document.createElement("option");
-            opt.value = p.Name;
-            opt.text = p.Name;
-            sel.appendChild(opt);
-          });
-
-          if (pincodeLatLng[pincode]) {
-            const rampurLat = 28.8, rampurLng = 79.0;
-            const dest = pincodeLatLng[pincode];
-            const distance = haversine(rampurLat, rampurLng, dest.lat, dest.lng).toFixed(0);
-            const eta = estimateDeliveryByDistance(distance);
-            const deliveryDate = calculateEstimatedDate(eta);
-
-            globalDistance = `${distance} km`;
-            globalETA = eta;
-            globalEstimatedDate = deliveryDate;
-
-            document.getElementById("deliveryEstimate").innerText =
-              `📍 Pincode found – Distance: ${globalDistance}
-⏳ ETA: ${globalETA}
-📅 Estimated Delivery: ${globalEstimatedDate}
-
-📝 Delivery timeline is based on past experience. Sometimes it may delay by 1–3 days due to unforeseen circumstances.`;
-          } else {
-            globalDistance = "N/A";
-            globalETA = "N/A";
-            globalEstimatedDate = "N/A";
-            document.getElementById("deliveryEstimate").innerText = "📍 Pincode found, but no distance data.";
-          }
-        }
-      });
-  }
-});
-
-function payNow() {
-  const amount = document.getElementById("amountpaid").value;
-  if (amount) {
-    window.open(`upi://pay?pa=gamesplanet@upi&pn=GamesPlanet&am=${amount}`, "_blank");
-  } else {
-    alert("Please enter the amount first.");
-  }
-}
-
-function sendOrder(){
-  let now = new Date();
-  let orderId = String(now.getDate()).padStart(2,'0') + String(now.getMonth()+1).padStart(2,'0') + now.getFullYear() +
-                String(now.getHours()).padStart(2,'0') + String(now.getMinutes()).padStart(2,'0') + String(now.getSeconds()).padStart(2,'0') + '00';
-
-  const getValue = (id) => document.getElementById(id)?.value || "";
-  const mode = getValue("paymentmode");
-
-  // ETA & Date for COD (+2 to 3 days)
-  let eta = globalETA;
-  let delivery = globalEstimatedDate;
-  if (mode === "cod" && globalETA.match(/\d/)) {
-    const nums = globalETA.match(/\d+/g).map(Number);
-    const newMin = nums[0] + 2;
-    const newMax = (nums[1] || nums[0]) + 3;
-    eta = `${newMin}–${newMax} days`;
-    delivery = calculateEstimatedDate(eta);
-  }
-
-  let msg = "";
-  if (mode === "prepaid") {
-    msg = `🟢 Prepaid Order on WhatsApp
-
-Order ID: ${orderId}
-Name: ${getValue("name")}
-Mobile: ${getValue("mobile")}
-Alt Mobile: ${getValue("altmobile")}
-Email: ${getValue("email")}
-Address: ${getValue("address")}
-Landmark: ${getValue("landmark")}
-Pincode: ${getValue("pincode")}
-State: ${getValue("state")}
-District/City: ${getValue("city")}
-Post office: ${getValue("postoffice")}
-
-Product: ${getValue("product")}
-Variant: ${getValue("variant")}
-Base Price: ₹${getValue("baseprice")}
-Discount Applied: ₹${getValue("discount")}
-Amount Paid: ₹${getValue("amountpaid")}
-
-📏 Distance: ${globalDistance}
-⏳ Prepaid Order ETA: ${eta}
-📅 Estimated Delivery: ${delivery}`;
-  } else {
-    msg = `🔴 COD Order on WhatsApp
-
-Order ID: ${orderId}
-Name: ${getValue("name")}
-Mobile: ${getValue("mobile")}
-Alt Mobile: ${getValue("altmobile")}
-Email: ${getValue("email")}
-Address: ${getValue("address")}
-Landmark: ${getValue("landmark")}
-Pincode: ${getValue("pincode")}
-State: ${getValue("state")}
-District/City: ${getValue("city")}
-Post office: ${getValue("postoffice")}
-
-Product: ${getValue("product")}
-Variant: ${getValue("variant")}
-Base Price: ₹${getValue("baseprice")}
-Amount Paid: ₹${getValue("amountpaid")}
-COD Charges: ₹${(parseInt(getValue("baseprice")) < 1500 ? 99 : 0)}
-Rest Amount on Delivery: ₹${getValue("restamount")}
-
-📏 Distance: ${globalDistance}
-⏳ COD Order ETA: ${eta}
-📅 Estimated Delivery: ${delivery}`;
-  }
-
-  window.location.href = `https://wa.me/917983624797?text=${encodeURIComponent(msg)}`;
-}
-
-const products = ["super mini u box md 16bit sega", "aoko game stick", "aoko game stick v1", "black hawk", "black hawk v1", "fmcb", "fmcb + usb", "fmcb + usb optional", "fmcb + usb top", "gamestick lite", "gamestick pro", "game stick gd10", "gamestick blaster", "game box g10", "g10", "g10v3", "g11 pro", "g11 pro special edition", "g11 pro ultimate edition", "gd10", "gd30", "gd35", "gs5", "k8", "m15 pro", "m22", "m33", "m44", "m55", "m66", "m77", "m88", "m99", "m222", "m333", "m444", "m555", "m666", "m777", "m888", "m999", "m1000", "nintendo switch", "nintendo switch oled", "nintendo wii", "nintendo wii u", "nintendo ds", "nintendo 3ds", "ps1", "ps2 slim", "ps3 slim", "ps3 super slim", "ps4 fat", "ps4 pro", "ps4 slim", "xbox 360", "xbox one", "xbox series s", "xbox series x", "pandora mini", "pandora pro", "sega mini u box", "sega 16bit mini u box", "sup x7m", "r35s", "r36s", "usb", "sd card"];
-
-document.getElementById("coupon").addEventListener("input", updateDiscount);
-document.getElementById("variant").addEventListener("input", updateDiscount);
-document.getElementById("product").addEventListener("input", updateDiscount);
-document.getElementById("baseprice").addEventListener("input", updateDiscount);
-document.getElementById("paymentmode").addEventListener("change", updateDiscount);
-
-function updateDiscount() {
-  const coupon = document.getElementById("coupon").value.trim().toLowerCase();
-  const mode = document.getElementById("paymentmode").value;
-  const product = document.getElementById("product").value.toLowerCase();
-  const variant = document.getElementById("variant").value.toLowerCase();
-  const base = parseInt(document.getElementById("baseprice").value) || 0;
-
-  const isKnownProduct = products.some(p => product.includes(p));
-  const is64 = variant.includes("64");
-  const is128 = variant.includes("128");
-  const is256plus = variant.includes("256") || variant.includes("500") || variant.includes("1tb");
-
-  let discount = 0;
-  if (coupon === "gpz2025" && mode === "prepaid" && isKnownProduct) {
-    if (is64) discount = 200;
-    else if (is128) discount = 300;
-    else if (is256plus) discount = 500;
-  }
-
-  const codCharge = (mode === "cod" && base < 1500) ? 99 : 0;
-  const amountPaid = mode === "cod" ? Math.max(500, Math.ceil(base * 0.1)) : base - discount + codCharge;
-  const rest = mode === "cod" ? base + codCharge - amountPaid : 0;
-
-  document.getElementById("discount").value = (mode === "prepaid") ? discount : 0;
-  document.getElementById("amountpaid").value = amountPaid;
-  document.getElementById("restamount").value = rest;
-}
+const COD_FMCB_FEE=99, COD_FEE_DEFAULT=99;
+const fmt=n=>`₹${n.toLocaleString('en-IN')}`;
+function computeCodAdvance(total){return Math.max(500,Math.ceil(total*0.10));}
+function priceFmcbBase(){return 999;}
+function computeTotals(base,{pack='Top',isCOD=false,category='USB'}={}){let total=base,codFee=0;const isOptional=(pack==='Optional Games');if(isCOD){if(category==='FMCB'){codFee=COD_FMCB_FEE;}else{codFee=isOptional?COD_FEE_DEFAULT:(total>2000?0:COD_FEE_DEFAULT);}total+=codFee;}return{total};}
+function upiLink(amount,note){const p=new URLSearchParams({pa:UPI_ID,pn:UPI_NAME,am:String(amount||0),cu:'INR',tn:note});return `upi://pay?${p.toString()}`;}
+function formLink({mode,items}){const p=new URLSearchParams();p.set('mode',mode.toLowerCase());items.forEach(({name,price,qty})=>{p.append('item',name);p.append('price',price);p.append('qty',qty||1)});return location.origin+location.pathname.replace(/[^/]+$/,'')+`order-prefill.html?${p.toString()}`;}
+function labelFor(base,pack,category){const isCOD=(paymentMode==='COD');const{total}=computeTotals(base,{pack,isCOD,category});const modeLabel=isCOD?'🔴 COD':'🟢 Prepaid';const packLabel=(pack==='Optional Games')?'Optional':'Top';return`${modeLabel} • ${packLabel} • ${fmt(total)}`;}
+function waMessage({product,variant,pack='Top Games',base,category}){const isCOD=(paymentMode==='COD');const{total}=computeTotals(base,{pack,isCOD,category});const adv=isCOD?computeCodAdvance(total):0;const payNowAmount=isCOD?adv:total;const payLink=upiLink(payNowAmount,isCOD?`Advance for ${product}`:`Prepaid for ${product}`);const prefill=formLink({mode:paymentMode,items:[{name:`${product} — ${variant} — ${pack}`,price:base,qty:1}]});const msg=[`🛒 *Buy Request — Games Planet*`,``,`• 📦 Product: ${product}`,variant?`• Variant: ${variant}`:null,`• Pack: ${pack}`,`• Mode: ${isCOD?'COD':'Prepaid'}`,``,`Total Payable: ${fmt(total)}`,isCOD?`Advance: ${fmt(adv)}`:null,isCOD?`Rest on Delivery: ${fmt(total-adv)}`:null,``,`👉 Pay Link:`,payLink,``,`📝 Edit/Confirm:`,prefill].filter(Boolean).join('\n');window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`,'_blank');}
+function setMode(btn){document.querySelectorAll('.seg button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');paymentMode=btn.dataset.mode;rerender();}
+function buyFmcbModel(model,type){waMessage({product:'Memory Card',variant:model,pack:type,base:priceFmcbBase(),category:'FMCB'});}
+function renderUSB(){const box=document.getElementById('usbList');box.innerHTML='';usbVariants.forEach(({v,top,opt,count})=>{const row=document.createElement('div');row.className='row';row.innerHTML=`<div class="name">${v} <span class="pill">🎮 Top ${count}</span></div><div class="cta"><button class="btn whatsapp">${labelFor(top,'Top Games','USB')}</button></div><div class="cta"><button class="btn alt">${labelFor(opt,'Optional Games','USB')}</button></div>`;row.querySelector('.btn.whatsapp').onclick=()=>waMessage({product:'USB for PS2',variant:v,pack:'Top Games',base:top,category:'USB'});row.querySelector('.btn.alt').onclick=()=>waMessage({product:'USB for PS2',variant:v,pack:'Optional Games',base:opt,category:'USB'});box.appendChild(row);});}
+function renderCombo(){const box=document.getElementById('comboList');box.innerHTML='';comboVariants.forEach(({v,top,opt,count})=>{const row=document.createElement('div');row.className='row';row.innerHTML=`<div class="name">${v} <span class="pill">🎮 Top ${count}</span></div><div class="cta"><button class="btn whatsapp">${labelFor(top,'Top Games','Combo')}</button></div><div class="cta"><button class="btn alt">${labelFor(opt,'Optional Games','Combo')}</button></div>`;row.querySelector('.btn.whatsapp').onclick=()=>waMessage({product:'FMCB + USB Combo',variant:v,pack:'Top Games',base:top,category:'Combo'});row.querySelector('.btn.alt').onclick=()=>waMessage({product:'FMCB + USB Combo',variant:v,pack:'Optional Games',base:opt,category:'Combo'});box.appendChild(row);});}
+function updateFmcbPills(){const isCOD=(paymentMode==='COD');const{total}=computeTotals(priceFmcbBase(),{pack:'Top Games',isCOD,category:'FMCB'});const modeLabel=isCOD?'🔴 COD':'🟢 Prepaid';document.querySelectorAll('.fmcb-pill').forEach(el=>{el.textContent=`${modeLabel} • ${fmt(total)}`;});}
+function rerender(){renderUSB();renderCombo();updateFmcbPills();}
+rerender();
 </script>
-
 </body>
 </html>
