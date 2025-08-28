@@ -24,10 +24,6 @@
     h1{font-size:clamp(22px,3.5vw,34px);margin:0}
     .sub{color:var(--muted);margin:6px 0 22px}
 
-    .actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 22px}
-    .linkbtn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid rgba(255,255,255,.12);padding:9px 12px;border-radius:12px;color:var(--text);text-decoration:none;font-weight:700}
-    .linkbtn:hover{box-shadow:0 0 0 6px var(--ring2)}
-
     .grid{display:grid;gap:18px;grid-template-columns:1fr}
     .card{background:var(--card);border-radius:20px;padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
     .card:after{content:"";position:absolute;inset:auto -30% -30% auto;width:220px;height:220px;background:radial-gradient(90px 90px at 70% 30%, var(--ring), transparent 60%)}
@@ -46,6 +42,9 @@
     .btn.alt{background:var(--accent3);color:#241a00}
 
     .links{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .linkbtn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid rgba(255,255,255,.12);padding:9px 12px;border-radius:12px;color:var(--text);text-decoration:none;font-weight:700}
+    .linkbtn:hover{box-shadow:0 0 0 6px var(--ring2)}
+
     .section{margin-top:28px}
     .list{margin:10px 0 0 0;padding-left:18px}
     .foot{opacity:.85;margin-top:34px;font-size:12px;color:var(--muted)}
@@ -61,26 +60,24 @@
       </div>
     </div>
 
-    <!-- (Global quick links हटाए — अब per card नीचे दिए हैं) -->
-
     <div class="grid">
       <!-- 1) FMCB / FunTuna -->
       <section class="card" aria-labelledby="fmcb-title">
         <span class="badge">FMCB / FunTuna Card</span>
         <h2 class="title" id="fmcb-title">Memory Card for PS2 (Model-wise)</h2>
         <div class="muted">Boot PS2 games from USB using preconfigured FMCB / FunTuna + OPL. Choose your model:</div>
-        <div class="variants" id="fmcbList">
+        <div class="variants">
           <div class="row one">
             <div class="name">PS2 Fat (All Models) — <b>FMCB</b> <span class="pill">₹999</span></div>
-            <div class="cta"><button class="btn buy" data-variant="PS2 Fat (All Models) — FMCB">Buy</button></div>
+            <div class="cta"><button class="btn buy" onclick="goFmcb('PS2 Fat (All Models) — FMCB')">Buy</button></div>
           </div>
           <div class="row one">
             <div class="name">PS2 Slim 7xxxx (All) — <b>FMCB</b> <span class="pill">₹999</span></div>
-            <div class="cta"><button class="btn buy" data-variant="PS2 Slim 7xxxx (All) — FMCB">Buy</button></div>
+            <div class="cta"><button class="btn buy" onclick="goFmcb('PS2 Slim 7xxxx (All) — FMCB')">Buy</button></div>
           </div>
           <div class="row one">
             <div class="name">PS2 Slim 9xxxx (All) — <b>FunTuna</b> <span class="pill">₹999</span></div>
-            <div class="cta"><button class="btn buy" data-variant="PS2 Slim 9xxxx (All) — FunTuna">Buy</button></div>
+            <div class="cta"><button class="btn buy" onclick="goFmcb('PS2 Slim 9xxxx (All) — FunTuna')">Buy</button></div>
           </div>
         </div>
       </section>
@@ -155,6 +152,31 @@
       </ul>
     </div>
 
+    <!-- NEW FMCB / FunTuna Instructions -->
+    <div class="section">
+      <h3>📘 FMCB / FunTuna Instructions</h3>
+      <ul class="list">
+        <li>✅ FMCB works on all PS2 models (Fat & Slim). But you must select the correct model when ordering.</li>
+        <li>🔹 PS2 Fat & Slim 7xxxx series → FMCB (Free Memory Card Boot)</li>
+        <li>🔹 PS2 Slim 9xxxx series → FunTuna Memory Card Boot</li>
+        <li>🧩 Modchip Compatibility:
+          <ul>
+            <li>🟢 Matrix v1.0, v2.0, v3.0, v4.0 or Sumo Lite → FMCB will work</li>
+            <li>🟡 DVD Boot Chip → only ~50% chance FMCB will work</li>
+            <li>🔵 Matrix v5.0 → FMCB not needed, just use USB with games (already supports OPL 10th, uLaunchELF, NES emulator, etc.)</li>
+          </ul>
+        </li>
+        <li>⚠️ Usage Guidelines:
+          <ul>
+            <li>Keep at least 500KB free on the FMCB card</li>
+            <li>❌ Do not delete system files (blue icon), OPL, ELF, or software files</li>
+            <li>Insert FMCB card in the first memory card port. USB can go in any port</li>
+            <li>On Slim 9xxxx (FunTuna): no direct boot → open Browser → Memory Card → then press Back repeatedly until FMCB menu appears</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
     <p class="foot">© Games Planet — WhatsApp: +91 79836 24797 • This page opens the prefilled order form. Prices in INR.</p>
   </div>
 
@@ -166,20 +188,17 @@
     return `${basePath}order-prefill.html?${p.toString()}`;
   }
 
-  // ===== FMCB Buttons (COD disabled) =====
-  document.getElementById('fmcbList').addEventListener('click', (e)=>{
-    const btn = e.target.closest('button[data-variant]');
-    if(!btn) return;
-    const variant = btn.getAttribute('data-variant'); // text shown
+  // ===== FMCB Buttons (COD disabled; inline onclick to avoid delegation issues) =====
+  function goFmcb(variant){
     const url = toPrefill({
       product:'Memory Card',
-      variant,
+      variant: variant,
       base: 999,
-      category:'FMCB',
-      allowCod:'false'
+      category: 'FMCB',
+      allowCod: 'false' // FMCB = prepaid only
     });
     location.href = url;
-  });
+  }
 
   // ===== USB & Combo data =====
   const usbVariants = [
@@ -205,8 +224,8 @@
     return `
       <div class="row">
         <div class="name">${label} <span class="pill">🎮 Top ${count}</span></div>
-        <div class="cta"><button class="btn buy" data-pack="Top" data-price="${priceTop}" data-cat="${category}" data-label="${label}">${topLabel}</button></div>
-        <div class="cta"><button class="btn alt" data-pack="Optional" data-price="${priceOpt}" data-cat="${category}" data-label="${label}">${optLabel}</button></div>
+        <div class="cta"><button class="btn buy" onclick="goPack('${category}','${label}','Top',${priceTop})">${topLabel}</button></div>
+        <div class="cta"><button class="btn alt" onclick="goPack('${category}','${label}','Optional',${priceOpt})">${optLabel}</button></div>
       </div>`;
   }
 
@@ -220,26 +239,18 @@
   renderList(usbVariants,'usbList','USB');
   renderList(comboVariants,'comboList','Combo');
 
-  // Common handler for USB & Combo
-  ['usbList','comboList'].forEach(id=>{
-    document.getElementById(id).addEventListener('click',(e)=>{
-      const b = e.target.closest('button[data-pack]');
-      if(!b) return;
-      const label = b.getAttribute('data-label');
-      const price = b.getAttribute('data-price');
-      const cat = b.getAttribute('data-cat');
-      const pack = b.getAttribute('data-pack'); // Top | Optional
-      const url = toPrefill({
-        product: (cat==='USB'?'USB for PS2':'FMCB + USB Combo'),
-        variant: `${label} — ${pack} Games`,
-        base: price,
-        category: cat,
-        pack: pack,
-        allowCod: 'true'
-      });
-      location.href = url;
+  // Open prefilled order for USB/Combo
+  function goPack(category,label,pack,price){
+    const url = toPrefill({
+      product: (category==='USB' ? 'USB for PS2' : 'FMCB + USB Combo'),
+      variant: `${label} — ${pack} Games`,
+      base: price,
+      category: category,
+      pack: pack,
+      allowCod: 'true' // USB/Combo can use COD (rules apply on prefill page)
     });
-  });
+    location.href = url;
+  }
 </script>
 </body>
 </html>
