@@ -39,26 +39,6 @@
   <h1>Games Planet — Quick Order</h1>
   <div class="sub">Prefilled from main page • India Post pincode autofill • Payment rules applied here</div>
 
-  <!-- Payment Mode -->
-  <div class="card">
-    <span class="badge">Payment Mode</span>
-    <div class="btns">
-      <button id="btn-prepaid" class="ghost" onclick="setMode('prepaid')">🟢 Prepaid</button>
-      <button id="btn-cod" class="ghost" onclick="setMode('cod')">🔴 COD</button>
-    </div>
-    <div class="hint">Note: <b>Prepaid delivery free</b>. FMCB cards are <b>Prepaid only</b>.</div>
-  </div>
-
-  <!-- Coupon (only for Prepaid) -->
-  <div class="card" id="couponCard" style="display:none">
-    <span class="badge">Coupon</span>
-    <div class="grid2">
-      <input id="couponCode" placeholder="Enter Coupon Code (gpz2025)" autocomplete="off">
-      <button class="ghost" onclick="applyCoupon()">Apply</button>
-    </div>
-    <div class="hint" id="couponNote"></div>
-  </div>
-
   <!-- Customer -->
   <div class="card">
     <span class="badge">Customer</span>
@@ -179,6 +159,26 @@
     <div class="hint">Add-ons are optional. Pick from dropdown → set Qty → “Add this to your order”. Names & prices fixed; only quantity editable.</div>
   </div>
 
+  <!-- Payment Mode (moved above Payment Summary) -->
+  <div class="card">
+    <span class="badge">Payment Mode</span>
+    <div class="btns">
+      <button id="btn-prepaid" class="ghost" onclick="setMode('prepaid')">🟢 Prepaid</button>
+      <button id="btn-cod" class="ghost" onclick="setMode('cod')">🔴 COD</button>
+    </div>
+    <div class="hint">Note: <b>Prepaid delivery free</b>. Memory Card (FMCB/FunTuna) is <b>Prepaid only</b> unless you add any add-on (then COD allowed).</div>
+  </div>
+
+  <!-- Coupon (moved above Payment Summary) -->
+  <div class="card" id="couponCard" style="display:none">
+    <span class="badge">Coupon</span>
+    <div class="grid2">
+      <input id="couponCode" placeholder="Enter Coupon Code (gpz2025)" autocomplete="off">
+      <button class="ghost" onclick="applyCoupon()">Apply</button>
+    </div>
+    <div class="hint" id="couponNote"></div>
+  </div>
+
   <!-- Payment summary -->
   <div class="card" id="payCard">
     <span class="badge">Payment Summary</span>
@@ -236,6 +236,8 @@ const WHATSAPP_PHONE="917983624797";
 const UPI_ID="paytmqr5hyx5o@ptys";
 const UPI_NAME="Surender Kaur";
 let discountValue=0,mode="prepaid";
+let productIsCard=false; // Memory Card?
+let initialAllowCod=true;
 
 /* ===== Badges ===== */
 function setModeBadge(){
@@ -251,7 +253,7 @@ function setPackBadge(pack){
   el.className='badge right '+(isOpt?'pack-opt':'pack-top');
 }
 
-/* ===== Add-ons rows (name & price readonly; qty editable) ===== */
+/* ===== Add-ons rows ===== */
 function addRow(name="",price="",qty=1){
   const box=document.getElementById("items");
   const row=document.createElement("div");
@@ -307,8 +309,9 @@ function applyCoupon(){
 
 /* ===== Mode toggle ===== */
 function setMode(m){
-  if(m==="cod" && window._allowCod===false){
-    alert("COD not available for this product. Please use Prepaid.");
+  // Memory Card without add-ons → COD block
+  if(m==="cod" && (!codAllowedNow())){
+    alert("COD not available for Memory Card without add-ons. Please add any accessory to enable COD.");
     return;
   }
   mode=m;
@@ -344,10 +347,28 @@ function computeCodCharge(subtotal){
   return subtotal>2000 ? 0 : 99;            // Top → threshold
 }
 
+/* ===== COD availability for Memory Card ===== */
+function codAllowedNow(){
+  if(!productIsCard) return true;
+  const addons = sumAddons();
+  return addons > 0;
+}
+function updateCodAvailability(){
+  const codBtn = document.getElementById("btn-cod");
+  const allowed = initialAllowCod && (productIsCard ? codAllowedNow() : true);
+  if(!allowed){
+    codBtn.setAttribute("disabled","disabled");
+    if(mode==="cod"){ mode="prepaid"; setModeBadge(); }
+  }else{
+    codBtn.removeAttribute("disabled");
+  }
+}
+
 /* ===== Recompute chain ===== */
 function recomputeAddons(){
   const addons = sumAddons();
   document.getElementById("addonsTotal").value = addons;
+  updateCodAvailability();
   computeTotals();
 }
 
@@ -364,7 +385,6 @@ function computeTotals(){
     isOptional ? "Optional Pack: COD charge ₹99 (any amount) • Prepaid delivery free."
                : "Top Pack: Subtotal > ₹2000 → COD ₹0; otherwise COD ₹99 • Prepaid delivery free.";
 
-  // Prepaid vs COD blocks
   let codC=0, paid=0, rest=0;
   if(mode==="prepaid"){
     document.getElementById("prepaidBlock").style.display="block";
@@ -377,14 +397,12 @@ function computeTotals(){
       paid = subtotal;
     }
     document.getElementById("amountPaid_pre").value = paid;
-
-  }else{ // COD
+  }else{
     document.getElementById("prepaidBlock").style.display="none";
     document.getElementById("codBlock").style.display="block";
-
     codC = computeCodCharge(subtotal);
     document.getElementById("codCharges").value = codC;
-    paid = Math.max(500, Math.ceil((subtotal + codC) * 0.10)); // min ₹500 or 10%
+    paid = Math.max(500, Math.ceil((subtotal + codC) * 0.10));
     rest = Math.max(0, subtotal + codC - paid);
     document.getElementById("amountPaid_cod").value = paid;
     document.getElementById("restAmount").value = rest;
@@ -401,12 +419,9 @@ function upiLink(amount,note){
   return "upi://pay?"+p.toString();
 }
 function orderIdNow(){
-  const d=new Date();
-  const pad=n=>String(n).padStart(2,"0");
+  const d=new Date(); const pad=n=>String(n).padStart(2,"0");
   return pad(d.getDate())+pad(d.getMonth()+1)+d.getFullYear()+pad(d.getHours())+pad(d.getMinutes())+pad(d.getSeconds())+"00";
 }
-
-/* ===== Product name + add-ons (for message) ===== */
 function productWithAddons(){
   const baseName = document.getElementById("product").value || "";
   let parts=[];
@@ -418,10 +433,10 @@ function productWithAddons(){
   return parts.length ? `${baseName} + ${parts.join(", ")}` : baseName;
 }
 
-/* ===== WhatsApp (message format exactly as requested) ===== */
+/* ===== WhatsApp message (UNCHANGED) ===== */
 function sendWhatsApp(){
   const id=document.getElementById("orderId").value || orderIdNow();
-  const subtotal = getSubtotal(); // Base + Add-ons to show as "Base Price" in message
+  const subtotal = getSubtotal();
 
   const paid = (mode==="prepaid")
     ? (+document.getElementById("amountPaid_pre").value||0)
@@ -471,7 +486,7 @@ function sendWhatsApp(){
       "🔴 COD Order on WhatsApp",
       "",
       ...commonTop,
-      `Discount Applied:`, // COD me coupon nahi
+      `Discount Applied:`,
       `Amount Paid: ${rs(paid)}`,
       `Rest on Delivery: ${rs(rest)}`,
       ...tail
@@ -489,13 +504,13 @@ function sendWhatsApp(){
   if(p.has("base")) document.getElementById("basePrice").value=p.get("base");
   if(p.has("pack")) setPackBadge(p.get("pack"));
 
-  // allowCod flag (for FMCB pass false)
-  window._allowCod = (p.has("allowCod") ? (p.get("allowCod")==="true") : true);
-  if(window._allowCod===false){
+  productIsCard = /memory\s*card/i.test(document.getElementById("product").value);
+  initialAllowCod = (p.has("allowCod") ? (p.get("allowCod")==="true") : true);
+
+  if(!initialAllowCod || (productIsCard && sumAddons()===0)){
     document.getElementById("btn-cod").setAttribute("disabled","disabled");
   }
 
-  // Rule text based on pack
   if(p.has("pack")){
     const pack=p.get("pack");
     document.getElementById("ruleNote").innerText =
@@ -509,8 +524,10 @@ function sendWhatsApp(){
   document.getElementById("addonsTotal").value = 0;
   computeTotals();
 })();
+</script>
 
-/* ===== Pincode API + ETA ===== */
+<!-- Pincode / ETA -->
+<script>
 let pincodeLatLng={};
 fetch('pincode_data.json').then(r=>r.json()).then(j=>pincodeLatLng=j);
 function haversine(lat1,lon1,lat2,lon2){
