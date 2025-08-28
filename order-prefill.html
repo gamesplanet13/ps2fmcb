@@ -159,17 +159,17 @@
     <div class="hint">Add-ons are optional. Pick from dropdown → set Qty → “Add this to your order”. Names & prices fixed; only quantity editable.</div>
   </div>
 
-  <!-- Payment Mode (moved above Payment Summary) -->
+  <!-- Payment Mode -->
   <div class="card">
     <span class="badge">Payment Mode</span>
     <div class="btns">
       <button id="btn-prepaid" class="ghost" onclick="setMode('prepaid')">🟢 Prepaid</button>
       <button id="btn-cod" class="ghost" onclick="setMode('cod')">🔴 COD</button>
     </div>
-    <div class="hint">Note: <b>Prepaid delivery free</b>. Memory Card (FMCB/FunTuna) is <b>Prepaid only</b> unless you add any add-on (then COD allowed).</div>
+    <div class="hint" id="codNote">COD ₹1498 se upar ke product pe he • COD charges = ₹40/₹1000 (Wireless Gamepad added ⇒ ₹50/₹1000)</div>
   </div>
 
-  <!-- Coupon (moved above Payment Summary) -->
+  <!-- Coupon (Prepaid only) -->
   <div class="card" id="couponCard" style="display:none">
     <span class="badge">Coupon</span>
     <div class="grid2">
@@ -194,7 +194,7 @@
 
     <!-- COD only -->
     <div id="codBlock" style="display:none">
-      <div class="label">COD Charges (rules applied)</div>
+      <div class="label">COD Charges</div>
       <input id="codCharges" type="number" placeholder="₹ (auto)" readonly>
       <div class="label">Amount Paid / Advance (now)</div>
       <input id="amountPaid_cod" type="number" placeholder="₹ (auto)" readonly>
@@ -235,9 +235,10 @@
 const WHATSAPP_PHONE="917983624797";
 const UPI_ID="paytmqr5hyx5o@ptys";
 const UPI_NAME="Surender Kaur";
+const COD_MIN_SUBTOTAL = 1498;
+const COD_RATE_DEFAULT = 40; // per 1000
+const COD_RATE_WITH_WIRELESS = 50; // per 1000 when Wireless Gamepad present
 let discountValue=0,mode="prepaid";
-let productIsCard=false; // Memory Card?
-let initialAllowCod=true;
 
 /* ===== Badges ===== */
 function setModeBadge(){
@@ -309,9 +310,9 @@ function applyCoupon(){
 
 /* ===== Mode toggle ===== */
 function setMode(m){
-  // Memory Card without add-ons → COD block
-  if(m==="cod" && (!codAllowedNow())){
-    alert("COD not available for Memory Card without add-ons. Please add any accessory to enable COD.");
+  // if trying COD below threshold → block with note
+  if(m==="cod" && !codEligible()){
+    alert("COD ₹1498 se upar ke product pe he.");
     return;
   }
   mode=m;
@@ -324,7 +325,7 @@ function setMode(m){
   computeTotals();
 }
 
-/* ===== Add-ons sum ===== */
+/* ===== Add-ons sum & flags ===== */
 function sumAddons(){
   let total=0;
   document.querySelectorAll("#items .addon-row").forEach(r=>{
@@ -334,41 +335,53 @@ function sumAddons(){
   });
   return total;
 }
+function hasWirelessGamepad(){
+  let flag=false;
+  document.querySelectorAll("#items .addon-row").forEach(r=>{
+    const name=(r.querySelector(".i-name").value||"").toLowerCase();
+    const q=Number(r.querySelector(".i-qty").value||0);
+    if(q>0 && name.includes("wireless gamepad")) flag=true;
+  });
+  return flag;
+}
 function getSubtotal(){
   const base=+document.getElementById("basePrice").value||0;
   return base + sumAddons();
 }
 
-/* ===== COD Rules ===== */
-function computeCodCharge(subtotal){
-  if(mode!=="cod") return 0;
-  const isOptional=/optional/i.test((document.getElementById("variant").value||""));
-  if(isOptional) return 99;                 // Optional → ₹99 always
-  return subtotal>2000 ? 0 : 99;            // Top → threshold
+/* ===== COD gating ===== */
+function codEligible(){
+  const sub=getSubtotal();
+  return sub >= COD_MIN_SUBTOTAL;
 }
-
-/* ===== COD availability for Memory Card ===== */
-function codAllowedNow(){
-  if(!productIsCard) return true;
-  const addons = sumAddons();
-  return addons > 0;
-}
-function updateCodAvailability(){
-  const codBtn = document.getElementById("btn-cod");
-  const allowed = initialAllowCod && (productIsCard ? codAllowedNow() : true);
-  if(!allowed){
+function updateCodButton(){
+  const codBtn=document.getElementById("btn-cod");
+  const eligible=codEligible();
+  if(!eligible){
     codBtn.setAttribute("disabled","disabled");
-    if(mode==="cod"){ mode="prepaid"; setModeBadge(); }
+    document.getElementById("codNote").textContent="COD ₹1498 se upar ke product pe he • COD charges = ₹40/₹1000 (Wireless Gamepad added ⇒ ₹50/₹1000)";
+    if(mode==="cod"){ mode="prepaid"; setModeBadge(); document.getElementById("prepaidBlock").style.display="block"; document.getElementById("codBlock").style.display="none"; }
   }else{
     codBtn.removeAttribute("disabled");
+    // also refresh note to show rate currently applicable
+    const rate = hasWirelessGamepad()? COD_RATE_WITH_WIRELESS : COD_RATE_DEFAULT;
+    document.getElementById("codNote").textContent=`COD available • Charges = ₹${rate}/₹1000 (subtotal)`;
   }
+}
+
+/* ===== COD charges ===== */
+function computeCodCharge(subtotal){
+  if(mode!=="cod") return 0;
+  const rate = hasWirelessGamepad()? COD_RATE_WITH_WIRELESS : COD_RATE_DEFAULT;
+  const slabs = Math.ceil(subtotal/1000);
+  return slabs * rate;
 }
 
 /* ===== Recompute chain ===== */
 function recomputeAddons(){
   const addons = sumAddons();
   document.getElementById("addonsTotal").value = addons;
-  updateCodAvailability();
+  updateCodButton();
   computeTotals();
 }
 
@@ -380,10 +393,11 @@ function computeTotals(){
   document.getElementById("addonsTotal").value = addons;
   document.getElementById("subtotal").value = subtotal;
 
-  const isOptional=/optional/i.test((document.getElementById("variant").value||""));
-  document.getElementById("ruleNote").innerText =
-    isOptional ? "Optional Pack: COD charge ₹99 (any amount) • Prepaid delivery free."
-               : "Top Pack: Subtotal > ₹2000 → COD ₹0; otherwise COD ₹99 • Prepaid delivery free.";
+  // Rules note (informational)
+  const rate = hasWirelessGamepad()? COD_RATE_WITH_WIRELESS : COD_RATE_DEFAULT;
+  document.getElementById("ruleNote").innerText = `Subtotal determines COD. COD threshold: ₹${COD_MIN_SUBTOTAL}. Charges: ₹${rate}/₹1000 (subtotal). Prepaid delivery free.`;
+
+  updateCodButton();
 
   let codC=0, paid=0, rest=0;
   if(mode==="prepaid"){
@@ -504,24 +518,12 @@ function sendWhatsApp(){
   if(p.has("base")) document.getElementById("basePrice").value=p.get("base");
   if(p.has("pack")) setPackBadge(p.get("pack"));
 
-  productIsCard = /memory\s*card/i.test(document.getElementById("product").value);
-  initialAllowCod = (p.has("allowCod") ? (p.get("allowCod")==="true") : true);
-
-  if(!initialAllowCod || (productIsCard && sumAddons()===0)){
-    document.getElementById("btn-cod").setAttribute("disabled","disabled");
-  }
-
-  if(p.has("pack")){
-    const pack=p.get("pack");
-    document.getElementById("ruleNote").innerText =
-      (/optional/i.test(pack))
-      ? "Optional Pack: COD charge ₹99 (any amount) • Prepaid delivery free."
-      : "Top Pack: Subtotal > ₹2000 → COD ₹0; otherwise COD ₹99 • Prepaid delivery free.";
-  }
-
   document.getElementById("orderId").value = orderIdNow();
+  // default mode prepaid
   setMode("prepaid");
+  // initialize numbers & COD gating
   document.getElementById("addonsTotal").value = 0;
+  updateCodButton();
   computeTotals();
 })();
 </script>
