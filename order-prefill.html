@@ -173,10 +173,10 @@
         <input id="addonQty" type="number" min="1" step="1" value="1" />
       </div>
       <div style="align-self:flex-end">
-        <button id="addAddonBtn" class="ghost" onclick="addAddonFromPicker()" disabled>+ Add Add-on</button>
+        <button id="addAddonBtn" class="ghost" onclick="addAddonFromPicker()" disabled>Add this to your order</button>
       </div>
     </div>
-    <div class="hint">Add-ons are optional. Pick from dropdown → set Qty → “+ Add Add-on”. Names & prices are fixed; only quantity is editable.</div>
+    <div class="hint">Add-ons are optional. Pick from dropdown → set Qty → “Add this to your order”. Names & prices fixed; only quantity editable.</div>
   </div>
 
   <!-- Payment summary -->
@@ -255,11 +255,11 @@ function setPackBadge(pack){
 function addRow(name="",price="",qty=1){
   const box=document.getElementById("items");
   const row=document.createElement("div");
-  row.className="row";
+  row.className="row addon-row";
   row.innerHTML=`
     <input class="i-name" value="${name}" readonly>
-    <input class="i-price" type="number" value="${price}" readonly>
-    <input class="i-qty" type="number" min="1" step="1" value="${qty}">
+    <input class="i-price" type="number" value="${Number(price)||0}" readonly>
+    <input class="i-qty" type="number" min="1" step="1" value="${Number(qty)||1}">
     <button class="ghost" aria-label="Remove add-on" onclick="this.parentNode.remove(); recomputeAddons()">✕</button>`;
   row.querySelector(".i-qty").addEventListener("input",recomputeAddons);
   box.appendChild(row);
@@ -268,8 +268,9 @@ function addRow(name="",price="",qty=1){
 
 function addAddonFromPicker(){
   const sel=document.getElementById("addonSelect");
-  const name=sel.value;
-  const pr=Number(document.getElementById("addonPrice").value||0);
+  const opt=sel.selectedOptions[0];
+  const name=opt?.value||"";
+  const pr=Number(opt?.dataset?.price||0);
   const qty=Number(document.getElementById("addonQty").value||1);
   if(!name){ alert("Please choose an add-on."); return; }
   addRow(name, pr, qty);
@@ -320,19 +321,19 @@ function setMode(m){
   computeTotals();
 }
 
-/* ===== Sum helpers ===== */
+/* ===== Add-ons sum ===== */
 function sumAddons(){
   let total=0;
-  document.querySelectorAll("#items .row").forEach(r=>{
+  document.querySelectorAll("#items .addon-row").forEach(r=>{
     const p=Number(r.querySelector(".i-price").value||0);
     const q=Number(r.querySelector(".i-qty").value||0);
-    total += p*q;
+    total += (p*q);
   });
   return total;
 }
 function getSubtotal(){
   const base=+document.getElementById("basePrice").value||0;
-  return base + sumAddons(); // include add-ons
+  return base + sumAddons();
 }
 
 /* ===== COD Rules ===== */
@@ -343,17 +344,19 @@ function computeCodCharge(subtotal){
   return subtotal>2000 ? 0 : 99;            // Top → threshold
 }
 
-/* ===== Totals & recompute ===== */
+/* ===== Recompute chain ===== */
 function recomputeAddons(){
   const addons = sumAddons();
   document.getElementById("addonsTotal").value = addons;
   computeTotals();
 }
 
+/* ===== Totals ===== */
 function computeTotals(){
   const base = +document.getElementById("basePrice").value||0;
   const addons = sumAddons();
   const subtotal = base + addons;
+  document.getElementById("addonsTotal").value = addons;
   document.getElementById("subtotal").value = subtotal;
 
   const isOptional=/optional/i.test((document.getElementById("variant").value||""));
@@ -364,12 +367,8 @@ function computeTotals(){
   // Prepaid vs COD blocks
   let codC=0, paid=0, rest=0;
   if(mode==="prepaid"){
-    // show/hide
-    document.getElementById("discountAmount").parentElement.style.display="block";
-    document.getElementById("amountPaid_pre").parentElement.style.display="block";
+    document.getElementById("prepaidBlock").style.display="block";
     document.getElementById("codBlock").style.display="none";
-
-    // calculate
     if(discountValue>0){
       document.getElementById("discountAmount").value = discountValue;
       paid = Math.max(0, subtotal - discountValue);
@@ -407,53 +406,79 @@ function orderIdNow(){
   return pad(d.getDate())+pad(d.getMonth()+1)+d.getFullYear()+pad(d.getHours())+pad(d.getMinutes())+pad(d.getSeconds())+"00";
 }
 
-/* ===== WhatsApp (styled message; pay link only) ===== */
+/* ===== Product name + add-ons (for message) ===== */
+function productWithAddons(){
+  const baseName = document.getElementById("product").value || "";
+  let parts=[];
+  document.querySelectorAll("#items .addon-row").forEach(r=>{
+    const name=r.querySelector(".i-name").value;
+    const q=Number(r.querySelector(".i-qty").value||0);
+    if(q>0) parts.push(`${name} x${q}`);
+  });
+  return parts.length ? `${baseName} + ${parts.join(", ")}` : baseName;
+}
+
+/* ===== WhatsApp (message format exactly as requested) ===== */
 function sendWhatsApp(){
   const id=document.getElementById("orderId").value || orderIdNow();
-  const base = +document.getElementById("basePrice").value||0;
-  const addons = sumAddons();
-  const subtotal = base + addons;
+  const subtotal = getSubtotal(); // Base + Add-ons to show as "Base Price" in message
 
   const paid = (mode==="prepaid")
     ? (+document.getElementById("amountPaid_pre").value||0)
     : (+document.getElementById("amountPaid_cod").value||0);
-  const codc = +document.getElementById("codCharges").value||0;
   const rest = +document.getElementById("restAmount").value||0;
 
-  const header = (mode==="prepaid") ? "🟢 Prepaid Order on WhatsApp" : "🔴 COD Order on WhatsApp";
+  const productLine = productWithAddons();
+  const variant = document.getElementById("variant").value || "";
 
-  const lines = [
-    header, "",
+  const commonTop = [
     `Order ID: ${id}`,
     `Name: ${document.getElementById("name").value}`,
     `Mobile: ${document.getElementById("mobile").value}`,
     `Alt Mobile: ${document.getElementById("altMobile").value}`,
     `Email: ${document.getElementById("email").value}`,
     `Address: ${document.getElementById("address").value}`,
-    `House number: ${document.getElementById("house").value}`,
     `Landmark: ${document.getElementById("landmark").value}`,
     `Pincode: ${document.getElementById("pincode").value}`,
     `State: ${document.getElementById("state").value}`,
     `District/City: ${document.getElementById("city").value}`,
     `Post office: ${document.getElementById("postoffice").value}`,
     "",
-    `Product: ${document.getElementById("product").value}`,
-    `Variant: ${document.getElementById("variant").value}`,
-    `Base Price: ${rs(base)}`,
-    addons ? `Add-ons Total (extras): ${rs(addons)}` : null,
-    `Subtotal (Base + Add-ons): ${rs(subtotal)}`,
-    (mode==="prepaid" && discountValue>0) ? `Discount: -${rs(discountValue)}` : null,
-    (mode==="prepaid") ? `Amount Paid: ${rs(paid)}`
-                       : `COD Charges: ${rs(codc)}\nAmount Paid: ${rs(paid)}\nRest on Delivery: ${rs(rest)}`,
+    `Product: ${productLine}`,
+    variant ? `Variant: ${variant}` : null,
+    `Base Price: ${rs(subtotal)}`
+  ].filter(Boolean);
+
+  const tail = [
     "",
     `📏 Distance: ${document.getElementById("distance").value}`,
-    `⏳ ETA: ${document.getElementById("etaText").value}`,
-    `📅 Estimated Delivery: ${document.getElementById("dateRange").value}`,
-    "",
-    `💳 Pay Link: ${document.getElementById("payNow").href}`
-  ].filter(Boolean).join("\n");
+    `⏳ COD Order ETA: ${document.getElementById("etaText").value}`,
+    `📅 Estimated Delivery: ${document.getElementById("dateRange").value}`
+  ];
 
-  window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(lines)}`,'_blank','noopener,noreferrer');
+  let lines=[];
+  if(mode==="prepaid"){
+    lines = [
+      "🟢 Prepaid Order on WhatsApp",
+      "",
+      ...commonTop,
+      (discountValue>0 ? `Discount Applied: -${rs(discountValue)}` : `Discount Applied:`),
+      `Amount paid: ${rs(paid)}`,
+      ...tail
+    ];
+  }else{
+    lines = [
+      "🔴 COD Order on WhatsApp",
+      "",
+      ...commonTop,
+      `Discount Applied:`, // COD me coupon nahi
+      `Amount Paid: ${rs(paid)}`,
+      `Rest on Delivery: ${rs(rest)}`,
+      ...tail
+    ];
+  }
+
+  window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(lines.join("\n"))}`,'_blank','noopener,noreferrer');
 }
 
 /* ===== Prefill from URL ===== */
@@ -462,8 +487,6 @@ function sendWhatsApp(){
   if(p.has("product")) document.getElementById("product").value=p.get("product");
   if(p.has("variant")) document.getElementById("variant").value=p.get("variant");
   if(p.has("base")) document.getElementById("basePrice").value=p.get("base");
-
-  // pack badge
   if(p.has("pack")) setPackBadge(p.get("pack"));
 
   // allowCod flag (for FMCB pass false)
