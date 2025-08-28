@@ -12,6 +12,7 @@
   .sub{color:var(--muted);margin-bottom:18px}
   .card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0}
   input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0e1530;color:#fff}
+  input[readonly], textarea[readonly]{opacity:.9}
   .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
   button,a.btn{border:0;padding:11px 14px;border-radius:12px;font-weight:800;cursor:pointer;text-decoration:none}
   .act{background:var(--ok);color:#04190b}
@@ -23,7 +24,6 @@
   .hint{color:var(--muted);font-size:13px;margin-top:6px;white-space:pre-line}
   .row{display:grid;grid-template-columns:1.8fr .9fr .9fr .4fr;gap:8px;align-items:center;margin-bottom:8px}
   .inline{display:flex;gap:8px;flex-wrap:wrap}
-  .readonly{opacity:.9}
   @media(max-width:900px){.grid3{grid-template-columns:1fr 1fr}}
   @media(max-width:720px){.grid2,.grid3{grid-template-columns:1fr}}
 </style>
@@ -47,7 +47,7 @@
   <div class="card" id="couponCard" style="display:none">
     <span class="badge">Coupon</span>
     <div class="grid2">
-      <input id="couponCode" placeholder="Enter Coupon Code (gpz2025)">
+      <input id="couponCode" placeholder="Enter Coupon Code (gpz2025)" autocomplete="off">
       <button class="ghost" onclick="applyCoupon()">Apply</button>
     </div>
     <div class="hint" id="couponNote"></div>
@@ -57,18 +57,18 @@
   <div class="card">
     <span class="badge">Customer</span>
     <div class="grid2">
-      <input id="name" placeholder="Name">
-      <input id="mobile" placeholder="Mobile">
+      <input id="name" placeholder="Name" autocomplete="name">
+      <input id="mobile" placeholder="Mobile" autocomplete="tel">
     </div>
     <div class="grid2">
-      <input id="altMobile" placeholder="Alt Mobile">
-      <input id="email" placeholder="Email">
+      <input id="altMobile" placeholder="Alt Mobile" autocomplete="tel">
+      <input id="email" placeholder="Email" autocomplete="email">
     </div>
     <textarea id="address" placeholder="Address (Area/Village/Street)" rows="2"></textarea>
     <div class="grid3" style="margin-top:8px">
       <input id="house" placeholder="House number">
       <input id="landmark" placeholder="Landmark">
-      <input id="pincode" placeholder="Pincode">
+      <input id="pincode" placeholder="Pincode" inputmode="numeric" maxlength="6" autocomplete="postal-code">
     </div>
     <div id="deliveryEstimate" class="hint"></div>
     <div class="grid3" style="margin-top:8px">
@@ -82,13 +82,13 @@
   <div class="card">
     <span class="badge">Product</span>
     <div class="grid2">
-      <input id="product" placeholder="Product">
-      <input id="variant" placeholder="Variant">
+      <input id="product" placeholder="Product" readonly>
+      <input id="variant" placeholder="Variant" readonly>
     </div>
     <div class="inline" style="margin-top:8px">
-      <input id="basePrice" type="number" placeholder="Base Price (₹)">
-      <input id="addonsTotal" class="readonly" type="number" placeholder="Add-ons Total (auto)" readonly>
-      <input id="subtotal" class="readonly" type="number" placeholder="Subtotal (auto)" readonly>
+      <input id="basePrice" type="number" placeholder="Base Price (₹)" readonly>
+      <input id="addonsTotal" type="number" placeholder="Add-ons Total (auto)" readonly>
+      <input id="subtotal" type="number" placeholder="Subtotal (auto)" readonly>
     </div>
     <div class="hint" id="ruleNote"></div>
   </div>
@@ -112,10 +112,10 @@
       <input id="addonQty" type="number" min="1" step="1" value="1" />
       <button id="addAddonBtn" class="ghost" onclick="addAddonFromPicker()" disabled>+ Add Add-on</button>
     </div>
-    <div class="hint">Default: No add-ons (₹0). Choose from dropdown, then “+ Add Add-on”. Prices are fixed (not editable).</div>
+    <div class="hint">Add-ons are optional. Pick from dropdown → set Qty → “+ Add Add-on”. Names & prices are fixed; only quantity is editable.</div>
   </div>
 
-  <!-- Payment summary -->
+  <!-- Payment summary (ALL READONLY) -->
   <div class="card">
     <span class="badge">Payment Summary</span>
     <!-- Prepaid only -->
@@ -124,16 +124,16 @@
     <input id="codCharges" type="number" placeholder="COD Charges (auto)" readonly style="display:none">
     <input id="restAmount" type="number" placeholder="Rest on Delivery (auto)" readonly style="display:none">
     <!-- Both -->
-    <input id="amountPaid" type="number" placeholder="Amount Paid (auto)">
+    <input id="amountPaid" type="number" placeholder="Amount Paid (auto)" readonly>
   </div>
 
   <!-- Delivery Meta -->
   <div class="card">
     <span class="badge">Delivery Meta</span>
     <div class="grid3">
-      <input id="distance" placeholder="Distance (auto)">
-      <input id="etaText" placeholder="ETA (auto)">
-      <input id="dateRange" placeholder="Estimated Delivery (auto)">
+      <input id="distance" placeholder="Distance (auto)" readonly>
+      <input id="etaText" placeholder="ETA (auto)" readonly>
+      <input id="dateRange" placeholder="Estimated Delivery (auto)" readonly>
     </div>
     <input id="orderId" placeholder="Order ID (auto)" readonly style="margin-top:8px">
   </div>
@@ -151,17 +151,17 @@ const UPI_ID="paytmqr5hyx5o@ptys";
 const UPI_NAME="Surender Kaur";
 let discountValue=0,mode="prepaid";
 
-/* ===== Add-ons rows (no default; price readonly) ===== */
+/* ===== Add-ons rows (name & price readonly; qty editable) ===== */
 function addRow(name="",price="",qty=1){
   const box=document.getElementById("items");
   const row=document.createElement("div");
   row.className="row";
   row.innerHTML=`
-    <input class="i-name" placeholder="Add-on name" value="${name}">
-    <input class="i-price" type="number" placeholder="Price" value="${price}" readonly>
-    <input class="i-qty" type="number" placeholder="Qty" min="1" step="1" value="${qty}">
-    <button class="ghost" onclick="this.parentNode.remove(); recomputeAddons()">✕</button>`;
-  row.querySelectorAll(".i-qty,.i-name").forEach(inp=>inp.addEventListener("input",recomputeAddons));
+    <input class="i-name" value="${name}" readonly>
+    <input class="i-price" type="number" value="${price}" readonly>
+    <input class="i-qty" type="number" min="1" step="1" value="${qty}">
+    <button class="ghost" aria-label="Remove add-on" onclick="this.parentNode.remove(); recomputeAddons()">✕</button>`;
+  row.querySelector(".i-qty").addEventListener("input",recomputeAddons);
   box.appendChild(row);
   recomputeAddons();
 }
@@ -229,21 +229,20 @@ function sumAddons(){
 }
 function getSubtotal(){
   const base=+document.getElementById("basePrice").value||0;
-  return base + sumAddons(); // default 0 add-ons -> subtotal = base
+  return base + sumAddons(); // add-ons included
 }
 
 /* ===== COD Rules ===== */
 function computeCodCharge(subtotal){
   if(mode!=="cod") return 0;
   const isOptional=/optional/i.test((document.getElementById("variant").value||""));
-  if(isOptional) return 99;                      // Optional → ₹99 always
-  return subtotal>2000 ? 0 : 99;                 // Top → threshold on subtotal
+  if(isOptional) return 99;          // Optional → ₹99 always
+  return subtotal>2000 ? 0 : 99;     // Top → threshold
 }
 
 /* ===== Totals & recompute ===== */
 function recomputeAddons(){
-  const addons = sumAddons();
-  document.getElementById("addonsTotal").value = addons;
+  document.getElementById("addonsTotal").value = sumAddons();
   document.getElementById("subtotal").value = getSubtotal();
   computeTotals();
 }
@@ -255,6 +254,7 @@ function computeTotals(){
     isOptional ? "Optional Pack: COD charge ₹99 (any amount) • Prepaid delivery free."
                : "Top Pack: Subtotal > ₹2000 → COD ₹0; otherwise COD ₹99 • Prepaid delivery free.";
 
+  // visibility of special fields
   document.getElementById("discountAmount").style.display=(mode==="prepaid")?"block":"none";
   document.getElementById("codCharges").style.display=(mode==="cod")?"block":"none";
   document.getElementById("restAmount").style.display=(mode==="cod")?"block":"none";
@@ -262,6 +262,7 @@ function computeTotals(){
   let codC=0, paid=0, rest=0;
 
   if(mode==="prepaid"){
+    // discount (if any)
     if(discountValue>0){
       document.getElementById("discountAmount").value = discountValue;
       paid = Math.max(0, subtotal - discountValue);
@@ -273,7 +274,7 @@ function computeTotals(){
     discountValue=0; document.getElementById("discountAmount").value="";
     codC = computeCodCharge(subtotal);
     document.getElementById("codCharges").value = codC;
-    paid = Math.max(500, Math.ceil((subtotal + codC) * 0.10)); // min ₹500
+    paid = Math.max(500, Math.ceil((subtotal + codC) * 0.10)); // min ₹500 or 10%
     rest = Math.max(0, subtotal + codC - paid);
     document.getElementById("restAmount").value = rest;
   }
@@ -282,6 +283,7 @@ function computeTotals(){
   const note=(mode==="prepaid")?"Prepaid for Games Planet Order":"Advance for Games Planet Order";
   document.getElementById("payNow").href = upiLink(paid, note);
 
+  // mirror values
   document.getElementById("addonsTotal").value = sumAddons();
   document.getElementById("subtotal").value = subtotal;
 }
@@ -298,7 +300,7 @@ function orderIdNow(){
   return pad(d.getDate())+pad(d.getMonth()+1)+d.getFullYear()+pad(d.getHours())+pad(d.getMinutes())+pad(d.getSeconds())+"00";
 }
 
-/* ===== WhatsApp ===== */
+/* ===== WhatsApp (styled message; pay link only) ===== */
 function sendWhatsApp(){
   const id=document.getElementById("orderId").value || orderIdNow();
   const base = +document.getElementById("basePrice").value||0;
@@ -367,13 +369,14 @@ function sendWhatsApp(){
 
   document.getElementById("orderId").value = orderIdNow();
   setMode("prepaid");
-  recomputeAddons(); // starts with 0 add-ons
+  recomputeAddons(); // start 0 add-ons
 })();
 
 /* ===== Pincode API + ETA ===== */
 let pincodeLatLng={};
 fetch('pincode_data.json').then(r=>r.json()).then(j=>pincodeLatLng=j);
-function haversine(lat1,lon1,lat2,lon2){const R=6371;const dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
+function haversine(lat1,lon1,lat2,lon2){const R=6371;const dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*sin2(dLon/2);return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
+function sin2(x){return Math.sin(x)**2;}
 function etaByDist(d){if(d<=30)return"1 day";if(d<=60)return"1-2 days";if(d<=100)return"2-3 days";if(d<=200)return"3-4 days";if(d<=500)return"4-5 days";if(d<=1000)return"4-6 days";if(d<=1500)return"5–7 days";if(d<=2000)return"6–8 days";if(d<=3000)return"6–10 days";return"8–12 days";}
 function dateRange(eta){const n=(eta.match(/\d+/g)||[]).map(Number);if(!n.length)return"";const min=Math.min(...n),max=Math.max(...n);const s=new Date(),e=new Date();s.setDate(s.getDate()+min);e.setDate(e.getDate()+max);const m=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][s.getMonth()];return `${s.getDate()}-${e.getDate()} ${m}`;}
 document.getElementById("pincode").addEventListener("input",function(){
@@ -389,13 +392,16 @@ document.getElementById("pincode").addEventListener("input",function(){
         if(pincodeLatLng[pin]){
           const baseLat=28.8,baseLng=79.0; // 244901 approx
           const {lat,lng}=pincodeLatLng[pin];
-          const d=haversine(baseLat,baseLng,lat,lng).toFixed(0);
-          const eta=etaByDist(d);
+          const R=6371, dLat=(lat-baseLat)*Math.PI/180, dLon=(lng-baseLng)*Math.PI/180;
+          const a=Math.sin(dLat/2)**2+Math.cos(baseLat*Math.PI/180)*Math.cos(lat*Math.PI/180)*Math.sin(dLon/2)**2;
+          const d=2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+          const D=Math.round(d);
+          const eta=etaByDist(D);
           const rng=dateRange(eta);
-          document.getElementById("distance").value=`${d} km`;
+          document.getElementById("distance").value=`${D} km`;
           document.getElementById("etaText").value=eta;
           document.getElementById("dateRange").value=rng;
-          document.getElementById("deliveryEstimate").innerText=`📍 Distance: ${d} km\n⏳ ETA: ${eta}\n📅 Delivery: ${rng}`;
+          document.getElementById("deliveryEstimate").innerText=`📍 Distance: ${D} km\n⏳ ETA: ${eta}\n📅 Delivery: ${rng}`;
         }
       }
     });
