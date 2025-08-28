@@ -5,25 +5,31 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Games Planet – Quick Order (Prefilled)</title>
 <style>
-  :root{--bg:#0b1020;--card:#121a33;--muted:#9fb0d3;--text:#eaf1ff;--ok:#3ddc84}
+  :root{--bg:#0b1020;--card:#121a33;--muted:#9fb0d3;--text:#eaf1ff;--ok:#3ddc84;--warn:#ffd54f;--chip:#1b2447}
   body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
   .wrap{max-width:900px;margin:0 auto;padding:22px 16px 60px}
   h1{margin:0 0 6px}
   .sub{color:var(--muted);margin-bottom:18px}
-  .card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0}
+  .card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0;position:relative}
+  .badge{display:inline-block;background:var(--chip);border-radius:999px;padding:6px 10px;font-weight:700;margin-right:6px;color:var(--muted)}
+  .badge.right{position:absolute;top:16px;right:16px}
+  .mode-pre{background:#173c2a;color:#8df0b6}
+  .mode-cod{background:#3a2a10;color:#ffd991}
+  .pack-top{background:#1e2c60;color:#9db7ff}
+  .pack-opt{background:#2d2748;color:#dab6ff}
   input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0e1530;color:#fff}
-  input[readonly], textarea[readonly]{opacity:.9}
+  input[readonly], textarea[readonly]{opacity:.95}
+  .label{font-size:12px;color:var(--muted);margin:10px 0 4px}
+  .row{display:grid;grid-template-columns:1.6fr .9fr .9fr .4fr;gap:8px;align-items:center;margin-bottom:8px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .inline{display:flex;gap:10px;flex-wrap:wrap}
   .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
   button,a.btn{border:0;padding:11px 14px;border-radius:12px;font-weight:800;cursor:pointer;text-decoration:none}
   .act{background:var(--ok);color:#04190b}
-  .alt{background:#ffd54f;color:#2b2100}
+  .alt{background:var(--warn);color:#2b2100}
   .ghost{background:transparent;border:1px solid rgba(255,255,255,.2);color:#fff}
-  .badge{display:inline-block;background:#1b2447;border-radius:999px;padding:6px 10px;font-weight:700;margin-right:6px;color:var(--muted)}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
   .hint{color:var(--muted);font-size:13px;margin-top:6px;white-space:pre-line}
-  .row{display:grid;grid-template-columns:1.8fr .9fr .9fr .4fr;gap:8px;align-items:center;margin-bottom:8px}
-  .inline{display:flex;gap:8px;flex-wrap:wrap}
   @media(max-width:900px){.grid3{grid-template-columns:1fr 1fr}}
   @media(max-width:720px){.grid2,.grid3{grid-template-columns:1fr}}
 </style>
@@ -57,38 +63,85 @@
   <div class="card">
     <span class="badge">Customer</span>
     <div class="grid2">
-      <input id="name" placeholder="Name" autocomplete="name">
-      <input id="mobile" placeholder="Mobile" autocomplete="tel">
+      <div>
+        <div class="label">Name</div>
+        <input id="name" placeholder="Name" autocomplete="name">
+      </div>
+      <div>
+        <div class="label">Mobile</div>
+        <input id="mobile" placeholder="Mobile" autocomplete="tel">
+      </div>
     </div>
     <div class="grid2">
-      <input id="altMobile" placeholder="Alt Mobile" autocomplete="tel">
-      <input id="email" placeholder="Email" autocomplete="email">
+      <div>
+        <div class="label">Alt Mobile</div>
+        <input id="altMobile" placeholder="Alt Mobile" autocomplete="tel">
+      </div>
+      <div>
+        <div class="label">Email</div>
+        <input id="email" placeholder="Email" autocomplete="email">
+      </div>
     </div>
+    <div class="label">Address</div>
     <textarea id="address" placeholder="Address (Area/Village/Street)" rows="2"></textarea>
     <div class="grid3" style="margin-top:8px">
-      <input id="house" placeholder="House number">
-      <input id="landmark" placeholder="Landmark">
-      <input id="pincode" placeholder="Pincode" inputmode="numeric" maxlength="6" autocomplete="postal-code">
+      <div>
+        <div class="label">House number</div>
+        <input id="house" placeholder="House number">
+      </div>
+      <div>
+        <div class="label">Landmark</div>
+        <input id="landmark" placeholder="Landmark">
+      </div>
+      <div>
+        <div class="label">Pincode</div>
+        <input id="pincode" placeholder="Pincode" inputmode="numeric" maxlength="6" autocomplete="postal-code">
+      </div>
     </div>
     <div id="deliveryEstimate" class="hint"></div>
     <div class="grid3" style="margin-top:8px">
-      <input id="state" placeholder="State" readonly>
-      <input id="city" placeholder="District/City" readonly>
-      <select id="postoffice"><option value="">Select Post Office</option></select>
+      <div>
+        <div class="label">State</div>
+        <input id="state" placeholder="State" readonly>
+      </div>
+      <div>
+        <div class="label">District/City</div>
+        <input id="city" placeholder="District/City" readonly>
+      </div>
+      <div>
+        <div class="label">Post Office</div>
+        <select id="postoffice"><option value="">Select Post Office</option></select>
+      </div>
     </div>
   </div>
 
   <!-- Product -->
-  <div class="card">
+  <div class="card" id="productCard">
     <span class="badge">Product</span>
+    <span id="packBadge" class="badge right">Pack: —</span>
     <div class="grid2">
-      <input id="product" placeholder="Product" readonly>
-      <input id="variant" placeholder="Variant" readonly>
+      <div>
+        <div class="label">Product Name</div>
+        <input id="product" placeholder="Product" readonly>
+      </div>
+      <div>
+        <div class="label">Variant / Model</div>
+        <input id="variant" placeholder="Variant" readonly>
+      </div>
     </div>
-    <div class="inline" style="margin-top:8px">
-      <input id="basePrice" type="number" placeholder="Base Price (₹)" readonly>
-      <input id="addonsTotal" type="number" placeholder="Add-ons Total (auto)" readonly>
-      <input id="subtotal" type="number" placeholder="Subtotal (auto)" readonly>
+    <div class="grid3" style="margin-top:8px">
+      <div>
+        <div class="label">Base Price (only product)</div>
+        <input id="basePrice" type="number" placeholder="₹" readonly>
+      </div>
+      <div>
+        <div class="label">Add-ons Total (extras)</div>
+        <input id="addonsTotal" type="number" placeholder="₹" readonly>
+      </div>
+      <div>
+        <div class="label">Subtotal (Base + Add-ons)</div>
+        <input id="subtotal" type="number" placeholder="₹" readonly>
+      </div>
     </div>
     <div class="hint" id="ruleNote"></div>
   </div>
@@ -98,44 +151,77 @@
     <span class="badge">Add-ons</span>
     <div id="items"></div>
     <div class="inline">
-      <select id="addonSelect">
-        <option value="" data-price="0">Choose an add-on…</option>
-        <option value="Wire Gamepad" data-price="399">Wire Gamepad — ₹399</option>
-        <option value="Wireless Gamepad" data-price="749">Wireless Gamepad — ₹749</option>
-        <option value="PS2 Slim Sticker/Skin" data-price="60">PS2 Slim Sticker/Skin — ₹60</option>
-        <option value="HDMI Converter" data-price="499">HDMI Converter — ₹499</option>
-        <option value="HDMI Cable" data-price="99">HDMI Cable — ₹99</option>
-        <option value="Best HDMI Cable" data-price="349">Best HDMI Cable — ₹349</option>
-        <option value="Blank Memory Card 8MB" data-price="549">Blank Memory Card 8MB — ₹549</option>
-      </select>
-      <input id="addonPrice" type="number" placeholder="Price (auto)" readonly />
-      <input id="addonQty" type="number" min="1" step="1" value="1" />
-      <button id="addAddonBtn" class="ghost" onclick="addAddonFromPicker()" disabled>+ Add Add-on</button>
+      <div style="flex:1 1 260px">
+        <div class="label">Choose add-on</div>
+        <select id="addonSelect">
+          <option value="" data-price="0">— Select —</option>
+          <option value="Wire Gamepad" data-price="399">Wire Gamepad — ₹399</option>
+          <option value="Wireless Gamepad" data-price="749">Wireless Gamepad — ₹749</option>
+          <option value="PS2 Slim Sticker/Skin" data-price="60">PS2 Slim Sticker/Skin — ₹60</option>
+          <option value="HDMI Converter" data-price="499">HDMI Converter — ₹499</option>
+          <option value="HDMI Cable" data-price="99">HDMI Cable — ₹99</option>
+          <option value="Best HDMI Cable" data-price="349">Best HDMI Cable — ₹349</option>
+          <option value="Blank Memory Card 8MB" data-price="549">Blank Memory Card 8MB — ₹549</option>
+        </select>
+      </div>
+      <div>
+        <div class="label">Price</div>
+        <input id="addonPrice" type="number" placeholder="₹" readonly />
+      </div>
+      <div>
+        <div class="label">Qty</div>
+        <input id="addonQty" type="number" min="1" step="1" value="1" />
+      </div>
+      <div style="align-self:flex-end">
+        <button id="addAddonBtn" class="ghost" onclick="addAddonFromPicker()" disabled>+ Add Add-on</button>
+      </div>
     </div>
     <div class="hint">Add-ons are optional. Pick from dropdown → set Qty → “+ Add Add-on”. Names & prices are fixed; only quantity is editable.</div>
   </div>
 
-  <!-- Payment summary (ALL READONLY) -->
-  <div class="card">
+  <!-- Payment summary -->
+  <div class="card" id="payCard">
     <span class="badge">Payment Summary</span>
+    <span id="modeBadge" class="badge right">Mode: —</span>
+
     <!-- Prepaid only -->
-    <input id="discountAmount" type="number" placeholder="Discount Applied (auto)" readonly style="display:none">
+    <div id="prepaidBlock" style="display:none">
+      <div class="label">Discount (Prepaid coupon 5%)</div>
+      <input id="discountAmount" type="number" placeholder="₹ (auto)" readonly>
+      <div class="label">Amount Paid (now)</div>
+      <input id="amountPaid_pre" type="number" placeholder="₹ (auto)" readonly>
+    </div>
+
     <!-- COD only -->
-    <input id="codCharges" type="number" placeholder="COD Charges (auto)" readonly style="display:none">
-    <input id="restAmount" type="number" placeholder="Rest on Delivery (auto)" readonly style="display:none">
-    <!-- Both -->
-    <input id="amountPaid" type="number" placeholder="Amount Paid (auto)" readonly>
+    <div id="codBlock" style="display:none">
+      <div class="label">COD Charges (rules applied)</div>
+      <input id="codCharges" type="number" placeholder="₹ (auto)" readonly>
+      <div class="label">Amount Paid / Advance (now)</div>
+      <input id="amountPaid_cod" type="number" placeholder="₹ (auto)" readonly>
+      <div class="label">Rest on Delivery</div>
+      <input id="restAmount" type="number" placeholder="₹ (auto)" readonly>
+    </div>
   </div>
 
   <!-- Delivery Meta -->
   <div class="card">
     <span class="badge">Delivery Meta</span>
     <div class="grid3">
-      <input id="distance" placeholder="Distance (auto)" readonly>
-      <input id="etaText" placeholder="ETA (auto)" readonly>
-      <input id="dateRange" placeholder="Estimated Delivery (auto)" readonly>
+      <div>
+        <div class="label">Distance</div>
+        <input id="distance" placeholder="(auto)" readonly>
+      </div>
+      <div>
+        <div class="label">ETA</div>
+        <input id="etaText" placeholder="(auto)" readonly>
+      </div>
+      <div>
+        <div class="label">Estimated Delivery</div>
+        <input id="dateRange" placeholder="(auto)" readonly>
+      </div>
     </div>
-    <input id="orderId" placeholder="Order ID (auto)" readonly style="margin-top:8px">
+    <div class="label" style="margin-top:8px">Order ID</div>
+    <input id="orderId" placeholder="(auto)" readonly>
   </div>
 
   <!-- Actions -->
@@ -150,6 +236,20 @@ const WHATSAPP_PHONE="917983624797";
 const UPI_ID="paytmqr5hyx5o@ptys";
 const UPI_NAME="Surender Kaur";
 let discountValue=0,mode="prepaid";
+
+/* ===== Badges ===== */
+function setModeBadge(){
+  const badge=document.getElementById('modeBadge');
+  if(mode==='prepaid'){ badge.textContent='Mode: Prepaid'; badge.className='badge right mode-pre'; }
+  else { badge.textContent='Mode: COD'; badge.className='badge right mode-cod'; }
+}
+function setPackBadge(pack){
+  const el=document.getElementById('packBadge');
+  if(!pack){ el.textContent='Pack: —'; el.className='badge right'; return; }
+  const isOpt=/optional/i.test(pack);
+  el.textContent='Pack: '+pack;
+  el.className='badge right '+(isOpt?'pack-opt':'pack-top');
+}
 
 /* ===== Add-ons rows (name & price readonly; qty editable) ===== */
 function addRow(name="",price="",qty=1){
@@ -214,6 +314,9 @@ function setMode(m){
   document.getElementById("btn-prepaid").className=(m==="prepaid"?"ghost act":"ghost");
   document.getElementById("btn-cod").className=(m==="cod"?"ghost act":"ghost");
   document.getElementById("couponCard").style.display=(m==="prepaid")?"block":"none";
+  document.getElementById("prepaidBlock").style.display=(m==="prepaid")?"block":"none";
+  document.getElementById("codBlock").style.display=(m==="cod")?"block":"none";
+  setModeBadge();
   computeTotals();
 }
 
@@ -229,7 +332,7 @@ function sumAddons(){
 }
 function getSubtotal(){
   const base=+document.getElementById("basePrice").value||0;
-  return base + sumAddons(); // ✅ include add-ons
+  return base + sumAddons(); // include add-ons
 }
 
 /* ===== COD Rules ===== */
@@ -250,7 +353,7 @@ function recomputeAddons(){
 function computeTotals(){
   const base = +document.getElementById("basePrice").value||0;
   const addons = sumAddons();
-  const subtotal = base + addons;               // ✅ use base + addons everywhere
+  const subtotal = base + addons;
   document.getElementById("subtotal").value = subtotal;
 
   const isOptional=/optional/i.test((document.getElementById("variant").value||""));
@@ -258,31 +361,36 @@ function computeTotals(){
     isOptional ? "Optional Pack: COD charge ₹99 (any amount) • Prepaid delivery free."
                : "Top Pack: Subtotal > ₹2000 → COD ₹0; otherwise COD ₹99 • Prepaid delivery free.";
 
-  // show/hide specific fields
-  document.getElementById("discountAmount").style.display=(mode==="prepaid")?"block":"none";
-  document.getElementById("codCharges").style.display=(mode==="cod")?"block":"none";
-  document.getElementById("restAmount").style.display=(mode==="cod")?"block":"none";
-
+  // Prepaid vs COD blocks
   let codC=0, paid=0, rest=0;
-
   if(mode==="prepaid"){
+    // show/hide
+    document.getElementById("discountAmount").parentElement.style.display="block";
+    document.getElementById("amountPaid_pre").parentElement.style.display="block";
+    document.getElementById("codBlock").style.display="none";
+
+    // calculate
     if(discountValue>0){
       document.getElementById("discountAmount").value = discountValue;
       paid = Math.max(0, subtotal - discountValue);
     }else{
-      document.getElementById("discountAmount").value = "";
+      document.getElementById("discountAmount").value = 0;
       paid = subtotal;
     }
-  }else{
-    discountValue=0; document.getElementById("discountAmount").value="";
+    document.getElementById("amountPaid_pre").value = paid;
+
+  }else{ // COD
+    document.getElementById("prepaidBlock").style.display="none";
+    document.getElementById("codBlock").style.display="block";
+
     codC = computeCodCharge(subtotal);
     document.getElementById("codCharges").value = codC;
     paid = Math.max(500, Math.ceil((subtotal + codC) * 0.10)); // min ₹500 or 10%
     rest = Math.max(0, subtotal + codC - paid);
+    document.getElementById("amountPaid_cod").value = paid;
     document.getElementById("restAmount").value = rest;
   }
 
-  document.getElementById("amountPaid").value = paid;
   const note=(mode==="prepaid")?"Prepaid for Games Planet Order":"Advance for Games Planet Order";
   document.getElementById("payNow").href = upiLink(paid, note);
 }
@@ -305,7 +413,10 @@ function sendWhatsApp(){
   const base = +document.getElementById("basePrice").value||0;
   const addons = sumAddons();
   const subtotal = base + addons;
-  const paid = +document.getElementById("amountPaid").value||0;
+
+  const paid = (mode==="prepaid")
+    ? (+document.getElementById("amountPaid_pre").value||0)
+    : (+document.getElementById("amountPaid_cod").value||0);
   const codc = +document.getElementById("codCharges").value||0;
   const rest = +document.getElementById("restAmount").value||0;
 
@@ -328,11 +439,12 @@ function sendWhatsApp(){
     "",
     `Product: ${document.getElementById("product").value}`,
     `Variant: ${document.getElementById("variant").value}`,
-    `Base Price: ${rs(base)}`,
-    addons ? `Add-ons Total: ${rs(addons)}` : null,
-    `Subtotal: ${rs(subtotal)}`,
-    (mode==="prepaid" && discountValue>0) ? `Discount Applied: -${rs(discountValue)}` : null,
-    (mode==="prepaid") ? `Amount Paid: ${rs(paid)}` : `Amount Paid (Advance): ${rs(paid)}\nCOD Charges: ${rs(codc)}\nRest on Delivery: ${rs(rest)}`,
+    `Base Price (only product): ${rs(base)}`,
+    addons ? `Add-ons Total (extras): ${rs(addons)}` : null,
+    `Subtotal (Base + Add-ons): ${rs(subtotal)}`,
+    (mode==="prepaid" && discountValue>0) ? `Discount (Prepaid coupon): -${rs(discountValue)}` : null,
+    (mode==="prepaid") ? `Amount Paid (now): ${rs(paid)}`
+                       : `COD Charges: ${rs(codc)}\nAmount Paid / Advance (now): ${rs(paid)}\nRest on Delivery: ${rs(rest)}`,
     "",
     `📏 Distance: ${document.getElementById("distance").value}`,
     `⏳ ETA: ${document.getElementById("etaText").value}`,
@@ -351,13 +463,16 @@ function sendWhatsApp(){
   if(p.has("variant")) document.getElementById("variant").value=p.get("variant");
   if(p.has("base")) document.getElementById("basePrice").value=p.get("base");
 
+  // pack badge
+  if(p.has("pack")) setPackBadge(p.get("pack"));
+
   // allowCod flag (for FMCB pass false)
   window._allowCod = (p.has("allowCod") ? (p.get("allowCod")==="true") : true);
   if(window._allowCod===false){
     document.getElementById("btn-cod").setAttribute("disabled","disabled");
   }
 
-  // Show pack rule if passed
+  // Rule text based on pack
   if(p.has("pack")){
     const pack=p.get("pack");
     document.getElementById("ruleNote").innerText =
@@ -368,7 +483,6 @@ function sendWhatsApp(){
 
   document.getElementById("orderId").value = orderIdNow();
   setMode("prepaid");
-  // start with 0 add-ons; totals compute once
   document.getElementById("addonsTotal").value = 0;
   computeTotals();
 })();
