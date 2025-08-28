@@ -187,7 +187,7 @@ document.getElementById("addonSelect").addEventListener("change", e=>{
   document.getElementById("addAddonBtn").disabled = !opt.value;
 });
 
-/* ===== Coupon ===== */
+/* ===== Coupon (prepaid only) ===== */
 function applyCoupon(){
   const code=(document.getElementById("couponCode").value||"").trim().toLowerCase();
   if(code==="gpz2025"){
@@ -229,32 +229,36 @@ function sumAddons(){
 }
 function getSubtotal(){
   const base=+document.getElementById("basePrice").value||0;
-  return base + sumAddons(); // add-ons included
+  return base + sumAddons(); // ✅ include add-ons
 }
 
 /* ===== COD Rules ===== */
 function computeCodCharge(subtotal){
   if(mode!=="cod") return 0;
   const isOptional=/optional/i.test((document.getElementById("variant").value||""));
-  if(isOptional) return 99;          // Optional → ₹99 always
-  return subtotal>2000 ? 0 : 99;     // Top → threshold
+  if(isOptional) return 99;                 // Optional → ₹99 always
+  return subtotal>2000 ? 0 : 99;            // Top → threshold
 }
 
 /* ===== Totals & recompute ===== */
 function recomputeAddons(){
-  document.getElementById("addonsTotal").value = sumAddons();
-  document.getElementById("subtotal").value = getSubtotal();
+  const addons = sumAddons();
+  document.getElementById("addonsTotal").value = addons;
   computeTotals();
 }
 
 function computeTotals(){
-  const subtotal = getSubtotal();
+  const base = +document.getElementById("basePrice").value||0;
+  const addons = sumAddons();
+  const subtotal = base + addons;               // ✅ use base + addons everywhere
+  document.getElementById("subtotal").value = subtotal;
+
   const isOptional=/optional/i.test((document.getElementById("variant").value||""));
   document.getElementById("ruleNote").innerText =
     isOptional ? "Optional Pack: COD charge ₹99 (any amount) • Prepaid delivery free."
                : "Top Pack: Subtotal > ₹2000 → COD ₹0; otherwise COD ₹99 • Prepaid delivery free.";
 
-  // visibility of special fields
+  // show/hide specific fields
   document.getElementById("discountAmount").style.display=(mode==="prepaid")?"block":"none";
   document.getElementById("codCharges").style.display=(mode==="cod")?"block":"none";
   document.getElementById("restAmount").style.display=(mode==="cod")?"block":"none";
@@ -262,7 +266,6 @@ function computeTotals(){
   let codC=0, paid=0, rest=0;
 
   if(mode==="prepaid"){
-    // discount (if any)
     if(discountValue>0){
       document.getElementById("discountAmount").value = discountValue;
       paid = Math.max(0, subtotal - discountValue);
@@ -282,10 +285,6 @@ function computeTotals(){
   document.getElementById("amountPaid").value = paid;
   const note=(mode==="prepaid")?"Prepaid for Games Planet Order":"Advance for Games Planet Order";
   document.getElementById("payNow").href = upiLink(paid, note);
-
-  // mirror values
-  document.getElementById("addonsTotal").value = sumAddons();
-  document.getElementById("subtotal").value = subtotal;
 }
 
 /* ===== Utils ===== */
@@ -305,7 +304,7 @@ function sendWhatsApp(){
   const id=document.getElementById("orderId").value || orderIdNow();
   const base = +document.getElementById("basePrice").value||0;
   const addons = sumAddons();
-  const subtotal = getSubtotal();
+  const subtotal = base + addons;
   const paid = +document.getElementById("amountPaid").value||0;
   const codc = +document.getElementById("codCharges").value||0;
   const rest = +document.getElementById("restAmount").value||0;
@@ -369,16 +368,41 @@ function sendWhatsApp(){
 
   document.getElementById("orderId").value = orderIdNow();
   setMode("prepaid");
-  recomputeAddons(); // start 0 add-ons
+  // start with 0 add-ons; totals compute once
+  document.getElementById("addonsTotal").value = 0;
+  computeTotals();
 })();
 
 /* ===== Pincode API + ETA ===== */
 let pincodeLatLng={};
 fetch('pincode_data.json').then(r=>r.json()).then(j=>pincodeLatLng=j);
-function haversine(lat1,lon1,lat2,lon2){const R=6371;const dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*sin2(dLon/2);return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
-function sin2(x){return Math.sin(x)**2;}
-function etaByDist(d){if(d<=30)return"1 day";if(d<=60)return"1-2 days";if(d<=100)return"2-3 days";if(d<=200)return"3-4 days";if(d<=500)return"4-5 days";if(d<=1000)return"4-6 days";if(d<=1500)return"5–7 days";if(d<=2000)return"6–8 days";if(d<=3000)return"6–10 days";return"8–12 days";}
-function dateRange(eta){const n=(eta.match(/\d+/g)||[]).map(Number);if(!n.length)return"";const min=Math.min(...n),max=Math.max(...n);const s=new Date(),e=new Date();s.setDate(s.getDate()+min);e.setDate(e.getDate()+max);const m=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][s.getMonth()];return `${s.getDate()}-${e.getDate()} ${m}`;}
+function haversine(lat1,lon1,lat2,lon2){
+  const R=6371;
+  const dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function etaByDist(d){
+  if(d<=30)return"1 day";
+  if(d<=60)return"1-2 days";
+  if(d<=100)return"2-3 days";
+  if(d<=200)return"3-4 days";
+  if(d<=500)return"4-5 days";
+  if(d<=1000)return"4-6 days";
+  if(d<=1500)return"5–7 days";
+  if(d<=2000)return"6–8 days";
+  if(d<=3000)return"6–10 days";
+  return"8–12 days";
+}
+function dateRange(eta){
+  const n=(eta.match(/\d+/g)||[]).map(Number);
+  if(!n.length)return"";
+  const min=Math.min(...n),max=Math.max(...n);
+  const s=new Date(),e=new Date();
+  s.setDate(s.getDate()+min); e.setDate(e.getDate()+max);
+  const m=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][s.getMonth()];
+  return `${s.getDate()}-${e.getDate()} ${m}`;
+}
 document.getElementById("pincode").addEventListener("input",function(){
   const pin=this.value.trim();
   if(pin.length===6){
@@ -390,18 +414,15 @@ document.getElementById("pincode").addEventListener("input",function(){
         const sel=document.getElementById("postoffice");sel.innerHTML='<option value="">Select Post Office</option>';
         data[0].PostOffice.forEach(p=>{const o=document.createElement("option");o.value=p.Name;o.text=p.Name;sel.appendChild(o);});
         if(pincodeLatLng[pin]){
-          const baseLat=28.8,baseLng=79.0; // 244901 approx
+          const baseLat=28.8,baseLng=79.0; // near 244901
           const {lat,lng}=pincodeLatLng[pin];
-          const R=6371, dLat=(lat-baseLat)*Math.PI/180, dLon=(lng-baseLng)*Math.PI/180;
-          const a=Math.sin(dLat/2)**2+Math.cos(baseLat*Math.PI/180)*Math.cos(lat*Math.PI/180)*Math.sin(dLon/2)**2;
-          const d=2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-          const D=Math.round(d);
-          const eta=etaByDist(D);
+          const d=Math.round(haversine(baseLat,baseLng,lat,lng));
+          const eta=etaByDist(d);
           const rng=dateRange(eta);
-          document.getElementById("distance").value=`${D} km`;
+          document.getElementById("distance").value=`${d} km`;
           document.getElementById("etaText").value=eta;
           document.getElementById("dateRange").value=rng;
-          document.getElementById("deliveryEstimate").innerText=`📍 Distance: ${D} km\n⏳ ETA: ${eta}\n📅 Delivery: ${rng}`;
+          document.getElementById("deliveryEstimate").innerText=`📍 Distance: ${d} km\n⏳ ETA: ${eta}\n📅 Delivery: ${rng}`;
         }
       }
     });
