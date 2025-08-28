@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Games Planet • PS2 Quick Buy — FMCB, USB & Combo</title>
-<meta name="description" content="Buy FMCB/FunTuna card, USB-only, or FMCB+USB Combo for PlayStation 2 with one-tap WhatsApp redirect. Top & Optional game packs supported."/>
+<title>Games Planet • PS2 Quick Buy — FMCB, USB, Combo & More</title>
+<meta name="description" content="Buy FMCB/FunTuna card, USB-only, FMCB+USB Combo, and more consoles/controllers with one-tap prefill. Prices loaded via CSV."/>
 <style>
 :root{
   --bg:#0b1020; --card:#121a33; --muted:#9fb0d3; --text:#eaf1ff;
@@ -34,7 +34,7 @@ h1{font-size:clamp(22px,3.5vw,34px);margin:0}
 
 .grid{display:flex;flex-direction:column;gap:18px} /* column sequence */
 .card{background:var(--card);border-radius:20px;padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
-.card:after{content:"";position:absolute;inset:auto -30% -30% auto;width:220px;height:220px;background:radial-gradient(90px 90px at 70% 30%, var(--ring), transparent 60%);pointer-events:none} /* tap fix */
+.card:after{content:"";position:absolute;inset:auto -30% -30% auto;width:220px;height:220px;background:radial-gradient(90px 90px at 70% 30%, var(--ring), transparent 60%);pointer-events:none} /* mobile tap fix */
 .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;background:var(--chip);color:var(--muted);border-radius:999px;font-size:12px;font-weight:700;margin-right:6px}
 .title{margin:10px 0 6px;font-size:20px}
 .muted{color:var(--muted);font-size:14px}
@@ -47,10 +47,12 @@ h1{font-size:clamp(22px,3.5vw,34px);margin:0}
 .btn{flex:1;border:0;padding:10px 12px;border-radius:12px;font-weight:800;cursor:pointer}
 .btn.buy{background:var(--accent2);color:#08210f}
 .btn.alt{background:var(--accent3);color:#241a00}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
 
 .section{margin-top:28px}
 .list{margin:10px 0 0 0;padding-left:18px}
 .foot{opacity:.85;margin-top:34px;font-size:12px;color:var(--muted)}
+.small{font-size:12px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -58,14 +60,15 @@ h1{font-size:clamp(22px,3.5vw,34px);margin:0}
   <div class="brand">
     <div class="logo">GPZ</div>
     <div>
-      <h1>PS2 Quick Buy — FMCB, USB & Combo</h1>
-      <div class="sub">One-tap Prefill Order • Top & Optional packs • Auto light/dark</div>
+      <h1>PS2 Quick Buy — FMCB, USB, Combo & More</h1>
+      <div class="sub">One-tap Prefill Order • CSV-driven prices • Auto light/dark</div>
     </div>
   </div>
 
   <div class="controls" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px">
     <a class="linkbtn" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
-    <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">▶️ Setup Video</a>
+    <a class="linkbtn" href="https://youtu.be/xGR0vUM1-Jw" target="_blank" rel="noopener">🎞️ Top Games List (Video)</a>
+    <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">🧩 Setup Guide</a>
   </div>
 
   <div class="grid">
@@ -73,25 +76,22 @@ h1{font-size:clamp(22px,3.5vw,34px);margin:0}
     <section class="card" aria-labelledby="fmcb-title">
       <span class="badge">FMCB / FunTuna Card</span>
       <h2 class="title" id="fmcb-title">Memory Card for PS2 (Model-wise)</h2>
-       <!-- IMAGE ROW: FMCB -->
-      <div style="display:flex;justify-content:center;gap:12px;margin:10px 0;flex-wrap:wrap">
-        <img src="Fmcb.png" alt="FMCB 8MB Memory Card" style="max-width:90px;border-radius:10px;box-shadow:var(--shadow)">
       <div class="muted">Boot PS2 games from USB using preconfigured FMCB / FunTuna + OPL. Choose your model:</div>
       <div class="variants" id="fmcbCard">
         <div class="row">
           <div class="name">PS2 Fat (All Models) — <b>FMCB</b> <span class="pill">🟢 ₹999</span></div>
           <div></div>
-          <div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Fat (All Models) — FMCB',999,'Card Only',false)">Buy</button></div>
+          <div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Fat (All Models) — FMCB',999,'Card Only')">Buy</button></div>
         </div>
         <div class="row">
           <div class="name">PS2 Slim 7xxxx (All) — <b>FMCB</b> <span class="pill">🟢 ₹999</span></div>
           <div></div>
-          <div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 7xxxx (All) — FMCB',999,'Card Only',false)">Buy</button></div>
+          <div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 7xxxx (All) — FMCB',999,'Card Only')">Buy</button></div>
         </div>
         <div class="row">
           <div class="name">PS2 Slim 9xxxx (All) — <b>FunTuna</b> <span class="pill">🟢 ₹999</span></div>
           <div></div>
-          <div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 9xxxx (All) — FunTuna',999,'Card Only',false)">Buy</button></div>
+          <div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 9xxxx (All) — FunTuna',999,'Card Only')">Buy</button></div>
         </div>
       </div>
     </section>
@@ -100,34 +100,25 @@ h1{font-size:clamp(22px,3.5vw,34px);margin:0}
     <section class="card" aria-labelledby="usb-title">
       <span class="badge">USB Only</span>
       <h2 class="title" id="usb-title">USB for PlayStation 2 — Game-Loaded</h2>
-      <!-- IMAGE ROW: USB pendrive + USB HDD -->
-      <div style="display:flex;justify-content:center;gap:16px;margin:10px 0;flex-wrap:wrap">
-        <img src="Usb.jpg" alt="USB Pendrive for PS2" style="max-width:120px;border-radius:12px;box-shadow:var(--shadow)">
-        <img src="Usbhdd.jpeg" alt="USB HDD for PS2" style="max-width:160px;border-radius:12px;box-shadow:var(--shadow)">
-      </div>
       <div class="muted">Requires FMCB card + latest OPL. Plug directly into PS2 (no hub/splitter).</div>
       <div class="variants" id="usbList"></div>
-      <div class="links" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-        <a class="linkbtn" href="https://youtu.be/xGR0vUM1-Jw" target="_blank" rel="noopener">🎞️ Top Games List (Video)</a>
-        <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">🧩 Setup Guide</a>
-      </div>
     </section>
 
     <!-- 3) FMCB + USB Combo -->
     <section class="card" aria-labelledby="combo-title">
       <span class="badge">Combo Best Value</span>
       <h2 class="title" id="combo-title">FMCB + USB Combo for PS2</h2>
-      <!-- IMAGE ROW: FMCB + USB pendrive + USB HDD (small) -->
-      <div style="display:flex;justify-content:center;gap:12px;margin:10px 0;flex-wrap:wrap">
-        <img src="Fmcb.png" alt="FMCB 8MB Memory Card" style="max-width:90px;border-radius:10px;box-shadow:var(--shadow)">
-        <img src="Usb.jpg" alt="USB Pendrive" style="max-width:90px;border-radius:10px;box-shadow:var(--shadow)">
-        <img src="Usbhdd.jpeg" alt="USB HDD" style="max-width:110px;border-radius:10px;box-shadow:var(--shadow)">
-      </div>
       <div class="muted">Fully Plug & Play. Works on PS2 Fat, Slim 7xxxx (FMCB) & Slim 9xxxx (FunTuna).</div>
       <div class="variants" id="comboList"></div>
-      <div class="links" style="margin-top:12px">
-        <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">📺 Setup Video</a>
-      </div>
+    </section>
+
+    <!-- 4) More Products (CSV-driven) -->
+    <section class="card" aria-labelledby="more-title">
+      <span class="badge">More Products</span>
+      <h2 class="title" id="more-title">Retro Consoles, Handhelds & Controllers (CSV Prices)</h2>
+      <div class="muted">Update <b>catalog.csv</b> to control prices. Missing price → button disabled.</div>
+      <div class="variants" id="moreProducts"></div>
+      <div class="small" id="csvStatus"></div>
     </section>
   </div>
 
@@ -174,7 +165,7 @@ h1{font-size:clamp(22px,3.5vw,34px);margin:0}
 </div>
 
 <script>
-// ===== Product Data =====
+// ===== Existing PS2 products =====
 const usbVariants = [
   { v:'64GB PD', top: 999, opt:1099 },
   { v:'128GB PD', top:1499, opt:1649 },
@@ -192,17 +183,53 @@ const comboVariants = [
   { v:'500GB SSD',top:4699, opt:5149, count:175 },
 ];
 
-function fmt(n){return `₹${Number(n).toLocaleString('en-IN')}`;}
-function link(prefill){
-  const q = new URLSearchParams(prefill).toString();
-  return `order-prefill.html?${q}`;
-}
+// ===== New catalog definitions (names & variants only; prices via CSV) =====
+const productDefs = [
+  { name:'Gamestick Lite Pandora Mini M8', variants:['64GB'] },
+  { name:'Gamestick Pro Pandora Pro M15', variants:['64GB'] },
+  { name:'Gamestick GD10 vayava', variants:['64GB','128GB'] },
+  { name:'Gamestick M33 vayava', variants:['64GB','128GB','256GB'] },
+  { name:'Gamestick M22 vayava', variants:['64GB','128GB','256GB'] },
+  { name:'Gamestick M55', variants:['64GB','128GB','256GB'] },
+  { name:'Gamestick M66', variants:['64GB','128GB','256GB'] },
+  { name:'Gamestick GS5 Mini', variants:['64GB','128GB','256GB'] },
+  { name:'Gamestick GD30v2 vayava', variants:['64GB','128GB','256GB'] },
+  { name:'Gamestick GD30v3 vayava', variants:['64GB','128GB','256GB'] },
+  { name:'Gamestick GD35 vayava', variants:['64GB','128GB','256GB'] },
+  { name:'Gamestick GD35 GTA Sanandreas Edition vayava', variants:['64GB','128GB','256GB'] },
+  { name:'Gamestick M88', variants:['64GB','128GB','256GB'] },
+  { name:'Gamebox Plus G10 Vayava', variants:['64GB','128GB'] },
+  { name:'Gamebox Plus G10 Ultimate Edition Vayava', variants:['64GB','128GB'] },
+  { name:'Gamebox G11Pro Vayava', variants:['64GB','128GB','256GB'] },
+  { name:'Gamebox G11Pro Special Edition Vayava', variants:['64GB','128GB','256GB'] },
+  { name:'Gamebox G11Pro Ultimate Edition Vayava', variants:['64GB','128GB','256GB'] },
+  { name:'R35S', variants:['64GB'] },
+  { name:'R36S', variants:['64GB'] },
+  { name:'R36 ULTRA', variants:['64GB'] },
+  { name:'SUP X7M', variants:['SINGLE','DUAL'] },
+  { name:'BLACK HAWK', variants:['SINGLE'] },
+  { name:'BLACK GAMEPAD CONTROLLER WIRELESS FOR PS4 COMPATIBLE', variants:['STD'] },
+  { name:'P5 GAMEPAD CONTROLLER WIRELESS FOR PS4 COMPATIBLE', variants:['STD'] },
+  { name:'P5 SPIDER MAN THEME CONTROLLER WIRELESS FOR PS4 COMPATIBLE', variants:['STD'] },
+  { name:'BLACK WIRE CONTROLLER FOR PS2 COMPATIBLE', variants:['STD'] },
+  { name:'WIRELESS CONTROLLER FOR PS2 COMPATIBLE', variants:['STD'] },
+  { name:'BLACK WIRELESS CONTROLLER FOR PS3 COMPATIBLE', variants:['STD'] },
+  { name:'PS2 SLIM', variants:['64GB','128GB','256GB','500GB'] },
+  { name:'PS3 SUPERSLIM', variants:['500GB'] },
+  { name:'PS3 SLIM', variants:['500GB'] },
+  { name:'XBOX 360', variants:['500GB'] },
+  { name:'PS4 FAT', variants:['500GB','1TB'] },
+  { name:'PS4 SLIM', variants:['500GB','1TB'] },
+  { name:'PS4 PRO', variants:['1TB','2TB'] },
+];
 
-function goPrefill(product, variant, base, pack, allowCod){
-  location.href = link({product,variant,base,pack,allowCod});
-}
+// ===== CSV Price Map =====
+const priceMap = new Map(); // key: `${product}|||${variant}` => price
+function keyFor(p,v){ return `${p}|||${v}`; }
+function fmt(n){ return `₹${Number(n).toLocaleString('en-IN')}`; }
+function goPrefill(product, variant, base, pack){ const q=new URLSearchParams({product,variant,base,pack}); location.href=`order-prefill.html?${q}`; }
 
-// USB renderer
+// Render USB
 (function renderUSB(){
   const box=document.getElementById('usbList'); box.innerHTML='';
   usbVariants.forEach(({v,top,opt})=>{
@@ -211,13 +238,13 @@ function goPrefill(product, variant, base, pack, allowCod){
       <div class="name">${v}</div>
       <div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
       <div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>`;
-    row.querySelector('.btn.buy').onclick=()=>goPrefill('USB for PS2 (Game-Loaded)', v, top, 'Top', true);
-    row.querySelector('.btn.alt').onclick=()=>goPrefill('USB for PS2 (Game-Loaded)', v+' — Optional', opt, 'Optional', true);
+    row.querySelector('.btn.buy').onclick=()=>goPrefill('USB for PS2 (Game-Loaded)', v, top, 'Top');
+    row.querySelector('.btn.alt').onclick=()=>goPrefill('USB for PS2 (Game-Loaded)', v+' — Optional', opt, 'Optional');
     box.appendChild(row);
   });
 })();
 
-// Combo renderer
+// Render Combo
 (function renderCombo(){
   const box=document.getElementById('comboList'); box.innerHTML='';
   comboVariants.forEach(({v,top,opt,count})=>{
@@ -226,11 +253,77 @@ function goPrefill(product, variant, base, pack, allowCod){
       <div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
       <div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
       <div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>`;
-    row.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v, top, 'Top', true);
-    row.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — Optional', opt, 'Optional', true);
+    row.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v, top, 'Top');
+    row.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — Optional', opt, 'Optional');
     box.appendChild(row);
   });
 })();
+
+// Render More Products (after CSV loaded)
+function renderMore(){
+  const box=document.getElementById('moreProducts'); box.innerHTML='';
+  productDefs.forEach(prod=>{
+    const head=document.createElement('div'); head.className='row';
+    head.innerHTML=`<div class="name">${prod.name}</div><div></div><div></div>`;
+    box.appendChild(head);
+
+    prod.variants.forEach(variant=>{
+      const k=keyFor(prod.name, variant);
+      const price = priceMap.has(k) ? Number(priceMap.get(k)) : null;
+
+      const row=document.createElement('div'); row.className='row';
+      if(price!=null && !Number.isNaN(price)){
+        row.innerHTML=`
+          <div class="name">— ${variant}</div>
+          <div></div>
+          <div class="cta"><button class="btn buy">🟢 ${fmt(price)} • Top</button></div>`;
+        row.querySelector('.btn.buy').onclick=()=>goPrefill(prod.name, variant, price, 'Top');
+      }else{
+        row.innerHTML=`
+          <div class="name">— ${variant}</div>
+          <div class="pill">Set price in CSV</div>
+          <div class="cta"><button class="btn buy" disabled>Price missing</button></div>`;
+      }
+      box.appendChild(row);
+    });
+  });
+}
+
+// Load CSV (catalog.csv) → fill priceMap → render more products
+function loadCSV(){
+  const statusEl=document.getElementById('csvStatus');
+  fetch('catalog.csv')
+    .then(r=>{
+      if(!r.ok) throw new Error('catalog.csv not found');
+      statusEl.textContent='catalog.csv loaded';
+      return r.text();
+    })
+    .then(txt=>{
+      const lines=txt.split(/\r?\n/).filter(Boolean);
+      const header = lines.shift();
+      const cols = header.split(',').map(s=>s.trim().toLowerCase());
+      const pi=cols.indexOf('product'), vi=cols.indexOf('variant'), pri=cols.indexOf('price');
+      if(pi<0||vi<0||pri<0) throw new Error('CSV must have headers: product,variant,price');
+      lines.forEach(line=>{
+        const parts=line.split(',');
+        if(parts.length<3) return;
+        const product=parts[pi]?.trim();
+        const variant=parts[vi]?.trim();
+        const price=parts[pri]?.trim();
+        if(product && variant && price && !Number.isNaN(Number(price))){
+          priceMap.set(keyFor(product,variant), Number(price));
+        }
+      });
+      renderMore();
+    })
+    .catch(err=>{
+      statusEl.textContent='catalog.csv not found or invalid. Buttons for CSV products will be disabled until you add it.';
+      renderMore(); // still render names/variants with disabled buttons
+    });
+}
+
+// Init
+loadCSV();
 </script>
 </body>
 </html>
