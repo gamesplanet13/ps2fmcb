@@ -439,12 +439,12 @@ function sendWhatsApp(){
     "",
     `Product: ${document.getElementById("product").value}`,
     `Variant: ${document.getElementById("variant").value}`,
-    `Base Price (only product): ${rs(base)}`,
+    `Base Price: ${rs(base)}`,
     addons ? `Add-ons Total (extras): ${rs(addons)}` : null,
     `Subtotal (Base + Add-ons): ${rs(subtotal)}`,
-    (mode==="prepaid" && discountValue>0) ? `Discount (Prepaid coupon): -${rs(discountValue)}` : null,
-    (mode==="prepaid") ? `Amount Paid (now): ${rs(paid)}`
-                       : `COD Charges: ${rs(codc)}\nAmount Paid / Advance (now): ${rs(paid)}\nRest on Delivery: ${rs(rest)}`,
+    (mode==="prepaid" && discountValue>0) ? `Discount: -${rs(discountValue)}` : null,
+    (mode==="prepaid") ? `Amount Paid: ${rs(paid)}`
+                       : `COD Charges: ${rs(codc)}\nAmount Paid: ${rs(paid)}\nRest on Delivery: ${rs(rest)}`,
     "",
     `📏 Distance: ${document.getElementById("distance").value}`,
     `⏳ ETA: ${document.getElementById("etaText").value}`,
