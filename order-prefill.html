@@ -5,20 +5,28 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Games Planet – Quick Order (Prefilled)</title>
 <style>
-  :root{--bg:#0b1020;--card:#121a33;--muted:#9fb0d3;--text:#eaf1ff;--ok:#3ddc84;--warn:#ffd54f;--chip:#1b2447}
+  /* === DAY THEME (Light) === */
+  :root{
+    --bg:#f7f9fc; --card:#ffffff; --muted:#5b6b8a; --text:#0f172a;
+    --ok:#16a34a; --warn:#f59e0b; --chip:#eef2ff; --ring:rgba(99,102,241,.25)
+  }
+  *{box-sizing:border-box}
   body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
-  .wrap{max-width:900px;margin:0 auto;padding:22px 16px 60px}
+  .wrap{max-width:900px;margin:0 auto;padding:22px 16px 80px}
   h1{margin:0 0 6px}
   .sub{color:var(--muted);margin-bottom:18px}
-  .card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0;position:relative}
-  .badge{display:inline-block;background:var(--chip);border-radius:999px;padding:6px 10px;font-weight:700;margin-right:6px;color:var(--muted)}
+  .card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0;position:relative;box-shadow:0 10px 30px rgba(2,6,23,.06), 0 1px 2px rgba(2,6,23,.04)}
+  .badge{display:inline-block;background:var(--chip);border-radius:999px;padding:6px 10px;font-weight:700;margin-right:6px;color:#334155;border:1px solid #e5e7eb}
   .badge.right{position:absolute;top:16px;right:16px}
-  .mode-pre{background:#173c2a;color:#8df0b6}
-  .mode-cod{background:#3a2a10;color:#ffd991}
-  .pack-top{background:#1e2c60;color:#9db7ff}
-  .pack-opt{background:#2d2748;color:#dab6ff}
-  input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0e1530;color:#fff}
-  input[readonly], textarea[readonly]{opacity:.95}
+  .mode-pre{background:#e9fbe9;color:#065f46;border-color:#bbf7d0}
+  .mode-cod{background:#fff7ed;color:#8a4b02;border-color:#fed7aa}
+  .pack-top{background:#eef2ff;color:#3730a3}
+  .pack-opt{background:#f3e8ff;color:#6b21a8}
+  input,select,textarea{
+    width:100%;padding:10px;border-radius:10px;border:1px solid #e5e7eb;background:#ffffff;color:#111827;
+    box-shadow:0 1px 0 rgba(0,0,0,.02) inset
+  }
+  input[readonly], textarea[readonly]{background:#fafafa}
   .label{font-size:12px;color:var(--muted);margin:10px 0 4px}
   .row{display:grid;grid-template-columns:1.6fr .9fr .9fr .4fr;gap:8px;align-items:center;margin-bottom:8px}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -26,9 +34,9 @@
   .inline{display:flex;gap:10px;flex-wrap:wrap}
   .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
   button,a.btn{border:0;padding:11px 14px;border-radius:12px;font-weight:800;cursor:pointer;text-decoration:none}
-  .act{background:var(--ok);color:#04190b}
-  .alt{background:var(--warn);color:#2b2100}
-  .ghost{background:transparent;border:1px solid rgba(255,255,255,.2);color:#fff}
+  .act{background:var(--ok);color:#fff}
+  .alt{background:var(--warn);color:#1f2937}
+  .ghost{background:#f8fafc;border:1px solid #e5e7eb;color:#111827}
   .hint{color:var(--muted);font-size:13px;margin-top:6px;white-space:pre-line}
   @media(max-width:900px){.grid3{grid-template-columns:1fr 1fr}}
   @media(max-width:720px){.grid2,.grid3{grid-template-columns:1fr}}
@@ -166,7 +174,7 @@
       <button id="btn-prepaid" class="ghost" onclick="setMode('prepaid')">🟢 Prepaid</button>
       <button id="btn-cod" class="ghost" onclick="setMode('cod')">🔴 COD</button>
     </div>
-    <div class="hint" id="codNote">COD ₹1498 se upar ke product pe he • COD charges = ₹40/₹1000 (Wireless Gamepad added ⇒ ₹50/₹1000)</div>
+    <div class="hint" id="codNote">COD rules: ≥ ₹1899 → ₹0 • ₹1399–₹1898 → ₹99 • < ₹1399 → No COD</div>
   </div>
 
   <!-- Coupon (Prepaid only) -->
@@ -244,15 +252,27 @@
     <a id="payNow" class="btn act" href="#" target="_blank" rel="noopener">Pay Now</a>
     <button class="alt" onclick="sendWhatsApp()">Send on WhatsApp</button>
   </div>
+
+  <!-- QR Code Section -->
+  <div class="card" style="text-align:center; margin-top:20px;">
+    <span class="badge">Scan & Pay</span>
+    <div style="margin:15px 0;">
+      <img src="Qr (1).jpg" alt="QR Code" style="max-width:260px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.15);" />
+    </div>
+    <a href="Qr (1).jpg" download="GPZ_QR.jpg" class="btn act">⬇️ Download QR</a>
+  </div>
 </div>
 
 <script>
 const WHATSAPP_PHONE="917983624797";
 const UPI_ID="paytmqr5hyx5o@ptys";
 const UPI_NAME="Surender Kaur";
-const COD_MIN_SUBTOTAL = 1498;
-const COD_RATE_DEFAULT = 40; // per 1000
-const COD_RATE_WITH_WIRELESS = 50; // per 1000 when Wireless Gamepad present
+
+/* === NEW COD RULES === */
+const COD_ALLOW_MIN = 1399;     // below this → No COD
+const COD_FREE_THRESHOLD = 1899; // ≥ this → COD charges 0
+const COD_MID_CHARGE = 99;       // between 1399 and 1898 → ₹99
+
 let discountValue=0,mode="prepaid";
 
 /* ===== Badges ===== */
@@ -278,7 +298,7 @@ function addRow(name="",price="",qty=1){
     <input class="i-name" value="${name}" readonly>
     <input class="i-price" type="number" value="${Number(price)||0}" readonly>
     <input class="i-qty" type="number" min="1" step="1" value="${Number(qty)||1}">
-    <button class="ghost" aria-label="Remove add-on" onclick="this.parentNode.remove(); recomputeAddons()">✕</button>`;
+    <button class="ghost" aria-label="Remove add-on" onclick="this.parentNode.remove(); recomputeAddons(); updatePreview()">✕</button>`;
   row.querySelector(".i-qty").addEventListener("input",()=>{recomputeAddons(); updatePreview();});
   box.appendChild(row);
   recomputeAddons();
@@ -321,26 +341,7 @@ function applyCoupon(){
   }else{
     discountValue=0; document.getElementById("couponNote").innerText="❌ Invalid coupon";
   }
-  computeTotals();
-  updatePreview();
-}
-
-/* ===== Mode toggle ===== */
-function setMode(m){
-  // if trying COD below threshold → block with note
-  if(m==="cod" && !codEligible()){
-    alert("COD ₹1498 se upar ke product pe he.");
-    return;
-  }
-  mode=m;
-  document.getElementById("btn-prepaid").className=(m==="prepaid"?"ghost act":"ghost");
-  document.getElementById("btn-cod").className=(m==="cod"?"ghost act":"ghost");
-  document.getElementById("couponCard").style.display=(m==="prepaid")?"block":"none";
-  document.getElementById("prepaidBlock").style.display=(m==="prepaid")?"block":"none";
-  document.getElementById("codBlock").style.display=(m==="cod")?"block":"none";
-  setModeBadge();
-  computeTotals();
-  updatePreview();
+  computeTotals(); updatePreview();
 }
 
 /* ===== Add-ons sum & flags ===== */
@@ -353,54 +354,53 @@ function sumAddons(){
   });
   return total;
 }
-function hasWirelessGamepad(){
-  let flag=false;
-  document.querySelectorAll("#items .addon-row").forEach(r=>{
-    const name=(r.querySelector(".i-name").value||"").toLowerCase();
-    const q=Number(r.querySelector(".i-qty").value||0);
-    if(q>0 && name.includes("wireless gamepad")) flag=true;
-  });
-  return flag;
-}
 function getSubtotal(){
   const base=+document.getElementById("basePrice").value||0;
   return base + sumAddons();
 }
 
-/* ===== COD gating ===== */
+/* ===== COD gating & notes (NEW RULES) ===== */
 function codEligible(){
   const sub=getSubtotal();
-  return sub >= COD_MIN_SUBTOTAL;
+  return sub >= COD_ALLOW_MIN;
+}
+function currentCodCharge(sub){
+  if(sub >= COD_FREE_THRESHOLD) return 0;
+  if(sub >= COD_ALLOW_MIN) return COD_MID_CHARGE;
+  return null; // means not allowed
 }
 function updateCodButton(){
   const codBtn=document.getElementById("btn-cod");
+  const sub=getSubtotal();
   const eligible=codEligible();
+  const charge=currentCodCharge(sub);
+
   if(!eligible){
     codBtn.setAttribute("disabled","disabled");
-    document.getElementById("codNote").textContent="COD ₹1498 se upar ke product pe he • COD charges = ₹40/₹1000 (Wireless Gamepad added ⇒ ₹50/₹1000)";
+    document.getElementById("codNote").textContent="COD not available below ₹1399";
     if(mode==="cod"){ mode="prepaid"; setModeBadge(); document.getElementById("prepaidBlock").style.display="block"; document.getElementById("codBlock").style.display="none"; }
   }else{
     codBtn.removeAttribute("disabled");
-    // also refresh note to show rate currently applicable
-    const rate = hasWirelessGamepad()? COD_RATE_WITH_WIRELESS : COD_RATE_DEFAULT;
-    document.getElementById("codNote").textContent=`COD available • Charges = ₹${rate}/₹1000 (subtotal)`;
+    document.getElementById("codNote").textContent = (charge===0)
+      ? "COD charges: ₹0 (Subtotal ≥ ₹1899)"
+      : "COD charges: ₹99 (Subtotal ₹1399–₹1898)";
   }
 }
 
-/* ===== COD charges ===== */
-function computeCodCharge(subtotal){
-  if(mode!=="cod") return 0;
-  const rate = hasWirelessGamepad()? COD_RATE_WITH_WIRELESS : COD_RATE_DEFAULT;
-  const slabs = Math.ceil(subtotal/1000);
-  return slabs * rate;
-}
-
-/* ===== Recompute chain ===== */
-function recomputeAddons(){
-  const addons = sumAddons();
-  document.getElementById("addonsTotal").value = addons;
-  updateCodButton();
-  computeTotals();
+/* ===== Mode toggle ===== */
+function setMode(m){
+  if(m==="cod" && !codEligible()){
+    alert("Subtotal ₹1399 se niche hai — COD allowed nahi.");
+    return;
+  }
+  mode=m;
+  document.getElementById("btn-prepaid").className=(m==="prepaid"?"ghost act":"ghost");
+  document.getElementById("btn-cod").className=(m==="cod"?"ghost act":"ghost");
+  document.getElementById("couponCard").style.display=(m==="prepaid")?"block":"none";
+  document.getElementById("prepaidBlock").style.display=(m==="prepaid")?"block":"none";
+  document.getElementById("codBlock").style.display=(m==="cod")?"block":"none";
+  setModeBadge();
+  computeTotals(); updatePreview();
 }
 
 /* ===== Totals ===== */
@@ -411,9 +411,9 @@ function computeTotals(){
   document.getElementById("addonsTotal").value = addons;
   document.getElementById("subtotal").value = subtotal;
 
-  // Rules note (informational)
-  const rate = hasWirelessGamepad()? COD_RATE_WITH_WIRELESS : COD_RATE_DEFAULT;
-  document.getElementById("ruleNote").innerText = `Subtotal determines COD. COD threshold: ₹${COD_MIN_SUBTOTAL}. Charges: ₹${rate}/₹1000 (subtotal). Prepaid delivery free.`;
+  // Rule note (info)
+  document.getElementById("ruleNote").innerText =
+    "COD rules: ≥ ₹1899 → ₹0 • ₹1399–₹1898 → ₹99 • < ₹1399 → No COD. Prepaid delivery free.";
 
   updateCodButton();
 
@@ -432,9 +432,10 @@ function computeTotals(){
   }else{
     document.getElementById("prepaidBlock").style.display="none";
     document.getElementById("codBlock").style.display="block";
-    codC = computeCodCharge(subtotal);
+    const charge = currentCodCharge(subtotal);
+    codC = (charge===null)?0:charge;
     document.getElementById("codCharges").value = codC;
-    paid = Math.max(500, Math.ceil((subtotal + codC) * 0.10));
+    paid = Math.max(500, Math.ceil((subtotal + codC) * 0.10)); // your existing advance rule
     rest = Math.max(0, subtotal + codC - paid);
     document.getElementById("amountPaid_cod").value = paid;
     document.getElementById("restAmount").value = rest;
@@ -442,7 +443,7 @@ function computeTotals(){
 
   const note=(mode==="prepaid")?"Prepaid for Games Planet Order":"Advance for Games Planet Order";
   document.getElementById("payNow").href = upiLink(paid, note);
-  // update previews on every totals recompute
+
   updatePreview();
 }
 
@@ -467,7 +468,7 @@ function productWithAddons(){
   return parts.length ? `${baseName} + ${parts.join(", ")}` : baseName;
 }
 
-/* ===== Message builders (common) ===== */
+/* ===== Message builders ===== */
 function buildCommonTop(subtotal){
   const variant = document.getElementById("variant").value || "";
   return [
@@ -488,7 +489,6 @@ function buildCommonTop(subtotal){
     `Base Price: ${rs(subtotal)}`
   ].filter(Boolean);
 }
-
 function buildTail(modeLabel){
   return [
     "",
@@ -497,7 +497,6 @@ function buildTail(modeLabel){
     `📅 Estimated Delivery: ${document.getElementById("dateRange").value}`
   ];
 }
-
 function buildWhatsAppLines(forMode){
   const subtotal = getSubtotal();
   const linesTop = buildCommonTop(subtotal);
@@ -527,7 +526,7 @@ function buildWhatsAppLines(forMode){
   }
 }
 
-/* ===== WhatsApp send (uses builder) ===== */
+/* ===== WhatsApp send ===== */
 function sendWhatsApp(){
   const lines = buildWhatsAppLines(mode);
   window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(lines.join("\n"))}`,'_blank','noopener,noreferrer');
@@ -548,28 +547,27 @@ function updatePreview(){
   if(p.has("pack")) setPackBadge(p.get("pack"));
 
   document.getElementById("orderId").value = orderIdNow();
-  // default mode prepaid
-  setMode("prepaid");
-  // initialize numbers & COD gating
+  setMode("prepaid");                      // default mode
   document.getElementById("addonsTotal").value = 0;
   updateCodButton();
   computeTotals();
   updatePreview();
 })();
-
 </script>
 
 <!-- Pincode / ETA -->
 <script>
 let pincodeLatLng={};
-fetch('pincode_data.json').then(r=>r.json()).then(j=>pincodeLatLng=j);
+fetch('pincode_data.json').then(r=>r.json()).then(j=>pincodeLatLng=j); /* local coords json */
 
+/* Haversine distance (km) */
 function haversine(lat1,lon1,lat2,lon2){
   const R=6371;
   const dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
   const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
   return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
+/* ETA buckets by distance */
 function etaByDist(d){
   if(d<=30)return"1 day";
   if(d<=60)return"1-2 days";
@@ -582,7 +580,6 @@ function etaByDist(d){
   if(d<=3000)return"6–10 days";
   return"8–12 days";
 }
-
 /* Full formatted date range with weekday, month, year */
 function dateRange(eta){
   const n=(eta.match(/\d+/g)||[]).map(Number);
@@ -605,7 +602,7 @@ document.getElementById("pincode").addEventListener("input",function(){
         const sel=document.getElementById("postoffice");sel.innerHTML='<option value="">Select Post Office</option>';
         data[0].PostOffice.forEach(p=>{const o=document.createElement("option");o.value=p.Name;o.text=p.Name;sel.appendChild(o);});
         if(pincodeLatLng[pin]){
-          const baseLat=28.8,baseLng=79.0; // near 244901
+          const baseLat=28.8,baseLng=79.0; // near 244901 (Rampur)
           const {lat,lng}=pincodeLatLng[pin];
           const d=Math.round(haversine(baseLat,baseLng,lat,lng));
           const eta=etaByDist(d);
@@ -614,18 +611,17 @@ document.getElementById("pincode").addEventListener("input",function(){
           document.getElementById("etaText").value=eta;
           document.getElementById("dateRange").value=rng;
           document.getElementById("deliveryEstimate").innerText=`📍 Distance: ${d} km\n⏳ ETA: ${eta}\n📅 Delivery: ${rng}`;
-          updatePreview();
+          updatePreview(); // pincode enter hote hi previews update
         }
       }
     });
   }
 });
 
-/* Keep previews live when user types */
+/* Live preview updates while typing */
 ["name","mobile","altMobile","email","address","landmark","pincode","state","city","product","variant","basePrice"]
 .forEach(id=>{const el=document.getElementById(id); if(el){ el.addEventListener("input",updatePreview); }});
 document.getElementById("postoffice").addEventListener("change",updatePreview);
-
 </script>
 </body>
 </html>
