@@ -8,7 +8,7 @@
   /* === DAY THEME (Light) === */
   :root{
     --bg:#f7f9fc; --card:#ffffff; --muted:#5b6b8a; --text:#0f172a;
-    --ok:#16a34a; --warn:#f59e0b; --chip:#eef2ff; --ring:rgba(99,102,241,.25)
+    --ok:#16a34a; --warn:#f59e0b; --chip:#eef2ff;
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
@@ -38,6 +38,11 @@
   .alt{background:var(--warn);color:#1f2937}
   .ghost{background:#f8fafc;border:1px solid #e5e7eb;color:#111827}
   .hint{color:var(--muted);font-size:13px;margin-top:6px;white-space:pre-line}
+
+  /* 👇 In lines ko page par hide karo */
+  #ruleNote,
+  #addonsHelp { display: none !important; }
+
   @media(max-width:900px){.grid3{grid-template-columns:1fr 1fr}}
   @media(max-width:720px){.grid2,.grid3{grid-template-columns:1fr}}
 </style>
@@ -86,7 +91,15 @@
         <input id="pincode" placeholder="Pincode" inputmode="numeric" maxlength="6" autocomplete="postal-code">
       </div>
     </div>
+
     <div id="deliveryEstimate" class="hint"></div>
+
+    <!-- Mini Preview under pincode -->
+    <div id="miniPreview" class="hint" style="margin-top:8px; display:none">
+      <div>🟢 <b>Prepaid</b> — ⏳ ETA: <span id="preEta">—</span> • 📅 Delivery: <span id="preRange">—</span></div>
+      <div>🔴 <b>COD</b> — ⏳ ETA: <span id="codEta">—</span> • 📅 Delivery: <span id="codRange">—</span></div>
+    </div>
+
     <div class="grid3" style="margin-top:8px">
       <div>
         <div class="label">State</div>
@@ -164,7 +177,7 @@
         <button id="addAddonBtn" class="ghost" onclick="addAddonFromPicker()" disabled>Add this to your order</button>
       </div>
     </div>
-    <div class="hint">Add-ons are optional. Pick from dropdown → set Qty → “Add this to your order”. Names & prices fixed; only quantity editable.</div>
+    <div class="hint" id="addonsHelp">Add-ons are optional. Pick from dropdown → set Qty → “Add this to your order”. Names & prices fixed; only quantity editable.</div>
   </div>
 
   <!-- Payment Mode -->
@@ -174,7 +187,7 @@
       <button id="btn-prepaid" class="ghost" onclick="setMode('prepaid')">🟢 Prepaid</button>
       <button id="btn-cod" class="ghost" onclick="setMode('cod')">🔴 COD</button>
     </div>
-    <div class="hint" id="codNote">COD rules: ≥ ₹1899 → ₹0 • ₹1399–₹1898 → ₹99 • < ₹1399 → No COD</div>
+    <div class="hint" id="codNote">COD rules: ≥ ₹1899 → ₹0 • ₹1399–₹1898 → ₹99 • &lt; ₹1399 → No COD</div>
   </div>
 
   <!-- Coupon (Prepaid only) -->
@@ -194,7 +207,7 @@
 
     <!-- Prepaid only -->
     <div id="prepaidBlock" style="display:none">
-      <div class="label">Discount (Prepaid coupon 5%)</div>
+      <div class="label">Discount (auto per rules)</div>
       <input id="discountAmount" type="number" placeholder="₹ (auto)" readonly>
       <div class="label">Amount Paid (now)</div>
       <input id="amountPaid_pre" type="number" placeholder="₹ (auto)" readonly>
@@ -220,31 +233,16 @@
         <input id="distance" placeholder="(auto)" readonly>
       </div>
       <div>
-        <div class="label">ETA</div>
+        <div class="label">Prepaid ETA</div>
         <input id="etaText" placeholder="(auto)" readonly>
       </div>
       <div>
-        <div class="label">Estimated Delivery</div>
+        <div class="label">Prepaid Estimated Delivery</div>
         <input id="dateRange" placeholder="(auto)" readonly>
       </div>
     </div>
     <div class="label" style="margin-top:8px">Order ID</div>
     <input id="orderId" placeholder="(auto)" readonly>
-  </div>
-
-  <!-- Message Preview (always shows BOTH) -->
-  <div class="card">
-    <span class="badge">Preview</span>
-    <div class="grid2">
-      <div>
-        <div class="label">🟢 Prepaid Preview</div>
-        <textarea id="previewPre" rows="14" readonly></textarea>
-      </div>
-      <div>
-        <div class="label">🔴 COD Preview</div>
-        <textarea id="previewCod" rows="16" readonly></textarea>
-      </div>
-    </div>
   </div>
 
   <!-- Actions -->
@@ -268,10 +266,10 @@ const WHATSAPP_PHONE="917983624797";
 const UPI_ID="paytmqr5hyx5o@ptys";
 const UPI_NAME="Surender Kaur";
 
-/* === NEW COD RULES === */
-const COD_ALLOW_MIN = 1399;     // below this → No COD
-const COD_FREE_THRESHOLD = 1899; // ≥ this → COD charges 0
-const COD_MID_CHARGE = 99;       // between 1399 and 1898 → ₹99
+/* === COD RULES === */
+const COD_ALLOW_MIN = 1399;      // below this → No COD
+const COD_FREE_THRESHOLD = 1899;  // ≥ this → COD charges 0
+const COD_MID_CHARGE = 99;        // between 1399 and 1898 → ₹99
 
 let discountValue=0,mode="prepaid";
 
@@ -298,12 +296,11 @@ function addRow(name="",price="",qty=1){
     <input class="i-name" value="${name}" readonly>
     <input class="i-price" type="number" value="${Number(price)||0}" readonly>
     <input class="i-qty" type="number" min="1" step="1" value="${Number(qty)||1}">
-    <button class="ghost" aria-label="Remove add-on" onclick="this.parentNode.remove(); recomputeAddons(); updatePreview()">✕</button>`;
-  row.querySelector(".i-qty").addEventListener("input",()=>{recomputeAddons(); updatePreview();});
+    <button class="ghost" aria-label="Remove add-on" onclick="this.parentNode.remove(); recomputeAddons()">✕</button>`;
+  row.querySelector(".i-qty").addEventListener("input",()=>{recomputeAddons();});
   box.appendChild(row);
   recomputeAddons();
 }
-
 function addAddonFromPicker(){
   const sel=document.getElementById("addonSelect");
   const opt=sel.selectedOptions[0];
@@ -312,14 +309,11 @@ function addAddonFromPicker(){
   const qty=Number(document.getElementById("addonQty").value||1);
   if(!name){ alert("Please choose an add-on."); return; }
   addRow(name, pr, qty);
-  // reset picker
   document.getElementById("addonQty").value=1;
   sel.value="";
   document.getElementById("addonPrice").value="";
   document.getElementById("addAddonBtn").disabled = true;
-  updatePreview();
 }
-
 document.getElementById("addonSelect").addEventListener("change", e=>{
   const opt=e.target.selectedOptions[0];
   const price=Number(opt?.dataset?.price||0);
@@ -327,24 +321,59 @@ document.getElementById("addonSelect").addEventListener("change", e=>{
   document.getElementById("addAddonBtn").disabled = !opt.value;
 });
 
-/* ===== Coupon (prepaid only) ===== */
+/* ===== Coupon helpers & logic ===== */
+function norm(s){return (s||"").toString().trim().toUpperCase();}
+function getBaseProduct(){ return norm(document.getElementById("product").value); }
+function getVariantGB(){
+  const v = norm(document.getElementById("variant").value) || getBaseProduct();
+  const m = v.match(/(\d+)\s*GB/);
+  return m ? Number(m[1]) : null;
+}
+function isFMCBorUSBCombo(){
+  const p=getBaseProduct();
+  const hasFMCB = p.includes("FMCB");
+  const hasUSB  = p.includes("USB");
+  const hasCOMBO= p.includes("COMBO") || p.includes(" + ");
+  return hasFMCB || hasUSB || hasCOMBO; // any FMCB/USB/Combo qualifies for 5%
+}
+function computeCouponDiscount(subtotal){
+  if(isFMCBorUSBCombo()){
+    return Math.round(subtotal * 0.05);
+  }
+  const gb=getVariantGB();
+  if(gb===64)  return 200;
+  if(gb===128) return 300;
+  if(gb===256) return 500;
+  return 0;
+}
 function applyCoupon(){
   const code=(document.getElementById("couponCode").value||"").trim().toLowerCase();
-  if(code==="gpz2025"){
-    if(mode==="prepaid"){
-      const sub=getSubtotal();
-      discountValue=Math.round(sub*0.05);
-      document.getElementById("couponNote").innerText=`✅ Coupon applied: -₹${discountValue} (5% off)`;
-    }else{
-      discountValue=0; document.getElementById("couponNote").innerText="❌ Coupon only valid on Prepaid";
-    }
-  }else{
-    discountValue=0; document.getElementById("couponNote").innerText="❌ Invalid coupon";
+  if(code!=="gpz2025"){
+    discountValue=0;
+    document.getElementById("couponNote").innerText="❌ Invalid coupon";
+    computeTotals(); return;
   }
-  computeTotals(); updatePreview();
+  if(mode!=="prepaid"){
+    discountValue=0;
+    document.getElementById("couponNote").innerText="❌ Coupon only valid on Prepaid";
+    computeTotals(); return;
+  }
+  const subtotal=getSubtotal();
+  const d=computeCouponDiscount(subtotal);
+  discountValue=Math.max(0, Math.min(d, subtotal));
+  if(isFMCBorUSBCombo()){
+    document.getElementById("couponNote").innerText=`✅ Coupon applied: -₹${discountValue} (5% on FMCB/USB/Combo)`;
+  }else{
+    const gb=getVariantGB();
+    const slab=(gb===64?200:gb===128?300:gb===256?500:0);
+    document.getElementById("couponNote").innerText = slab>0
+      ? `✅ Coupon applied: -₹${slab} (GB slab: ${gb}GB)`
+      : `ℹ️ Coupon applied: ₹0 (no GB slab matched)`;
+  }
+  computeTotals();
 }
 
-/* ===== Add-ons sum & flags ===== */
+/* ===== Add-ons sum & totals helpers ===== */
 function sumAddons(){
   let total=0;
   document.querySelectorAll("#items .addon-row").forEach(r=>{
@@ -358,8 +387,12 @@ function getSubtotal(){
   const base=+document.getElementById("basePrice").value||0;
   return base + sumAddons();
 }
+function recomputeAddons(){
+  document.getElementById("addonsTotal").value = sumAddons();
+  computeTotals();
+}
 
-/* ===== COD gating & notes (NEW RULES) ===== */
+/* ===== COD gating & charges ===== */
 function codEligible(){
   const sub=getSubtotal();
   return sub >= COD_ALLOW_MIN;
@@ -367,7 +400,7 @@ function codEligible(){
 function currentCodCharge(sub){
   if(sub >= COD_FREE_THRESHOLD) return 0;
   if(sub >= COD_ALLOW_MIN) return COD_MID_CHARGE;
-  return null; // means not allowed
+  return null; // not allowed
 }
 function updateCodButton(){
   const codBtn=document.getElementById("btn-cod");
@@ -400,7 +433,7 @@ function setMode(m){
   document.getElementById("prepaidBlock").style.display=(m==="prepaid")?"block":"none";
   document.getElementById("codBlock").style.display=(m==="cod")?"block":"none";
   setModeBadge();
-  computeTotals(); updatePreview();
+  computeTotals();
 }
 
 /* ===== Totals ===== */
@@ -411,9 +444,9 @@ function computeTotals(){
   document.getElementById("addonsTotal").value = addons;
   document.getElementById("subtotal").value = subtotal;
 
-  // Rule note (info)
+  // (Hidden) info text remains for reference but not shown
   document.getElementById("ruleNote").innerText =
-    "COD rules: ≥ ₹1899 → ₹0 • ₹1399–₹1898 → ₹99 • < ₹1399 → No COD. Prepaid delivery free.";
+    "COD rules: ≥ ₹1899 → ₹0 • ₹1399–₹1898 → ₹99 • < ₹1399 → No COD. Coupon (prepaid): FMCB/USB/Combo 5% OR 64GB ₹200 • 128GB ₹300 • 256GB ₹500.";
 
   updateCodButton();
 
@@ -435,7 +468,8 @@ function computeTotals(){
     const charge = currentCodCharge(subtotal);
     codC = (charge===null)?0:charge;
     document.getElementById("codCharges").value = codC;
-    paid = Math.max(500, Math.ceil((subtotal + codC) * 0.10)); // your existing advance rule
+    // Advance: max(₹500, 10% of (subtotal+codC))
+    paid = Math.max(500, Math.ceil((subtotal + codC) * 0.10));
     rest = Math.max(0, subtotal + codC - paid);
     document.getElementById("amountPaid_cod").value = paid;
     document.getElementById("restAmount").value = rest;
@@ -443,8 +477,6 @@ function computeTotals(){
 
   const note=(mode==="prepaid")?"Prepaid for Games Planet Order":"Advance for Games Planet Order";
   document.getElementById("payNow").href = upiLink(paid, note);
-
-  updatePreview();
 }
 
 /* ===== Utils ===== */
@@ -468,74 +500,25 @@ function productWithAddons(){
   return parts.length ? `${baseName} + ${parts.join(", ")}` : baseName;
 }
 
-/* ===== Message builders ===== */
-function buildCommonTop(subtotal){
-  const variant = document.getElementById("variant").value || "";
-  return [
-    `Order ID: ${document.getElementById("orderId").value || orderIdNow()}`,
+/* ===== WhatsApp send (concise) ===== */
+function sendWhatsApp(){
+  const subtotal = getSubtotal();
+  const lines = [
+    "Games Planet Order",
+    "",
     `Name: ${document.getElementById("name").value}`,
     `Mobile: ${document.getElementById("mobile").value}`,
-    `Alt Mobile: ${document.getElementById("altMobile").value}`,
-    `Email: ${document.getElementById("email").value}`,
     `Address: ${document.getElementById("address").value}`,
-    `Landmark: ${document.getElementById("landmark").value}`,
     `Pincode: ${document.getElementById("pincode").value}`,
-    `State: ${document.getElementById("state").value}`,
-    `District/City: ${document.getElementById("city").value}`,
-    `Post office: ${document.getElementById("postoffice").value}`,
     "",
     `Product: ${productWithAddons()}`,
-    variant ? `Variant: ${variant}` : null,
-    `Base Price: ${rs(subtotal)}`
-  ].filter(Boolean);
-}
-function buildTail(modeLabel){
-  return [
+    `Subtotal: ${rs(subtotal)}`,
     "",
     `📏 Distance: ${document.getElementById("distance").value}`,
-    `⏳ ${modeLabel} ETA: ${document.getElementById("etaText").value}`,
-    `📅 Estimated Delivery: ${document.getElementById("dateRange").value}`
+    `⏳ ETA: ${document.getElementById("etaText").value}`,
+    `📅 Delivery: ${document.getElementById("dateRange").value}`
   ];
-}
-function buildWhatsAppLines(forMode){
-  const subtotal = getSubtotal();
-  const linesTop = buildCommonTop(subtotal);
-  if(forMode==="prepaid"){
-    const paid = +document.getElementById("amountPaid_pre").value||0;
-    const discLine = (discountValue>0 ? `Discount Applied: -${rs(discountValue)}` : `Discount Applied:`);
-    return [
-      "🟢 Prepaid Order on WhatsApp",
-      "",
-      ...linesTop,
-      discLine,
-      `Amount paid: ${rs(paid)}`,
-      ...buildTail("Prepaid Order")
-    ];
-  }else{
-    const paid = +document.getElementById("amountPaid_cod").value||0;
-    const rest = +document.getElementById("restAmount").value||0;
-    return [
-      "🔴 COD Order on WhatsApp",
-      "",
-      ...linesTop,
-      `Discount Applied:`,
-      `Amount Paid: ${rs(paid)}`,
-      `Rest on Delivery: ${rs(rest)}`,
-      ...buildTail("COD Order")
-    ];
-  }
-}
-
-/* ===== WhatsApp send ===== */
-function sendWhatsApp(){
-  const lines = buildWhatsAppLines(mode);
   window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(lines.join("\n"))}`,'_blank','noopener,noreferrer');
-}
-
-/* ===== Preview updater (always both) ===== */
-function updatePreview(){
-  document.getElementById("previewPre").value = buildWhatsAppLines("prepaid").join("\n");
-  document.getElementById("previewCod").value = buildWhatsAppLines("cod").join("\n");
 }
 
 /* ===== Prefill from URL ===== */
@@ -547,16 +530,13 @@ function updatePreview(){
   if(p.has("pack")) setPackBadge(p.get("pack"));
 
   document.getElementById("orderId").value = orderIdNow();
-  setMode("prepaid");                      // default mode
+  setMode("prepaid");
   document.getElementById("addonsTotal").value = 0;
   updateCodButton();
   computeTotals();
-  updatePreview();
 })();
-</script>
 
-<!-- Pincode / ETA -->
-<script>
+/* ====== ETA / PINCODE ====== */
 let pincodeLatLng={};
 fetch('pincode_data.json').then(r=>r.json()).then(j=>pincodeLatLng=j); /* local coords json */
 
@@ -567,7 +547,7 @@ function haversine(lat1,lon1,lat2,lon2){
   const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
   return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
-/* ETA buckets by distance */
+/* ETA buckets by distance (Prepaid) */
 function etaByDist(d){
   if(d<=30)return"1 day";
   if(d<=60)return"1-2 days";
@@ -580,13 +560,27 @@ function etaByDist(d){
   if(d<=3000)return"6–10 days";
   return"8–12 days";
 }
-/* Full formatted date range with weekday, month, year */
-function dateRange(eta){
+/* Parse ETA → min/max days */
+function parseEta(eta){
   const n=(eta.match(/\d+/g)||[]).map(Number);
-  if(!n.length)return"";
-  const min=Math.min(...n),max=Math.max(...n);
-  const s=new Date(),e=new Date();
-  s.setDate(s.getDate()+min); e.setDate(e.getDate()+max);
+  if(!n.length) return {min:0,max:0};
+  if(n.length===1) return {min:n[0],max:n[0]};
+  return {min:Math.min(...n), max:Math.max(...n)};
+}
+/* After 7 PM (Mon–Fri) → start from next day */
+function dayStartOffset(){
+  const now=new Date();
+  const dow=now.getDay(); // 0=Sun
+  const after7 = now.getHours()>=19;
+  const weekday = dow>=1 && dow<=5;
+  return (weekday && after7) ? 1 : 0;
+}
+/* Full formatted date range with weekday, month, year */
+function formatDateRange(minDays,maxDays){
+  const offs=dayStartOffset();
+  const s=new Date(), e=new Date();
+  s.setDate(s.getDate()+minDays+offs);
+  e.setDate(e.getDate()+maxDays+offs);
   const opts={weekday:"long", day:"2-digit", month:"long", year:"numeric"};
   return `${s.toLocaleDateString("en-IN",opts)} – ${e.toLocaleDateString("en-IN",opts)}`;
 }
@@ -605,23 +599,46 @@ document.getElementById("pincode").addEventListener("input",function(){
           const baseLat=28.8,baseLng=79.0; // near 244901 (Rampur)
           const {lat,lng}=pincodeLatLng[pin];
           const d=Math.round(haversine(baseLat,baseLng,lat,lng));
-          const eta=etaByDist(d);
-          const rng=dateRange(eta);
+          const eta=etaByDist(d);                 // prepaid ETA bucket
+          const pre=parseEta(eta);
+          const preRangeFull = formatDateRange(pre.min, pre.max);
+
+          // COD = Prepaid +2 to +3 days
+          const cod={min: pre.min+2, max: pre.max+3};
+          const codEtaText = (cod.min===cod.max) ? `${cod.min} days` : `${cod.min}–${cod.max} days`;
+          const codRangeFull = formatDateRange(cod.min, cod.max);
+
+          // Fill meta (prepaid kept in original fields)
           document.getElementById("distance").value=`${d} km`;
           document.getElementById("etaText").value=eta;
-          document.getElementById("dateRange").value=rng;
-          document.getElementById("deliveryEstimate").innerText=`📍 Distance: ${d} km\n⏳ ETA: ${eta}\n📅 Delivery: ${rng}`;
-          updatePreview(); // pincode enter hote hi previews update
+          document.getElementById("dateRange").value=preRangeFull;
+
+          // Hidden fields (in case needed elsewhere)
+          if(!document.getElementById("etaTextCod")){
+            const h1=document.createElement("input"); h1.type="hidden"; h1.id="etaTextCod";
+            const h2=document.createElement("input"); h2.type="hidden"; h2.id="dateRangeCOD";
+            document.body.appendChild(h1); document.body.appendChild(h2);
+          }
+          document.getElementById("etaTextCod").value = codEtaText;
+          document.getElementById("dateRangeCOD").value = codRangeFull;
+
+          // Mini preview under pincode
+          document.getElementById("deliveryEstimate").innerText=`📍 Distance: ${d} km\n⏳ Prepaid ETA: ${eta}\n📅 Prepaid Delivery: ${preRangeFull}`;
+          document.getElementById("preEta").textContent = eta;
+          document.getElementById("preRange").textContent = preRangeFull;
+          document.getElementById("codEta").textContent = codEtaText;
+          document.getElementById("codRange").textContent = codRangeFull;
+          document.getElementById("miniPreview").style.display="block";
         }
       }
     });
   }
 });
 
-/* Live preview updates while typing */
+/* Live updates that might affect totals/eligibility */
 ["name","mobile","altMobile","email","address","landmark","pincode","state","city","product","variant","basePrice"]
-.forEach(id=>{const el=document.getElementById(id); if(el){ el.addEventListener("input",updatePreview); }});
-document.getElementById("postoffice").addEventListener("change",updatePreview);
+.forEach(id=>{const el=document.getElementById(id); if(el){ el.addEventListener("input",()=>{ if(id==="product"||id==="variant"){ const code=(document.getElementById("couponCode").value||"").trim().toLowerCase(); if(code==="gpz2025" && mode==="prepaid") applyCoupon(); } }); }});
+document.getElementById("postoffice").addEventListener("change",()=>{});
 </script>
 </body>
 </html>
