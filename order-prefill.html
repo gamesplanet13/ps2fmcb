@@ -224,6 +224,21 @@
     <input id="orderId" placeholder="(auto)" readonly>
   </div>
 
+  <!-- Message Preview (always shows BOTH) -->
+  <div class="card">
+    <span class="badge">Preview</span>
+    <div class="grid2">
+      <div>
+        <div class="label">🟢 Prepaid Preview</div>
+        <textarea id="previewPre" rows="14" readonly></textarea>
+      </div>
+      <div>
+        <div class="label">🔴 COD Preview</div>
+        <textarea id="previewCod" rows="16" readonly></textarea>
+      </div>
+    </div>
+  </div>
+
   <!-- Actions -->
   <div class="btns">
     <a id="payNow" class="btn act" href="#" target="_blank" rel="noopener">Pay Now</a>
@@ -264,7 +279,7 @@ function addRow(name="",price="",qty=1){
     <input class="i-price" type="number" value="${Number(price)||0}" readonly>
     <input class="i-qty" type="number" min="1" step="1" value="${Number(qty)||1}">
     <button class="ghost" aria-label="Remove add-on" onclick="this.parentNode.remove(); recomputeAddons()">✕</button>`;
-  row.querySelector(".i-qty").addEventListener("input",recomputeAddons);
+  row.querySelector(".i-qty").addEventListener("input",()=>{recomputeAddons(); updatePreview();});
   box.appendChild(row);
   recomputeAddons();
 }
@@ -282,6 +297,7 @@ function addAddonFromPicker(){
   sel.value="";
   document.getElementById("addonPrice").value="";
   document.getElementById("addAddonBtn").disabled = true;
+  updatePreview();
 }
 
 document.getElementById("addonSelect").addEventListener("change", e=>{
@@ -306,6 +322,7 @@ function applyCoupon(){
     discountValue=0; document.getElementById("couponNote").innerText="❌ Invalid coupon";
   }
   computeTotals();
+  updatePreview();
 }
 
 /* ===== Mode toggle ===== */
@@ -323,6 +340,7 @@ function setMode(m){
   document.getElementById("codBlock").style.display=(m==="cod")?"block":"none";
   setModeBadge();
   computeTotals();
+  updatePreview();
 }
 
 /* ===== Add-ons sum & flags ===== */
@@ -424,6 +442,8 @@ function computeTotals(){
 
   const note=(mode==="prepaid")?"Prepaid for Games Planet Order":"Advance for Games Planet Order";
   document.getElementById("payNow").href = upiLink(paid, note);
+  // update previews on every totals recompute
+  updatePreview();
 }
 
 /* ===== Utils ===== */
@@ -447,21 +467,11 @@ function productWithAddons(){
   return parts.length ? `${baseName} + ${parts.join(", ")}` : baseName;
 }
 
-/* ===== WhatsApp message (UNCHANGED) ===== */
-function sendWhatsApp(){
-  const id=document.getElementById("orderId").value || orderIdNow();
-  const subtotal = getSubtotal();
-
-  const paid = (mode==="prepaid")
-    ? (+document.getElementById("amountPaid_pre").value||0)
-    : (+document.getElementById("amountPaid_cod").value||0);
-  const rest = +document.getElementById("restAmount").value||0;
-
-  const productLine = productWithAddons();
+/* ===== Message builders (common) ===== */
+function buildCommonTop(subtotal){
   const variant = document.getElementById("variant").value || "";
-
-  const commonTop = [
-    `Order ID: ${id}`,
+  return [
+    `Order ID: ${document.getElementById("orderId").value || orderIdNow()}`,
     `Name: ${document.getElementById("name").value}`,
     `Mobile: ${document.getElementById("mobile").value}`,
     `Alt Mobile: ${document.getElementById("altMobile").value}`,
@@ -473,41 +483,60 @@ function sendWhatsApp(){
     `District/City: ${document.getElementById("city").value}`,
     `Post office: ${document.getElementById("postoffice").value}`,
     "",
-    `Product: ${productLine}`,
+    `Product: ${productWithAddons()}`,
     variant ? `Variant: ${variant}` : null,
     `Base Price: ${rs(subtotal)}`
   ].filter(Boolean);
+}
 
-  const tail = [
+function buildTail(modeLabel){
+  return [
     "",
     `📏 Distance: ${document.getElementById("distance").value}`,
-    `⏳ COD Order ETA: ${document.getElementById("etaText").value}`,
+    `⏳ ${modeLabel} ETA: ${document.getElementById("etaText").value}`,
     `📅 Estimated Delivery: ${document.getElementById("dateRange").value}`
   ];
+}
 
-  let lines=[];
-  if(mode==="prepaid"){
-    lines = [
+function buildWhatsAppLines(forMode){
+  const subtotal = getSubtotal();
+  const linesTop = buildCommonTop(subtotal);
+  if(forMode==="prepaid"){
+    const paid = +document.getElementById("amountPaid_pre").value||0;
+    const discLine = (discountValue>0 ? `Discount Applied: -${rs(discountValue)}` : `Discount Applied:`);
+    return [
       "🟢 Prepaid Order on WhatsApp",
       "",
-      ...commonTop,
-      (discountValue>0 ? `Discount Applied: -${rs(discountValue)}` : `Discount Applied:`),
+      ...linesTop,
+      discLine,
       `Amount paid: ${rs(paid)}`,
-      ...tail
+      ...buildTail("Prepaid Order")
     ];
   }else{
-    lines = [
+    const paid = +document.getElementById("amountPaid_cod").value||0;
+    const rest = +document.getElementById("restAmount").value||0;
+    return [
       "🔴 COD Order on WhatsApp",
       "",
-      ...commonTop,
+      ...linesTop,
       `Discount Applied:`,
       `Amount Paid: ${rs(paid)}`,
       `Rest on Delivery: ${rs(rest)}`,
-      ...tail
+      ...buildTail("COD Order")
     ];
   }
+}
 
+/* ===== WhatsApp send (uses builder) ===== */
+function sendWhatsApp(){
+  const lines = buildWhatsAppLines(mode);
   window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(lines.join("\n"))}`,'_blank','noopener,noreferrer');
+}
+
+/* ===== Preview updater (always both) ===== */
+function updatePreview(){
+  document.getElementById("previewPre").value = buildWhatsAppLines("prepaid").join("\n");
+  document.getElementById("previewCod").value = buildWhatsAppLines("cod").join("\n");
 }
 
 /* ===== Prefill from URL ===== */
@@ -525,13 +554,16 @@ function sendWhatsApp(){
   document.getElementById("addonsTotal").value = 0;
   updateCodButton();
   computeTotals();
+  updatePreview();
 })();
+
 </script>
 
 <!-- Pincode / ETA -->
 <script>
 let pincodeLatLng={};
 fetch('pincode_data.json').then(r=>r.json()).then(j=>pincodeLatLng=j);
+
 function haversine(lat1,lon1,lat2,lon2){
   const R=6371;
   const dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
@@ -550,15 +582,18 @@ function etaByDist(d){
   if(d<=3000)return"6–10 days";
   return"8–12 days";
 }
+
+/* Full formatted date range with weekday, month, year */
 function dateRange(eta){
   const n=(eta.match(/\d+/g)||[]).map(Number);
   if(!n.length)return"";
   const min=Math.min(...n),max=Math.max(...n);
   const s=new Date(),e=new Date();
   s.setDate(s.getDate()+min); e.setDate(e.getDate()+max);
-  const m=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][s.getMonth()];
-  return `${s.getDate()}-${e.getDate()} ${m}`;
+  const opts={weekday:"long", day:"2-digit", month:"long", year:"numeric"};
+  return `${s.toLocaleDateString("en-IN",opts)} – ${e.toLocaleDateString("en-IN",opts)}`;
 }
+
 document.getElementById("pincode").addEventListener("input",function(){
   const pin=this.value.trim();
   if(pin.length===6){
@@ -579,11 +614,18 @@ document.getElementById("pincode").addEventListener("input",function(){
           document.getElementById("etaText").value=eta;
           document.getElementById("dateRange").value=rng;
           document.getElementById("deliveryEstimate").innerText=`📍 Distance: ${d} km\n⏳ ETA: ${eta}\n📅 Delivery: ${rng}`;
+          updatePreview();
         }
       }
     });
   }
 });
+
+/* Keep previews live when user types */
+["name","mobile","altMobile","email","address","landmark","pincode","state","city","product","variant","basePrice"]
+.forEach(id=>{const el=document.getElementById(id); if(el){ el.addEventListener("input",updatePreview); }});
+document.getElementById("postoffice").addEventListener("change",updatePreview);
+
 </script>
 </body>
 </html>
