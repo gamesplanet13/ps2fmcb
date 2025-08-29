@@ -39,7 +39,7 @@
   .ghost{background:#f8fafc;border:1px solid #e5e7eb;color:#111827}
   .hint{color:var(--muted);font-size:13px;margin-top:6px;white-space:pre-line}
 
-  /* 👇 In lines ko page par hide karo */
+  /* Hide info lines on UI (as requested) */
   #ruleNote,
   #addonsHelp { display: none !important; }
 
@@ -247,8 +247,8 @@
 
   <!-- Actions -->
   <div class="btns">
+    <button class="alt" onclick="submitOrder()">Submit this order</button>
     <a id="payNow" class="btn act" href="#" target="_blank" rel="noopener">Pay Now</a>
-    <button class="alt" onclick="sendWhatsApp()">Send on WhatsApp</button>
   </div>
 
   <!-- QR Code Section -->
@@ -444,7 +444,7 @@ function computeTotals(){
   document.getElementById("addonsTotal").value = addons;
   document.getElementById("subtotal").value = subtotal;
 
-  // (Hidden) info text remains for reference but not shown
+  // Hidden info text (reference only; not visible)
   document.getElementById("ruleNote").innerText =
     "COD rules: ≥ ₹1899 → ₹0 • ₹1399–₹1898 → ₹99 • < ₹1399 → No COD. Coupon (prepaid): FMCB/USB/Combo 5% OR 64GB ₹200 • 128GB ₹300 • 256GB ₹500.";
 
@@ -500,25 +500,74 @@ function productWithAddons(){
   return parts.length ? `${baseName} + ${parts.join(", ")}` : baseName;
 }
 
-/* ===== WhatsApp send (concise) ===== */
-function sendWhatsApp(){
-  const subtotal = getSubtotal();
-  const lines = [
-    "Games Planet Order",
-    "",
-    `Name: ${document.getElementById("name").value}`,
-    `Mobile: ${document.getElementById("mobile").value}`,
-    `Address: ${document.getElementById("address").value}`,
-    `Pincode: ${document.getElementById("pincode").value}`,
-    "",
+/* ===== WA template (House no. merged into Address) ===== */
+function buildWhatsAppTemplate(forMode){
+  const isCod = (forMode==="cod");
+  const basePrice = +document.getElementById("basePrice").value || 0;
+
+  // Build Address with House no. prefixed if present
+  const house = (document.getElementById("house").value || "").trim();
+  const addr  = (document.getElementById("address").value || "").trim();
+  const fullAddress = (house ? house + ", " : "") + addr;
+
+  // eta/date
+  const etaPre = document.getElementById("etaText").value || "";
+  const rangePre = document.getElementById("dateRange").value || "";
+  const etaCod = document.getElementById("etaTextCod")?.value || etaPre;
+  const rangeCod = document.getElementById("dateRangeCOD")?.value || rangePre;
+
+  const common = [
+    `Order ID: ${document.getElementById("orderId").value || orderIdNow()}`,
+    `Name: ${document.getElementById("name").value || ""}`,
+    `Mobile: ${document.getElementById("mobile").value || ""}`,
+    `Alt Mobile: ${document.getElementById("altMobile").value || ""}`,
+    `Email: ${document.getElementById("email").value || ""}`,
+    `Address: ${fullAddress}`,
+    `Landmark: ${document.getElementById("landmark").value || ""}`,
+    `Pincode: ${document.getElementById("pincode").value || ""}`,
+    `State: ${document.getElementById("state").value || ""}`,
+    `District/City: ${document.getElementById("city").value || ""}`,
+    `Post office: ${document.getElementById("postoffice").value || ""}`,
     `Product: ${productWithAddons()}`,
-    `Subtotal: ${rs(subtotal)}`,
-    "",
-    `📏 Distance: ${document.getElementById("distance").value}`,
-    `⏳ ETA: ${document.getElementById("etaText").value}`,
-    `📅 Delivery: ${document.getElementById("dateRange").value}`
+    `Variant: ${document.getElementById("variant").value || ""}`,
+    `Base Price: ${rs(basePrice)}`
   ];
-  window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(lines.join("\n"))}`,'_blank','noopener,noreferrer');
+
+  if(!isCod){
+    const paid = +document.getElementById("amountPaid_pre").value || 0;
+    return [
+      "🟢 Prepaid Order on WhatsApp",
+      "",
+      ...common,
+      `Discount Applied:${(typeof discountValue==='number' && discountValue>0) ? " "+rs(discountValue) : ""}`,
+      `Amount Paid: ${rs(paid)}`,
+      "",
+      `📏 Distance: ${document.getElementById("distance").value || ""}`,
+      `⏳ Prepaid Order ETA: ${etaPre}`,
+      `📅 Estimated Delivery: ${rangePre}`
+    ].join("\n");
+  }else{
+    const paid = +document.getElementById("amountPaid_cod").value || 0;
+    const rest = +document.getElementById("restAmount").value || 0;
+    return [
+      "🔴 COD Order on WhatsApp",
+      "",
+      ...common,
+      `Discount Applied:`,
+      `Amount Paid: ${rs(paid)}`,
+      `Rest on Delivery: ${rs(rest)}`,
+      "",
+      `📏 Distance: ${document.getElementById("distance").value || ""}`,
+      `⏳ COD Order ETA: ${etaCod}`,
+      `📅 Estimated Delivery: ${rangeCod}`
+    ].join("\n");
+  }
+}
+
+/* ===== Single action: Submit this order ===== */
+function submitOrder(){
+  const text = buildWhatsAppTemplate(mode === "cod" ? "cod" : "prepaid");
+  window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`,'_blank','noopener,noreferrer');
 }
 
 /* ===== Prefill from URL ===== */
@@ -613,7 +662,7 @@ document.getElementById("pincode").addEventListener("input",function(){
           document.getElementById("etaText").value=eta;
           document.getElementById("dateRange").value=preRangeFull;
 
-          // Hidden fields (in case needed elsewhere)
+          // Hidden for COD template
           if(!document.getElementById("etaTextCod")){
             const h1=document.createElement("input"); h1.type="hidden"; h1.id="etaTextCod";
             const h2=document.createElement("input"); h2.type="hidden"; h2.id="dateRangeCOD";
@@ -636,8 +685,8 @@ document.getElementById("pincode").addEventListener("input",function(){
 });
 
 /* Live updates that might affect totals/eligibility */
-["name","mobile","altMobile","email","address","landmark","pincode","state","city","product","variant","basePrice"]
-.forEach(id=>{const el=document.getElementById(id); if(el){ el.addEventListener("input",()=>{ if(id==="product"||id==="variant"){ const code=(document.getElementById("couponCode").value||"").trim().toLowerCase(); if(code==="gpz2025" && mode==="prepaid") applyCoupon(); } }); }});
+["name","mobile","altMobile","email","address","landmark","pincode","state","city","product","variant","basePrice","house"]
+.forEach(id=>{const el=document.getElementById(id); if(el){ el.addEventListener("input",()=>{ /* no-op: submit builds fresh text */ }); }});
 document.getElementById("postoffice").addEventListener("change",()=>{});
 </script>
 </body>
