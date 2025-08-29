@@ -480,7 +480,10 @@ function computeTotals(){
 }
 
 /* ===== Utils ===== */
-function rs(n){return "₹"+(Number(n)||0).toLocaleString("en-IN");}
+/* Amounts WITHOUT commas for WhatsApp */
+function rs(n){
+  return "₹" + (Number(n) || 0); // plain number, no locale commas
+}
 function upiLink(amount,note){
   const p=new URLSearchParams({pa:UPI_ID,pn:UPI_NAME,am:String(amount||0),cu:"INR",tn:note});
   return "upi://pay?"+p.toString();
@@ -500,7 +503,7 @@ function productWithAddons(){
   return parts.length ? `${baseName} + ${parts.join(", ")}` : baseName;
 }
 
-/* ===== WA template (House no. merged into Address) ===== */
+/* ===== WA template (House no. merged into Address, amounts no-commas) ===== */
 function buildWhatsAppTemplate(forMode){
   const isCod = (forMode==="cod");
   const basePrice = +document.getElementById("basePrice").value || 0;
