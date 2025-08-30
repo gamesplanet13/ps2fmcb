@@ -156,6 +156,7 @@
         <div class="label">Choose add-on</div>
         <select id="addonSelect">
           <option value="" data-price="0">— Select —</option>
+          <!-- Existing add-ons -->
           <option value="Wire Gamepad" data-price="399">Wire Gamepad — ₹399</option>
           <option value="Wireless Gamepad" data-price="749">Wireless Gamepad — ₹749</option>
           <option value="PS2 Slim Sticker/Skin" data-price="60">PS2 Slim Sticker/Skin — ₹60</option>
@@ -163,6 +164,12 @@
           <option value="HDMI Cable" data-price="99">HDMI Cable — ₹99</option>
           <option value="Best HDMI Cable" data-price="349">Best HDMI Cable — ₹349</option>
           <option value="Blank Memory Card 8MB" data-price="549">Blank Memory Card 8MB — ₹549</option>
+          <!-- NEW add-ons requested -->
+          <option value="AAA Batteries of duaracel PACK OF 4" data-price="88">AAA Batteries of duaracel PACK OF 4 — ₹88</option>
+          <option value="AAA RECHARGEABLE BATTERIES PACK OF 4" data-price="599">AAA RECHARGEABLE BATTERIES PACK OF 4 — ₹599</option>
+          <option value="AAA/AA  BARTERIES CHARGER 4 SLOT" data-price="450">AAA/AA  BARTERIES CHARGER 4 SLOT — ₹450</option>
+          <option value="AAA 4 BATTERIES AND  4 PORT CHARGER COMBO" data-price="919">AAA 4 BATTERIES AND  4 PORT CHARGER COMBO — ₹919</option>
+          <option value="TRACKON.IN PRIME COURIER SERVICE" data-price="200">TRACKON.IN PRIME COURIER SERVICE — ₹200</option>
         </select>
       </div>
       <div>
@@ -224,25 +231,18 @@
     </div>
   </div>
 
-  <!-- Delivery Meta -->
+  <!-- Order (only Order ID visible) -->
   <div class="card">
-    <span class="badge">Delivery Meta</span>
-    <div class="grid3">
-      <div>
-        <div class="label">Distance</div>
-        <input id="distance" placeholder="(auto)" readonly>
-      </div>
-      <div>
-        <div class="label">Prepaid ETA</div>
-        <input id="etaText" placeholder="(auto)" readonly>
-      </div>
-      <div>
-        <div class="label">Prepaid Estimated Delivery</div>
-        <input id="dateRange" placeholder="(auto)" readonly>
-      </div>
-    </div>
-    <div class="label" style="margin-top:8px">Order ID</div>
+    <span class="badge">Order</span>
+    <div class="label">Order ID</div>
     <input id="orderId" placeholder="(auto)" readonly>
+  </div>
+
+  <!-- Hidden meta fields (kept for logic / WhatsApp msg) -->
+  <div style="display:none">
+    <input id="distance" type="text" />
+    <input id="etaText" type="text" />
+    <input id="dateRange" type="text" />
   </div>
 
   <!-- Actions -->
@@ -660,7 +660,7 @@ document.getElementById("pincode").addEventListener("input",function(){
           const codEtaText = (cod.min===cod.max) ? `${cod.min} days` : `${cod.min}–${cod.max} days`;
           const codRangeFull = formatDateRange(cod.min, cod.max);
 
-          // Fill meta (prepaid kept in original fields)
+          // Keep meta in hidden inputs
           document.getElementById("distance").value=`${d} km`;
           document.getElementById("etaText").value=eta;
           document.getElementById("dateRange").value=preRangeFull;
