@@ -32,9 +32,9 @@ h1{font-size:clamp(22px,3.5vw,34px);margin:0}
 .linkbtn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid rgba(255,255,255,.12);padding:9px 12px;border-radius:12px;color:var(--text);text-decoration:none;font-weight:700}
 .linkbtn:hover{box-shadow:0 0 0 6px var(--ring2)}
 
-.grid{display:flex;flex-direction:column;gap:18px} /* column sequence */
+.grid{display:flex;flex-direction:column;gap:18px}
 .card{background:var(--card);border-radius:20px;padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
-.card:after{content:"";position:absolute;inset:auto -30% -30% auto;width:220px;height:220px;background:radial-gradient(90px 90px at 70% 30%, var(--ring), transparent 60%);pointer-events:none} /* tap fix */
+.card:after{content:"";position:absolute;inset:auto -30% -30% auto;width:220px;height:220px;background:radial-gradient(90px 90px at 70% 30%, var(--ring), transparent 60%);pointer-events:none}
 .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;background:var(--chip);color:var(--muted);border-radius:999px;font-size:12px;font-weight:700;margin-right:6px}
 .title{margin:10px 0 6px;font-size:20px}
 .muted{color:var(--muted);font-size:14px}
@@ -63,145 +63,113 @@ h1{font-size:clamp(22px,3.5vw,34px);margin:0}
 </div>
 </div>
 
-<!-- Top controls (kept for global navigation) -->
 <div class="controls" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px">
 <a class="linkbtn" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
 <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">▶️ Setup Video</a>
 </div>
 
 <div class="grid">
-<!-- 1) FMCB / FunTuna Card -->
+
+<!-- 1) FMCB -->
 <section class="card" aria-labelledby="fmcb-title">
 <span class="badge">FMCB / FunTuna Card</span>
 <h2 class="title" id="fmcb-title">Memory Card for PS2 (Model-wise)</h2>
 
-<!-- IMAGE ROW: FMCB -->
 <div style="display:flex;justify-content:center;gap:12px;margin:10px 0;flex-wrap:wrap">
-<img src="Fmcb.png" alt="FMCB 8MB Memory Card" style="max-width:90px;border-radius:10px;box-shadow:var(--shadow)">
+<img src="Fmcb.png" style="max-width:90px;border-radius:10px;box-shadow:var(--shadow)">
 </div>
 
-<div class="muted">Boot PS2 games from USB using preconfigured FMCB / FunTuna + OPL. Choose your model:</div>
+<div class="muted">Boot PS2 games from USB using preconfigured FMCB / FunTuna + OPL.</div>
 <div class="variants" id="fmcbCard">
 <div class="row">
 <div class="name">PS2 Fat (All Models) — <b>FMCB</b> <span class="pill">🟢 ₹999</span></div>
 <div></div>
 <div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Fat (All Models) — FMCB',999,'Card Only',false)">Buy</button></div>
 </div>
+
 <div class="row">
-<div class="name">PS2 Slim 7xxxx (All) — <b>FMCB</b> <span class="pill">🟢 ₹999</span></div>
+<div class="name">PS2 Slim 7xxxx — <b>FMCB</b> <span class="pill">🟢 ₹999</span></div>
 <div></div>
-<div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 7xxxx (All) — FMCB',999,'Card Only',false)">Buy</button></div>
-</div>
-<div class="row">
-<div class="name">PS2 Slim 9xxxx (All) — <b>FunTuna</b> <span class="pill">🟢 ₹999</span></div>
-<div></div>
-<div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 9xxxx (All) — FunTuna',999,'Card Only',false)">Buy</button></div>
+<div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 7xxxx — FMCB',999,'Card Only',false)">Buy</button></div>
 </div>
 
-<!-- Setup video for FMCB group -->
+<div class="row">
+<div class="name">PS2 Slim 9xxxx — <b>FunTuna</b> <span class="pill">🟢 ₹999</span></div>
+<div></div>
+<div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 9xxxx — FunTuna',999,'Card Only',false)">Buy</button></div>
+</div>
+
 <div style="margin-top:12px;">
-<a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">▶️ Setup Video</a>
+<a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank">▶️ Setup Video</a>
 </div>
 </div>
 </section>
 
-<!-- 2) USB Only -->
+<!-- 2) USB ONLY -->
 <section class="card" aria-labelledby="usb-title">
 <span class="badge">USB Only</span>
 <h2 class="title" id="usb-title">USB for PlayStation 2 — Game-Loaded</h2>
 
 <div style="display:flex;justify-content:center;gap:16px;margin:10px 0;flex-wrap:wrap">
-<img src="Usb.jpg" alt="USB Pendrive for PS2" style="max-width:120px;border-radius:12px;box-shadow:var(--shadow)">
-<img src="Usbhdd.jpeg" alt="USB HDD for PS2" style="max-width:160px;border-radius:12px;box-shadow:var(--shadow)">
+<img src="Usb.jpg" style="max-width:120px;border-radius:12px;box-shadow:var(--shadow)">
+<img src="Usbhdd.jpeg" style="max-width:160px;border-radius:12px;box-shadow:var(--shadow)">
 </div>
 
-<div class="muted">Requires FMCB card + latest OPL. Plug directly into PS2 (no hub/splitter).</div>
+<div class="muted">Requires FMCB card + latest OPL.</div>
+
 <div class="variants" id="usbList"></div>
 
 <div class="links" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-<a class="linkbtn" href="https://youtu.be/xGR0vUM1-Jw" target="_blank" rel="noopener">🎞️ Top Games List (Video)</a>
-<a class="linkbtn" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
-<a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">🧩 Setup Guide</a>
+<a class="linkbtn" href="https://youtu.be/xGR0vUM1-Jw" target="_blank">🎞️ Top Games List</a>
+<a class="linkbtn" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank">🟨 Optional Selector</a>
+<a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank">🧩 Setup Guide</a>
 </div>
+
 </section>
 
-<!-- 3) FMCB + USB Combo -->
+<!-- 3) COMBO -->
 <section class="card" aria-labelledby="combo-title">
 <span class="badge">Combo Best Value</span>
 <h2 class="title" id="combo-title">FMCB + USB Combo for PS2</h2>
 
 <div style="display:flex;justify-content:center;gap:12px;margin:10px 0;flex-wrap:wrap">
-<img src="Fmcb.png" alt="FMCB 8MB Memory Card" style="max-width:90px;border-radius:10px;box-shadow:var(--shadow)">
-<img src="Usb.jpg" alt="USB Pendrive" style="max-width:90px;border-radius:10px;box-shadow:var(--shadow)">
-<img src="Usbhdd.jpeg" alt="USB HDD" style="max-width:110px;border-radius:10px;box-shadow:var(--shadow)">
+<img src="Fmcb.png" style="max-width:90px;border-radius:10px;box-shadow:var(--shadow)">
+<img src="Usb.jpg" style="max-width:90px;border-radius:10px;box-shadow:var(--shadow)">
+<img src="Usbhdd.jpeg" style="max-width:110px;border-radius:10px;box-shadow:var(--shadow)">
 </div>
 
-<div class="muted">Fully Plug & Play. Works on PS2 Fat, Slim 7xxxx (FMCB) & Slim 9xxxx (FunTuna).</div>
+<div class="muted">Fully Plug & Play.</div>
 
-<h3 style="margin-top:12px;margin-bottom:6px">PS2 Fat (FMCB)</h3>
+<h3>PS2 Fat</h3>
 <div class="variants" id="comboFatList"></div>
 
-<h3 style="margin-top:12px;margin-bottom:6px">PS2 Slim 7xxxx (FMCB)</h3>
+<h3>PS2 Slim 7xxxx</h3>
 <div class="variants" id="comboSlim7List"></div>
 
-<h3 style="margin-top:12px;margin-bottom:6px">PS2 Slim 9xxxx (FunTuna)</h3>
+<h3>PS2 Slim 9xxxx</h3>
 <div class="variants" id="comboSlim9List"></div>
 
 <div class="links" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-<a class="linkbtn" href="https://youtu.be/xGR0vUM1-Jw" target="_blank" rel="noopener">🎞️ Top Games List (Video)</a>
-<a class="linkbtn" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
-<a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">📺 Setup Video</a>
+<a class="linkbtn" href="https://youtu.be/xGR0vUM1-Jw" target="_blank">🎞️ Top Games List</a>
+<a class="linkbtn" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank">🟨 Optional Selector</a>
+<a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank">📺 Setup Video</a>
 </div>
 
 </section>
 </div>
 
-<!-- Important notes -->
 <div class="section">
 <h3>⚠️ Important Notes</h3>
 <ul class="list">
-<li>Do <b>not</b> delete FMCB / OPL / ELF / system (blue icon) files.</li>
-<li>USB works with PS2 Fat & Slim (7xxxx / 9xxxx). Plug directly into PS2 (no hub/splitter).</li>
-<li>For Slim 9xxxx, <b>FunTuna</b> is used automatically with the combo.</li>
+<li>Do not delete FMCB / OPL files.</li>
 </ul>
 </div>
 
-<div class="section">
-<h3>⚠️ Chip Condition (Read Before Order)</h3>
-<ul class="list">
-<li>🟢 FMCB & FunTuna both work without any modding chip.</li>
-<li>🟢 If your PS2 has <b>Matrix</b> or <b>Sumo Lite</b> chip → usually OK.</li>
-<li>🔴 If your PS2 has a <b>DVD Boot Chip</b> → 99% chances FMCB/FunTuna will not work.</li>
-<li>👉 In that case, chip wires must be disconnected (requires opening PS2). Message us for the step-by-step guidance video.</li>
-</ul>
-</div>
+<p class="foot">© Games Planet</p>
 
-<div class="section">
-<h3>💡 Warranty</h3>
-<ul class="list">
-<li>64GB / 128GB / 128GB SSD – 1 Year</li>
-<li>256GB / 500GB SSD – 1 Year</li>
-<li>500GB HDD – 6 Months</li>
-<li>USB Enclosure – ❌ No Warranty</li>
-</ul>
-</div>
-
-<div class="section">
-<h3>📌 Policy</h3>
-<ul class="list">
-<li>❌ No Return • ❌ No Replacement</li>
-<li>✔️ Confirm OPL compatibility before ordering</li>
-<li>🛠️ 1 Month Free Software Reinstallation (Courier both sides by customer)</li>
-</ul>
-</div>
-
-<p class="foot">© Games Planet — WhatsApp: +91 79836 24797 • This page opens the Prefill Order page with selected product. Prices in INR.</p>
 </div>
 
 <script>
-// ===== Updated Product Data =====
-
-// USB Only — PRICE UPDATED
 const usbVariants = [
 { v:'64GB PD', top:1099, opt:1199, count:21 },
 { v:'128GB PD', top:1699, opt:1849, count:41 },
@@ -211,7 +179,6 @@ const usbVariants = [
 { v:'500GB SSD', top:4499, opt:4899, count:175 },
 ];
 
-// Combo — PRICE UPDATED
 const comboVariants = [
 { v:'64GB PD',  top:1599, opt:1749, count:21 },
 { v:'128GB PD', top:2199, opt:2399, count:41 },
@@ -221,35 +188,38 @@ const comboVariants = [
 { v:'500GB SSD',top:5199, opt:5649, count:175 },
 ];
 
-
 function fmt(n){return `₹${Number(n).toLocaleString('en-IN')}`;}
 function link(prefill){
 const q = new URLSearchParams(prefill).toString();
 return `order-prefill.html?${q}`;
 }
-
 function goPrefill(product, variant, base, pack, allowCod){
 location.href = link({product,variant,base,pack,allowCod});
 }
 
-
-// USB renderer
+/* USB — patched with TOP Games count */
 (function renderUSB(){
-const box=document.getElementById('usbList'); box.innerHTML='';
-usbVariants.forEach(({v,top,opt})=>{
-const row=document.createElement('div'); row.className='row';
+const box=document.getElementById('usbList'); 
+box.innerHTML='';
+
+usbVariants.forEach(({v,top,opt,count})=>{
+const row=document.createElement('div'); 
+row.className='row';
+
 row.innerHTML=`
 <div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
 <div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
-<div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>`;
+<div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>
+`;
+
 row.querySelector('.btn.buy').onclick=()=>goPrefill('USB for PS2 (Game-Loaded)', v, top, 'Top', true);
 row.querySelector('.btn.alt').onclick=()=>goPrefill('USB for PS2 (Game-Loaded)', v+' — Optional', opt, 'Optional', true);
+
 box.appendChild(row);
 });
 })();
 
-
-// Combo Model-wise render
+/* Combo renderer remains SAME */
 (function renderComboModelWise(){
 const fatBox = document.getElementById('comboFatList');
 const slim7Box = document.getElementById('comboSlim7List');
@@ -259,13 +229,14 @@ fatBox.innerHTML=''; slim7Box.innerHTML=''; slim9Box.innerHTML='';
 comboVariants.forEach(({v,top,opt,count})=>{
 
 // FAT
-const rowF=document.createElement('div'); rowF.className='row';
+const rowF=document.createElement('div'); 
+rowF.className='row';
 rowF.innerHTML=`
 <div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
 <div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
 <div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>`;
-rowF.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Fat (FMCB)', top, 'Top', true);
-rowF.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Fat (FMCB) — Optional', opt, 'Optional', true);
+rowF.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Fat', top, 'Top', true);
+rowF.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Fat — Optional', opt, 'Optional', true);
 fatBox.appendChild(rowF);
 
 // Slim 7xxxx
@@ -274,8 +245,8 @@ row7.innerHTML=`
 <div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
 <div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
 <div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>`;
-row7.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 7xxxx (FMCB)', top, 'Top', true);
-row7.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 7xxxx (FMCB) — Optional', opt, 'Optional', true);
+row7.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 7xxxx', top, 'Top', true);
+row7.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 7xxxx — Optional', opt, 'Optional', true);
 slim7Box.appendChild(row7);
 
 // Slim 9xxxx
@@ -284,8 +255,8 @@ row9.innerHTML=`
 <div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
 <div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
 <div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>`;
-row9.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 9xxxx (FunTuna)', top, 'Top', true);
-row9.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 9xxxx (FunTuna) — Optional', opt, 'Optional', true);
+row9.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 9xxxx', top, 'Top', true);
+row9.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 9xxxx — Optional', opt, 'Optional', true);
 slim9Box.appendChild(row9);
 
 });
