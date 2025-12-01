@@ -239,7 +239,7 @@ const box=document.getElementById('usbList'); box.innerHTML='';
 usbVariants.forEach(({v,top,opt})=>{
 const row=document.createElement('div'); row.className='row';
 row.innerHTML=`
-<div class="name">${v}</div>
+<div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
 <div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
 <div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>`;
 row.querySelector('.btn.buy').onclick=()=>goPrefill('USB for PS2 (Game-Loaded)', v, top, 'Top', true);
