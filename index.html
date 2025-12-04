@@ -63,6 +63,11 @@ body{
   -webkit-font-smoothing: antialiased;
 }
 
+/* Generic hidden */
+.hidden{
+  display:none !important;
+}
+
 /* Page shell */
 .wrap{
   max-width:var(--max-width);
@@ -119,7 +124,7 @@ h1 span{
   font-size:0.82rem;
 }
 
-/* quick actions (top right) */
+/* top right actions */
 .brand-actions{
   display:flex;
   flex-wrap:wrap;
@@ -147,7 +152,7 @@ h1 span{
   box-shadow:0 0 0 4px rgba(34,197,94,0.28);
 }
 
-/* small buttons / nav links */
+/* small nav link buttons */
 .linkbtn{
   display:inline-flex;
   align-items:center;
@@ -175,12 +180,120 @@ h1 span{
   box-shadow:0 16px 32px rgba(15,23,42,0.95);
 }
 
-/* controls row below brand */
+/* controls row */
 .controls{
   display:flex;
   flex-wrap:wrap;
   gap:10px;
   margin:8px 0 18px;
+}
+
+/* MODEL SELECTOR */
+.model-selector{
+  margin-bottom:18px;
+  padding:14px 14px 16px;
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 0 0,rgba(56,189,248,0.18),transparent 55%),
+    radial-gradient(circle at 100% 100%,rgba(34,197,94,0.18),transparent 60%),
+    rgba(15,23,42,0.9);
+  border:1px solid rgba(31,41,55,0.9);
+  box-shadow:0 16px 34px rgba(15,23,42,0.9);
+}
+
+.model-title{
+  font-size:0.9rem;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  margin:0 0 4px;
+}
+
+.model-sub{
+  margin:0 0 10px;
+  font-size:0.8rem;
+  color:var(--muted);
+}
+
+.model-btn-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.model-btn{
+  flex:1 1 120px;
+  border-radius:18px;
+  border:1px solid rgba(148,163,184,0.65);
+  background:radial-gradient(circle at 0 0,rgba(56,189,248,0.25),rgba(15,23,42,1));
+  padding:10px 12px;
+  font-size:0.86rem;
+  font-weight:800;
+  color:var(--text);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  box-shadow:0 14px 30px rgba(15,23,42,1);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.model-btn span{
+  font-size:1.1rem;
+}
+
+.model-btn:hover{
+  transform:translateY(-1px);
+  border-color:rgba(209,213,219,0.9);
+  box-shadow:0 20px 40px rgba(15,23,42,1);
+}
+
+.model-btn.active{
+  background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.95));
+  border-color:rgba(190,242,100,0.9);
+  color:#022c22;
+  box-shadow:0 20px 42px rgba(22,163,74,0.9);
+}
+
+.selected-model{
+  margin-top:10px;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+  font-size:0.78rem;
+  color:var(--muted);
+}
+
+.selected-chip{
+  padding:4px 9px;
+  border-radius:var(--radius-pill);
+  border:1px solid rgba(148,163,184,0.7);
+  background:rgba(15,23,42,0.9);
+}
+
+.change-model-btn{
+  border-radius:var(--radius-pill);
+  border:0;
+  padding:5px 10px;
+  font-size:0.75rem;
+  font-weight:700;
+  cursor:pointer;
+  background:rgba(15,23,42,0.95);
+  color:var(--muted);
+  border:1px solid rgba(148,163,184,0.8);
+  transition:background var(--transition-fast),color var(--transition-fast),transform var(--transition-fast);
+}
+
+.change-model-btn:hover{
+  background:rgba(31,41,55,1);
+  color:#e5e7eb;
+  transform:translateY(-1px);
 }
 
 /* Cards grid */
@@ -292,7 +405,7 @@ h1 span{
   font-size:0.9rem;
 }
 
-/* pill = small neon tag (price / count) */
+/* pill label */
 .pill{
   display:inline-flex;
   align-items:center;
@@ -392,7 +505,6 @@ h1 span{
   margin-bottom:4px;
 }
 
-/* bullets icons colors */
 .list li b{
   color:var(--text);
 }
@@ -479,10 +591,36 @@ h1 span{
     <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">▶️ Setup Video</a>
   </div>
 
+  <!-- MODEL SELECTOR -->
+  <section class="model-selector">
+    <h2 class="model-title">Step 1 — Select Your PS2 Model</h2>
+    <p class="model-sub">Model select karte hi neeche sirf usi model ke FMCB / FunTuna card & combo packs dikhेंगे.</p>
+    <div class="model-btn-row">
+      <button type="button" class="model-btn" data-model="fat" onclick="selectModel('fat')">
+        <span>🔵</span> PS2 FAT
+      </button>
+      <button type="button" class="model-btn" data-model="slim7" onclick="selectModel('slim7')">
+        <span>🟣</span> PS2 SLIM 7xxxx
+      </button>
+      <button type="button" class="model-btn" data-model="slim9" onclick="selectModel('slim9')">
+        <span>🟢</span> PS2 SLIM 9xxxx
+      </button>
+    </div>
+    <div id="selectedModelWrap" class="selected-model hidden">
+      <div class="selected-chip">
+        Selected Model: <strong id="selectedModelLabel"></strong>
+      </div>
+      <button type="button" class="change-model-btn" onclick="clearModel()">Change Model</button>
+    </div>
+  </section>
+
+  <!-- Anchor to scroll after selection -->
+  <div id="cardsAnchor"></div>
+
   <div class="grid">
 
-    <!-- 1) FMCB -->
-    <section class="card" aria-labelledby="fmcb-title">
+    <!-- 1) FMCB (hidden until model select) -->
+    <section class="card model-guard hidden" aria-labelledby="fmcb-title">
       <span class="badge">FMCB / FunTuna Card</span>
       <h2 class="title" id="fmcb-title">Memory Card for PS2 (Model-wise)</h2>
 
@@ -494,7 +632,7 @@ h1 span{
 
       <div class="variants" id="fmcbCard">
 
-        <div class="row">
+        <div class="row" data-model-group="fmcb-row" data-model="fat">
           <div class="name">PS2 Fat (All Models) — <b>FMCB</b> <span class="pill">🟢 ₹999</span></div>
           <div></div>
           <div class="cta">
@@ -502,7 +640,7 @@ h1 span{
           </div>
         </div>
 
-        <div class="row">
+        <div class="row" data-model-group="fmcb-row" data-model="slim7">
           <div class="name">PS2 Slim 7xxxx (All) — <b>FMCB</b> <span class="pill">🟢 ₹999</span></div>
           <div></div>
           <div class="cta">
@@ -510,7 +648,7 @@ h1 span{
           </div>
         </div>
 
-        <div class="row">
+        <div class="row" data-model-group="fmcb-row" data-model="slim9">
           <div class="name">PS2 Slim 9xxxx (All) — <b>FunTuna</b> <span class="pill">🟢 ₹999</span></div>
           <div></div>
           <div class="cta">
@@ -525,8 +663,8 @@ h1 span{
       </div>
     </section>
 
-    <!-- 2) USB ONLY -->
-    <section class="card" aria-labelledby="usb-title">
+    <!-- 2) USB ONLY (same for all models, just hidden before select) -->
+    <section class="card model-guard hidden" aria-labelledby="usb-title">
       <span class="badge">USB Only</span>
       <h2 class="title" id="usb-title">USB for PlayStation 2 — Game-Loaded</h2>
 
@@ -547,7 +685,7 @@ h1 span{
     </section>
 
     <!-- 3) COMBO -->
-    <section class="card" aria-labelledby="combo-title">
+    <section class="card model-guard hidden" aria-labelledby="combo-title">
       <span class="badge">Combo Best Value</span>
       <h2 class="title" id="combo-title">FMCB + USB Combo for PS2</h2>
 
@@ -559,14 +697,20 @@ h1 span{
 
       <div class="muted">Fully Plug & Play. Works on PS2 Fat, Slim 7xxxx (FMCB) & Slim 9xxxx (FunTuna).</div>
 
-      <h3 style="margin-top:12px;margin-bottom:6px;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;">PS2 Fat (FMCB)</h3>
-      <div class="variants" id="comboFatList"></div>
+      <div class="combo-block" data-model-group="combo-section" data-model="fat">
+        <h3 style="margin-top:12px;margin-bottom:6px;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;">PS2 Fat (FMCB)</h3>
+        <div class="variants" id="comboFatList"></div>
+      </div>
 
-      <h3 style="margin-top:14px;margin-bottom:6px;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;">PS2 Slim 7xxxx (FMCB)</h3>
-      <div class="variants" id="comboSlim7List"></div>
+      <div class="combo-block" data-model-group="combo-section" data-model="slim7">
+        <h3 style="margin-top:14px;margin-bottom:6px;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;">PS2 Slim 7xxxx (FMCB)</h3>
+        <div class="variants" id="comboSlim7List"></div>
+      </div>
 
-      <h3 style="margin-top:14px;margin-bottom:6px;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;">PS2 Slim 9xxxx (FunTuna)</h3>
-      <div class="variants" id="comboSlim9List"></div>
+      <div class="combo-block" data-model-group="combo-section" data-model="slim9">
+        <h3 style="margin-top:14px;margin-bottom:6px;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;">PS2 Slim 9xxxx (FunTuna)</h3>
+        <div class="variants" id="comboSlim9List"></div>
+      </div>
 
       <div class="links" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
         <a class="linkbtn" href="https://youtu.be/xGR0vUM1-Jw" target="_blank" rel="noopener">🎞️ Top Games List (Video)</a>
@@ -721,6 +865,63 @@ function goPrefill(product, variant, base, pack, allowCod){
 
   });
 })();
+
+// ===== MODEL SELECT LOGIC =====
+const modelLabels = {
+  fat: "PS2 Fat (All Models)",
+  slim7: "PS2 Slim 7xxxx",
+  slim9: "PS2 Slim 9xxxx"
+};
+
+function selectModel(model){
+  // Activate buttons
+  document.querySelectorAll('.model-btn').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.model === model);
+  });
+
+  // Show main product cards
+  document.querySelectorAll('.model-guard').forEach(el=>{
+    el.classList.remove('hidden');
+  });
+
+  // FMCB: show only selected model row
+  document.querySelectorAll('[data-model-group="fmcb-row"]').forEach(row=>{
+    row.style.display = (row.dataset.model === model) ? 'grid' : 'none';
+  });
+
+  // Combo sections: show only for selected model
+  document.querySelectorAll('[data-model-group="combo-section"]').forEach(block=>{
+    block.style.display = (block.dataset.model === model) ? 'block' : 'none';
+  });
+
+  // Selected label
+  const wrap = document.getElementById('selectedModelWrap');
+  const label = document.getElementById('selectedModelLabel');
+  if(label){ label.textContent = modelLabels[model] || ""; }
+  if(wrap){ wrap.classList.remove('hidden'); }
+
+  // Scroll to products
+  const anchor = document.getElementById('cardsAnchor');
+  if(anchor){
+    anchor.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
+
+function clearModel(){
+  // Deactivate buttons
+  document.querySelectorAll('.model-btn').forEach(btn=>{
+    btn.classList.remove('active');
+  });
+
+  // Hide product cards
+  document.querySelectorAll('.model-guard').forEach(el=>{
+    el.classList.add('hidden');
+  });
+
+  // Hide selected label
+  const wrap = document.getElementById('selectedModelWrap');
+  if(wrap){ wrap.classList.add('hidden'); }
+}
 </script>
 
 </body>
