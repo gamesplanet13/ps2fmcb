@@ -5,304 +5,721 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Games Planet • PS2 Quick Buy — FMCB, USB & Combo</title>
 <meta name="description" content="Buy FMCB/FunTuna card, USB-only, or FMCB+USB Combo for PlayStation 2 with one-tap WhatsApp redirect. Top & Optional game packs supported."/>
+
 <style>
 :root{
---bg:#0b1020; --card:#121a33; --muted:#9fb0d3; --text:#eaf1ff;
---accent:#7c4dff; --accent2:#3ddc84; --accent3:#ffd54f;
---chip:#1b2447; --ring: rgba(124,77,255,.35); --ring2: rgba(61,220,132,.35);
---shadow:0 10px 30px rgba(0,0,0,.35);
+  --bg: #020617;
+  --bg-alt: #050816;
+  --card: #020617;
+  --card-soft: #0b1120;
+  --muted: #9ca3af;
+  --text: #e5e7eb;
+  --accent: #22c55e;
+  --accent-alt: #16a34a;
+  --accent2: #38bdf8;
+  --accent3: #eab308;
+  --chip: #020617;
+  --chip-border: rgba(148,163,184,.5);
+  --ring: rgba(34,197,94,.26);
+  --ring2: rgba(56,189,248,.23);
+  --danger: #f97316;
+  --shadow-soft: 0 18px 40px rgba(15,23,42,0.95);
+  --shadow-btn: 0 16px 32px rgba(34,197,94,0.5);
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+  --max-width: 1100px;
+  --transition-fast: 170ms ease-out;
 }
-@media(prefers-color-scheme:light){:root{--bg:#f7f8ff;--card:#ffffff;--text:#0b1020;--muted:#51607e;--chip:#eef2ff;--shadow:0 8px 20px rgba(11,16,32,.08)}}
+
+@media(prefers-color-scheme:light){
+  :root{
+    --bg:#f3f4ff;
+    --bg-alt:#e5e7ff;
+    --card:#ffffff;
+    --card-soft:#eef2ff;
+    --text:#020617;
+    --muted:#6b7280;
+    --chip:#e5e7ff;
+    --chip-border: rgba(148,163,184,.7);
+    --ring: rgba(34,197,94,.18);
+    --ring2: rgba(56,189,248,.18);
+    --shadow-soft: 0 14px 32px rgba(15,23,42,0.18);
+    --shadow-btn: 0 10px 22px rgba(34,197,94,0.45);
+  }
+}
+
 *{box-sizing:border-box}
 html,body{height:100%}
+
 body{
-margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
-background:
-radial-gradient(60vw 60vw at 10% -10%, rgba(124,77,255,.20), transparent 40%),
-radial-gradient(50vw 50vw at 110% 10%, rgba(61,220,132,.20), transparent 40%),
-var(--bg);
-color:var(--text)
+  margin:0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  background:
+    radial-gradient(circle at 0% -10%, rgba(56,189,248,.20), transparent 55%),
+    radial-gradient(circle at 110% 0%, rgba(34,197,94,.20), transparent 50%),
+    radial-gradient(circle at 50% 120%, rgba(56,189,248,.16), transparent 55%),
+    var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing: antialiased;
 }
-.wrap{max-width:1100px;margin:0 auto;padding:28px 18px 60px}
-.brand{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-.logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-weight:900;background:linear-gradient(135deg,var(--accent),#5ecbff);color:#fff;box-shadow:var(--shadow)}
-h1{font-size:clamp(22px,3.5vw,34px);margin:0}
-.sub{color:var(--muted);margin:6px 0 22px}
 
-.linkbtn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid rgba(255,255,255,.12);padding:9px 12px;border-radius:12px;color:var(--text);text-decoration:none;font-weight:700}
-.linkbtn:hover{box-shadow:0 0 0 6px var(--ring2)}
+/* Page shell */
+.wrap{
+  max-width:var(--max-width);
+  margin:0 auto;
+  padding:24px 16px 56px;
+}
 
-.grid{display:flex;flex-direction:column;gap:18px}
-.card{background:var(--card);border-radius:20px;padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
-.card:after{content:"";position:absolute;inset:auto -30% -30% auto;width:220px;height:220px;background:radial-gradient(90px 90px at 70% 30%, var(--ring), transparent 60%);pointer-events:none}
-.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;background:var(--chip);color:var(--muted);border-radius:999px;font-size:12px;font-weight:700;margin-right:6px}
-.title{margin:10px 0 6px;font-size:20px}
-.muted{color:var(--muted);font-size:14px}
+/* Brand / top bar */
+.brand{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:12px;
+}
 
-.variants{margin-top:14px;display:grid;gap:10px}
-.row{display:grid;grid-template-columns:1.2fr .8fr .8fr;gap:8px;align-items:center;position:relative}
-.name{font-weight:700}
-.pill{display:inline-flex;align-items:center;gap:6px;background:var(--chip);padding:6px 10px;border-radius:999px;font-weight:800;font-size:12px}
-.cta{display:flex;gap:8px;position:relative;z-index:1}
-.btn{flex:1;border:0;padding:10px 12px;border-radius:12px;font-weight:800;cursor:pointer}
-.btn.buy{background:var(--accent2);color:#08210f}
-.btn.alt{background:var(--accent3);color:#241a00}
+.brand-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
 
-.section{margin-top:28px}
-.list{margin:10px 0 0 0;padding-left:18px}
-.foot{opacity:.85;margin-top:34px;font-size:12px;color:var(--muted)}
+.logo{
+  width:44px;
+  height:44px;
+  border-radius:16px;
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  font-size:0.9rem;
+  background:
+    conic-gradient(from 210deg,#22c55e,#38bdf8,#a855f7,#22c55e);
+  color:#020617;
+  box-shadow:
+    0 0 0 1px rgba(15,23,42,0.85),
+    0 18px 38px rgba(0,0,0,0.85);
+}
+
+h1{
+  font-size:clamp(22px,3.3vw,32px);
+  margin:0;
+  letter-spacing:0.03em;
+}
+
+h1 span{
+  background:linear-gradient(135deg,#22c55e,#38bdf8);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+.sub{
+  color:var(--muted);
+  margin:4px 0 0;
+  font-size:0.82rem;
+}
+
+/* quick actions (top right) */
+.brand-actions{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:8px;
+}
+
+.nav-pill{
+  padding:6px 10px;
+  border-radius:var(--radius-pill);
+  border:1px solid rgba(148,163,184,0.4);
+  background:radial-gradient(circle at 0 0,rgba(34,197,94,0.18),rgba(15,23,42,0.98));
+  font-size:0.72rem;
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.nav-pill-dot{
+  width:7px;
+  height:7px;
+  border-radius:999px;
+  background-color:var(--accent);
+  box-shadow:0 0 0 4px rgba(34,197,94,0.28);
+}
+
+/* small buttons / nav links */
+.linkbtn{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  border:1px solid rgba(148,163,184,0.5);
+  padding:7px 11px;
+  border-radius:12px;
+  color:var(--text);
+  text-decoration:none;
+  font-weight:600;
+  font-size:0.8rem;
+  background:linear-gradient(135deg,rgba(15,23,42,0.96),rgba(15,23,42,0.9));
+  box-shadow:0 10px 24px rgba(15,23,42,0.7);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.linkbtn:hover{
+  transform:translateY(-1px);
+  border-color:rgba(209,213,219,0.9);
+  background:linear-gradient(135deg,rgba(15,23,42,1),rgba(15,23,42,0.98));
+  box-shadow:0 16px 32px rgba(15,23,42,0.95);
+}
+
+/* controls row below brand */
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin:8px 0 18px;
+}
+
+/* Cards grid */
+.grid{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+/* Card base */
+.card{
+  background:
+    radial-gradient(circle at 0 0,rgba(56,189,248,0.18),transparent 60%),
+    radial-gradient(circle at 105% 0,rgba(34,197,94,0.18),transparent 55%),
+    var(--card-soft);
+  border-radius:var(--radius-lg);
+  padding:18px 18px 20px;
+  box-shadow:var(--shadow-soft);
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(31,41,55,0.95);
+}
+
+/* inner glow decoration */
+.card::before{
+  content:"";
+  position:absolute;
+  inset:auto -40% -40% auto;
+  width:250px;
+  height:250px;
+  background:
+    radial-gradient(circle at 20% 10%,var(--ring),transparent 60%),
+    radial-gradient(circle at 80% 80%,var(--ring2),transparent 65%);
+  opacity:0.8;
+  pointer-events:none;
+}
+
+/* badge at top of card */
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 9px;
+  background:rgba(15,23,42,0.95);
+  color:var(--muted);
+  border-radius:var(--radius-pill);
+  font-size:11px;
+  font-weight:700;
+  border:1px solid var(--chip-border);
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+}
+
+.badge::before{
+  content:"";
+  width:7px;
+  height:7px;
+  border-radius:999px;
+  background:var(--accent2);
+  box-shadow:0 0 0 4px rgba(56,189,248,0.3);
+}
+
+/* Title + text */
+.title{
+  margin:10px 0 6px;
+  font-size:1.1rem;
+  letter-spacing:0.03em;
+}
+
+.muted{
+  color:var(--muted);
+  font-size:0.86rem;
+}
+
+/* product images row */
+.card-images{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  margin:10px 0;
+  flex-wrap:wrap;
+}
+
+.card-images img{
+  max-width:110px;
+  border-radius:14px;
+  box-shadow:0 18px 32px rgba(15,23,42,0.9);
+  border:1px solid rgba(30,64,175,0.8);
+}
+
+/* variants grid */
+.variants{
+  margin-top:16px;
+  display:grid;
+  gap:10px;
+}
+
+/* variant row */
+.row{
+  display:grid;
+  grid-template-columns: minmax(0,1.35fr) minmax(0,.9fr) minmax(0,.9fr);
+  gap:10px;
+  align-items:center;
+  position:relative;
+}
+
+.name{
+  font-weight:600;
+  font-size:0.9rem;
+}
+
+/* pill = small neon tag (price / count) */
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:radial-gradient(circle at 0 0,rgba(34,197,94,0.3),rgba(15,23,42,0.98));
+  padding:5px 10px;
+  border-radius:var(--radius-pill);
+  font-weight:700;
+  font-size:11px;
+  border:1px solid rgba(34,197,94,0.7);
+  color:#bbf7d0;
+  margin-left:4px;
+}
+
+.pill::before{
+  content:"";
+  width:6px;
+  height:6px;
+  border-radius:999px;
+  background-color:var(--accent);
+}
+
+/* CTA buttons block */
+.cta{
+  display:flex;
+  gap:8px;
+  position:relative;
+  z-index:1;
+}
+
+/* big buttons */
+.btn{
+  flex:1;
+  border:0;
+  padding:9px 11px;
+  border-radius:14px;
+  font-weight:800;
+  cursor:pointer;
+  font-size:0.83rem;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    filter var(--transition-fast),
+    background var(--transition-fast),
+    color var(--transition-fast);
+  white-space:nowrap;
+}
+
+.btn.buy{
+  background:linear-gradient(135deg,var(--accent),var(--accent-alt));
+  color:#022c22;
+  box-shadow:var(--shadow-btn);
+}
+
+.btn.buy:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.03);
+  box-shadow:0 20px 40px rgba(22,163,74,0.75);
+}
+
+.btn.alt{
+  background:linear-gradient(135deg,var(--accent3),#f97316);
+  color:#1f1300;
+  box-shadow:0 14px 26px rgba(234,179,8,0.45);
+}
+
+.btn.alt:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.03);
+  box-shadow:0 18px 34px rgba(234,179,8,0.7);
+}
+
+/* Sections below cards */
+.section{
+  margin-top:26px;
+}
+
+.section h3{
+  font-size:0.96rem;
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+  margin:0 0 6px;
+}
+
+.list{
+  margin:10px 0 0 0;
+  padding-left:18px;
+  font-size:0.86rem;
+  color:var(--muted);
+}
+
+.list li{
+  margin-bottom:4px;
+}
+
+/* bullets icons colors */
+.list li b{
+  color:var(--text);
+}
+
+.foot{
+  opacity:.9;
+  margin-top:30px;
+  font-size:0.75rem;
+  color:var(--muted);
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+/* Responsive */
+@media(max-width:900px){
+  .row{
+    grid-template-columns: minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr);
+  }
+}
+
+@media(max-width:720px){
+  .brand{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .brand-actions{
+    width:100%;
+    justify-content:flex-start;
+  }
+}
+
+@media(max-width:640px){
+  .wrap{
+    padding-inline:14px;
+  }
+
+  .row{
+    grid-template-columns: minmax(0,1.4fr) minmax(0,1fr);
+    grid-template-rows:auto auto;
+  }
+
+  .row > .cta:last-child{
+    grid-column:1 / -1;
+  }
+
+  .card{
+    padding:16px 14px 18px;
+  }
+
+  .card-images img{
+    max-width:95px;
+  }
+}
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="brand">
-<div class="logo">GPZ</div>
-<div>
-<h1>PS2 Quick Buy — FMCB, USB & Combo</h1>
-<div class="sub">One-tap Prefill Order • Top & Optional packs • Auto light/dark</div>
-</div>
-</div>
 
-<!-- Top navigation -->
-<div class="controls" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px">
-<a class="linkbtn" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
-<a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">▶️ Setup Video</a>
-</div>
+  <!-- BRAND / HERO BAR -->
+  <header class="brand">
+    <div class="brand-left">
+      <div class="logo">GPZ</div>
+      <div>
+        <h1>PS2 Quick Buy — <span>FMCB, USB & Combo</span></h1>
+        <div class="sub">One-tap WhatsApp Prefill • Top & Optional Packs • Auto Light/Dark</div>
+      </div>
+    </div>
+    <div class="brand-actions">
+      <div class="nav-pill">
+        <span class="nav-pill-dot"></span>
+        Plug &amp; Play • No Modchip
+      </div>
+      <a class="linkbtn" href="https://wa.me/917983624797?text=Hi%2C%20I%20want%20to%20buy%20FMCB%20USB%20Combo%20for%20PS2" target="_blank" rel="noopener">
+        🛒 WhatsApp Quick Order
+      </a>
+    </div>
+  </header>
 
-<div class="grid">
+  <!-- Top navigation shortcuts -->
+  <div class="controls">
+    <a class="linkbtn" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
+    <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">▶️ Setup Video</a>
+  </div>
 
-<!-- 1) FMCB -->
-<section class="card" aria-labelledby="fmcb-title">
-<span class="badge">FMCB / FunTuna Card</span>
-<h2 class="title" id="fmcb-title">Memory Card for PS2 (Model-wise)</h2>
+  <div class="grid">
 
-<div style="display:flex;justify-content:center;gap:12px;margin:10px 0;flex-wrap:wrap">
-<img src="Fmcb.png" alt="FMCB 8MB Memory Card" style="max-width:90px;border-radius:10px;box-shadow:var(--shadow)">
-</div>
+    <!-- 1) FMCB -->
+    <section class="card" aria-labelledby="fmcb-title">
+      <span class="badge">FMCB / FunTuna Card</span>
+      <h2 class="title" id="fmcb-title">Memory Card for PS2 (Model-wise)</h2>
 
-<div class="muted">Boot PS2 games from USB using preconfigured FMCB / FunTuna + OPL.</div>
+      <div class="card-images">
+        <img src="Fmcb.png" alt="FMCB 8MB Memory Card">
+      </div>
 
-<div class="variants" id="fmcbCard">
+      <div class="muted">Boot PS2 games from USB using preconfigured FMCB / FunTuna + OPL.</div>
 
-<div class="row">
-<div class="name">PS2 Fat (All Models) — <b>FMCB</b> <span class="pill">🟢 ₹999</span></div>
-<div></div>
-<div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Fat (All Models) — FMCB',999,'Card Only',false)">Buy</button></div>
-</div>
+      <div class="variants" id="fmcbCard">
 
-<div class="row">
-<div class="name">PS2 Slim 7xxxx (All) — <b>FMCB</b> <span class="pill">🟢 ₹999</span></div>
-<div></div>
-<div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 7xxxx (All) — FMCB',999,'Card Only',false)">Buy</button></div>
-</div>
+        <div class="row">
+          <div class="name">PS2 Fat (All Models) — <b>FMCB</b> <span class="pill">🟢 ₹999</span></div>
+          <div></div>
+          <div class="cta">
+            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Fat (All Models) — FMCB',999,'Card Only',false)">Buy</button>
+          </div>
+        </div>
 
-<div class="row">
-<div class="name">PS2 Slim 9xxxx (All) — <b>FunTuna</b> <span class="pill">🟢 ₹999</span></div>
-<div></div>
-<div class="cta"><button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 9xxxx (All) — FunTuna',999,'Card Only',false)">Buy</button></div>
-</div>
+        <div class="row">
+          <div class="name">PS2 Slim 7xxxx (All) — <b>FMCB</b> <span class="pill">🟢 ₹999</span></div>
+          <div></div>
+          <div class="cta">
+            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 7xxxx (All) — FMCB',999,'Card Only',false)">Buy</button>
+          </div>
+        </div>
 
-<div style="margin-top:12px;">
-<a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">▶️ Setup Video</a>
-</div>
+        <div class="row">
+          <div class="name">PS2 Slim 9xxxx (All) — <b>FunTuna</b> <span class="pill">🟢 ₹999</span></div>
+          <div></div>
+          <div class="cta">
+            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 9xxxx (All) — FunTuna',999,'Card Only',false)">Buy</button>
+          </div>
+        </div>
 
-</div>
-</section>
+        <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px">
+          <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">▶️ Setup Video</a>
+        </div>
 
-<!-- 2) USB ONLY -->
-<section class="card" aria-labelledby="usb-title">
-<span class="badge">USB Only</span>
-<h2 class="title" id="usb-title">USB for PlayStation 2 — Game-Loaded</h2>
+      </div>
+    </section>
 
-<div style="display:flex;justify-content:center;gap:16px;margin:10px 0;flex-wrap:wrap">
-<img src="Usb.jpg" alt="USB Pendrive for PS2" style="max-width:120px;border-radius:12px;box-shadow:var(--shadow)">
-<img src="Usbhdd.jpeg" alt="USB HDD for PS2" style="max-width:160px;border-radius:12px;box-shadow:var(--shadow)">
-</div>
+    <!-- 2) USB ONLY -->
+    <section class="card" aria-labelledby="usb-title">
+      <span class="badge">USB Only</span>
+      <h2 class="title" id="usb-title">USB for PlayStation 2 — Game-Loaded</h2>
 
-<div class="muted">Requires FMCB card + latest OPL. Plug directly into PS2 (no hub/splitter).</div>
+      <div class="card-images">
+        <img src="Usb.jpg" alt="USB Pendrive for PS2">
+        <img src="Usbhdd.jpeg" alt="USB HDD for PS2">
+      </div>
 
-<div class="variants" id="usbList"></div>
+      <div class="muted">Requires FMCB card + latest OPL. Plug directly into PS2 (no hub/splitter).</div>
 
-<div class="links" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-<a class="linkbtn" href="https://youtu.be/xGR0vUM1-Jw" target="_blank" rel="noopener">🎞️ Top Games List (Video)</a>
-<a class="linkbtn" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
-<a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">🧩 Setup Guide</a>
-</div>
-</section>
+      <div class="variants" id="usbList"></div>
 
-<!-- 3) COMBO -->
-<section class="card" aria-labelledby="combo-title">
-<span class="badge">Combo Best Value</span>
-<h2 class="title" id="combo-title">FMCB + USB Combo for PS2</h2>
+      <div class="links" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+        <a class="linkbtn" href="https://youtu.be/xGR0vUM1-Jw" target="_blank" rel="noopener">🎞️ Top Games List (Video)</a>
+        <a class="linkbtn" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
+        <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">🧩 Setup Guide</a>
+      </div>
+    </section>
 
-<div style="display:flex;justify-content:center;gap:12px;margin:10px 0;flex-wrap:wrap">
-<img src="Fmcb.png" alt="FMCB 8MB Memory Card" style="max-width:90px;border-radius:10px;box-shadow:var(--shadow)">
-<img src="Usb.jpg" alt="USB Pendrive" style="max-width:90px;border-radius:10px;box-shadow:var(--shadow)">
-<img src="Usbhdd.jpeg" alt="USB HDD" style="max-width:110px;border-radius:10px;box-shadow:var(--shadow)">
-</div>
+    <!-- 3) COMBO -->
+    <section class="card" aria-labelledby="combo-title">
+      <span class="badge">Combo Best Value</span>
+      <h2 class="title" id="combo-title">FMCB + USB Combo for PS2</h2>
 
-<div class="muted">Fully Plug & Play. Works on PS2 Fat, Slim 7xxxx (FMCB) & Slim 9xxxx (FunTuna).</div>
+      <div class="card-images">
+        <img src="Fmcb.png" alt="FMCB 8MB Memory Card">
+        <img src="Usb.jpg" alt="USB Pendrive">
+        <img src="Usbhdd.jpeg" alt="USB HDD">
+      </div>
 
-<h3 style="margin-top:12px;margin-bottom:6px">PS2 Fat (FMCB)</h3>
-<div class="variants" id="comboFatList"></div>
+      <div class="muted">Fully Plug & Play. Works on PS2 Fat, Slim 7xxxx (FMCB) & Slim 9xxxx (FunTuna).</div>
 
-<h3 style="margin-top:12px;margin-bottom:6px">PS2 Slim 7xxxx (FMCB)</h3>
-<div class="variants" id="comboSlim7List"></div>
+      <h3 style="margin-top:12px;margin-bottom:6px;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;">PS2 Fat (FMCB)</h3>
+      <div class="variants" id="comboFatList"></div>
 
-<h3 style="margin-top:12px;margin-bottom:6px">PS2 Slim 9xxxx (FunTuna)</h3>
-<div class="variants" id="comboSlim9List"></div>
+      <h3 style="margin-top:14px;margin-bottom:6px;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;">PS2 Slim 7xxxx (FMCB)</h3>
+      <div class="variants" id="comboSlim7List"></div>
 
-<div class="links" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-<a class="linkbtn" href="https://youtu.be/xGR0vUM1-Jw" target="_blank" rel="noopener">🎞️ Top Games List (Video)</a>
-<a class="linkbtn" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
-<a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">📺 Setup Video</a>
-</div>
+      <h3 style="margin-top:14px;margin-bottom:6px;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;">PS2 Slim 9xxxx (FunTuna)</h3>
+      <div class="variants" id="comboSlim9List"></div>
 
-</section>
-</div>
+      <div class="links" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+        <a class="linkbtn" href="https://youtu.be/xGR0vUM1-Jw" target="_blank" rel="noopener">🎞️ Top Games List (Video)</a>
+        <a class="linkbtn" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
+        <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">📺 Setup Video</a>
+      </div>
 
-<!-- Important Notes -->
-<div class="section">
-<h3>⚠️ Important Notes</h3>
-<ul class="list">
-<li>Do <b>not</b> delete FMCB / OPL / ELF / system (blue icon) files.</li>
-<li>USB works with PS2 Fat & Slim (7xxxx / 9xxxx). Plug directly into PS2 (no hub/splitter).</li>
-<li>For Slim 9xxxx, <b>FunTuna</b> is used automatically with the combo.</li>
-</ul>
-</div>
+    </section>
+  </div>
 
-<!-- Chip Condition -->
-<div class="section">
-<h3>⚠️ Chip Condition (Read Before Order)</h3>
-<ul class="list">
-<li>🟢 FMCB & FunTuna both work without any modding chip.</li>
-<li>🟢 If your PS2 has <b>Matrix</b> or <b>Sumo Lite</b> chip → usually OK.</li>
-<li>🔴 If your PS2 has a <b>DVD Boot Chip</b> → 99% chances FMCB/FunTuna will not work.</li>
-<li>👉 In that case, chip wires must be disconnected (requires opening PS2). Message us for the step-by-step guidance video.</li>
-</ul>
-</div>
+  <!-- Important Notes -->
+  <div class="section">
+    <h3>⚠️ Important Notes</h3>
+    <ul class="list">
+      <li>Do <b>not</b> delete FMCB / OPL / ELF / system (blue icon) files.</li>
+      <li>USB works with PS2 Fat & Slim (7xxxx / 9xxxx). Plug directly into PS2 (no hub/splitter).</li>
+      <li>For Slim 9xxxx, <b>FunTuna</b> is used automatically with the combo.</li>
+    </ul>
+  </div>
 
-<!-- Warranty -->
-<div class="section">
-<h3>💡 Warranty</h3>
-<ul class="list">
-<li>64GB / 128GB / 128GB SSD – 1 Year</li>
-<li>256GB / 500GB SSD – 1 Year</li>
-<li>500GB HDD – 6 Months</li>
-<li>USB Enclosure – ❌ No Warranty</li>
-</ul>
-</div>
+  <!-- Chip Condition -->
+  <div class="section">
+    <h3>⚠️ Chip Condition (Read Before Order)</h3>
+    <ul class="list">
+      <li>🟢 FMCB & FunTuna both work without any modding chip.</li>
+      <li>🟢 If your PS2 has <b>Matrix</b> or <b>Sumo Lite</b> chip → usually OK.</li>
+      <li>🔴 If your PS2 has a <b>DVD Boot Chip</b> → 99% chances FMCB/FunTuna will not work.</li>
+      <li>👉 In that case, chip wires must be disconnected (requires opening PS2). Message us for the step-by-step guidance video.</li>
+    </ul>
+  </div>
 
-<!-- Policy -->
-<div class="section">
-<h3>📌 Policy</h3>
-<ul class="list">
-<li>❌ No Return • ❌ No Replacement</li>
-<li>✔️ Confirm OPL compatibility before ordering</li>
-<li>🛠️ 1 Month Free Software Reinstallation (Courier both sides by customer)</li>
-</ul>
-</div>
+  <!-- Warranty -->
+  <div class="section">
+    <h3>💡 Warranty</h3>
+    <ul class="list">
+      <li>64GB / 128GB / 128GB SSD – 1 Year</li>
+      <li>256GB / 500GB SSD – 1 Year</li>
+      <li>500GB HDD – 6 Months</li>
+      <li>USB Enclosure – ❌ No Warranty</li>
+    </ul>
+  </div>
 
-<p class="foot">© Games Planet — WhatsApp: +91 79836 24797 • Prices in INR.</p>
+  <!-- Policy -->
+  <div class="section">
+    <h3>📌 Policy</h3>
+    <ul class="list">
+      <li>❌ No Return • ❌ No Replacement</li>
+      <li>✔️ Confirm OPL compatibility before ordering</li>
+      <li>🛠️ 1 Month Free Software Reinstallation (Courier both sides by customer)</li>
+    </ul>
+  </div>
+
+  <p class="foot">
+    © Games Planet — WhatsApp: +91 79836 24797 • Prices in INR.
+  </p>
 </div>
 
 <script>
 // ===== Updated Product Data =====
 
 const usbVariants = [
-{ v:'64GB PD', top:1099, opt:1199, count:21 },
-{ v:'128GB PD', top:1699, opt:1849, count:41 },
-{ v:'128GB SSD', top:2199, opt:2399, count:41 },
-{ v:'256GB SSD', top:3299, opt:3599, count:71 },
-{ v:'500GB HDD', top:3499, opt:3799, count:175 },
-{ v:'500GB SSD', top:4499, opt:4899, count:175 },
+  { v:'64GB PD', top:1099, opt:1199, count:21 },
+  { v:'128GB PD', top:1699, opt:1849, count:41 },
+  { v:'128GB SSD', top:2199, opt:2399, count:41 },
+  { v:'256GB SSD', top:3299, opt:3599, count:71 },
+  { v:'500GB HDD', top:3499, opt:3799, count:175 },
+  { v:'500GB SSD', top:4499, opt:4899, count:175 },
 ];
 
 const comboVariants = [
-{ v:'64GB PD',  top:1599, opt:1749, count:21 },
-{ v:'128GB PD', top:2199, opt:2399, count:41 },
-{ v:'128GB SSD',top:2699, opt:2899, count:41 },
-{ v:'256GB SSD',top:3799, opt:4149, count:71 },
-{ v:'500GB HDD',top:4199, opt:4549, count:175 },
-{ v:'500GB SSD',top:5199, opt:5649, count:175 },
+  { v:'64GB PD',  top:1599, opt:1749, count:21 },
+  { v:'128GB PD', top:2199, opt:2399, count:41 },
+  { v:'128GB SSD',top:2699, opt:2899, count:41 },
+  { v:'256GB SSD',top:3799, opt:4149, count:71 },
+  { v:'500GB HDD',top:4199, opt:4549, count:175 },
+  { v:'500GB SSD',top:5199, opt:5649, count:175 },
 ];
 
 function fmt(n){return `₹${Number(n).toLocaleString('en-IN')}`;}
 function link(prefill){
-const q = new URLSearchParams(prefill).toString();
-return `order-prefill.html?${q}`;
+  const q = new URLSearchParams(prefill).toString();
+  return `order-prefill.html?${q}`;
 }
 
 function goPrefill(product, variant, base, pack, allowCod){
-location.href = link({product,variant,base,pack,allowCod});
+  location.href = link({product,variant,base,pack,allowCod});
 }
 
-// ===== USB renderer (PATCHED ONLY THIS PART) =====
+// ===== USB renderer =====
 (function renderUSB(){
-const box=document.getElementById('usbList'); 
-box.innerHTML='';
+  const box=document.getElementById('usbList'); 
+  box.innerHTML='';
 
-usbVariants.forEach(({v,top,opt,count})=>{
+  usbVariants.forEach(({v,top,opt,count})=>{
+    const row=document.createElement('div'); 
+    row.className='row';
 
-const row=document.createElement('div'); 
-row.className='row';
+    row.innerHTML=`
+      <div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
+      <div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
+      <div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>
+    `;
 
-row.innerHTML=`
-<div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
-<div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
-<div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>
-`;
+    row.querySelector('.btn.buy').onclick=()=>goPrefill('USB for PS2 (Game-Loaded)', v, top, 'Top', true);
+    row.querySelector('.btn.alt').onclick=()=>goPrefill('USB for PS2 (Game-Loaded)', v+' — Optional', opt, 'Optional', true);
 
-row.querySelector('.btn.buy').onclick=()=>goPrefill('USB for PS2 (Game-Loaded)', v, top, 'Top', true);
-row.querySelector('.btn.alt').onclick=()=>goPrefill('USB for PS2 (Game-Loaded)', v+' — Optional', opt, 'Optional', true);
-
-box.appendChild(row);
-});
+    box.appendChild(row);
+  });
 })();
 
-// ===== COMBO Renderer (unchanged) =====
+// ===== COMBO Renderer =====
 (function renderComboModelWise(){
-const fatBox = document.getElementById('comboFatList');
-const slim7Box = document.getElementById('comboSlim7List');
-const slim9Box = document.getElementById('comboSlim9List');
-fatBox.innerHTML=''; slim7Box.innerHTML=''; slim9Box.innerHTML='';
+  const fatBox = document.getElementById('comboFatList');
+  const slim7Box = document.getElementById('comboSlim7List');
+  const slim9Box = document.getElementById('comboSlim9List');
+  fatBox.innerHTML=''; slim7Box.innerHTML=''; slim9Box.innerHTML='';
 
-comboVariants.forEach(({v,top,opt,count})=>{
+  comboVariants.forEach(({v,top,opt,count})=>{
 
-// FAT
-const rowF=document.createElement('div'); 
-rowF.className='row';
-rowF.innerHTML=`
-<div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
-<div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
-<div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>`;
-rowF.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Fat (FMCB)', top, 'Top', true);
-rowF.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Fat (FMCB) — Optional', opt, 'Optional', true);
-fatBox.appendChild(rowF);
+    // FAT
+    const rowF=document.createElement('div'); 
+    rowF.className='row';
+    rowF.innerHTML=`
+      <div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
+      <div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
+      <div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>`;
+    rowF.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Fat (FMCB)', top, 'Top', true);
+    rowF.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Fat (FMCB) — Optional', opt, 'Optional', true);
+    fatBox.appendChild(rowF);
 
-// Slim 7xxxx
-const row7=document.createElement('div'); 
-row7.className='row';
-row7.innerHTML=`
-<div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
-<div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
-<div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>`;
-row7.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 7xxxx (FMCB)', top, 'Top', true);
-row7.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 7xxxx (FMCB) — Optional', opt, 'Optional', true);
-slim7Box.appendChild(row7);
+    // Slim 7xxxx
+    const row7=document.createElement('div'); 
+    row7.className='row';
+    row7.innerHTML=`
+      <div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
+      <div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
+      <div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>`;
+    row7.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 7xxxx (FMCB)', top, 'Top', true);
+    row7.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 7xxxx (FMCB) — Optional', opt, 'Optional', true);
+    slim7Box.appendChild(row7);
 
-// Slim 9xxxx
-const row9=document.createElement('div'); 
-row9.className='row';
-row9.innerHTML=`
-<div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
-<div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
-<div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>`;
-row9.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 9xxxx (FunTuna)', top, 'Top', true);
-row9.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 9xxxx (FunTuna) — Optional', opt, 'Optional', true);
-slim9Box.appendChild(row9);
+    // Slim 9xxxx
+    const row9=document.createElement('div'); 
+    row9.className='row';
+    row9.innerHTML=`
+      <div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
+      <div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
+      <div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>`;
+    row9.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 9xxxx (FunTuna)', top, 'Top', true);
+    row9.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 9xxxx (FunTuna) — Optional', opt, 'Optional', true);
+    slim9Box.appendChild(row9);
 
-});
+  });
 })();
 </script>
 
