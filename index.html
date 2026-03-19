@@ -8,27 +8,22 @@
 
 <style>
 :root{
-  --bg: #020617;
-  --bg-alt: #050816;
-  --card: #020617;
-  --card-soft: #0b1120;
-  --muted: #9ca3af;
-  --text: #e5e7eb;
-  --accent: #22c55e;
-  --accent-alt: #16a34a;
-  --accent2: #38bdf8;
-  --accent3: #eab308;
-  --chip: #020617;
-  --chip-border: rgba(148,163,184,.5);
-  --ring: rgba(34,197,94,.26);
-  --ring2: rgba(56,189,248,.23);
-  --danger: #f97316;
-  --shadow-soft: 0 18px 40px rgba(15,23,42,0.95);
-  --shadow-btn: 0 16px 32px rgba(34,197,94,0.5);
-  --radius-lg: 20px;
-  --radius-pill: 999px;
-  --max-width: 1100px;
-  --transition-fast: 170ms ease-out;
+  --bg:#f8fbff;
+  --bg-alt:#eef4ff;
+  --card:#ffffff;
+  --card-soft:#f6faff;
+  --text:#020617;
+  --muted:#64748b;
+  --accent:#00e38c;
+  --accent-alt:#00c97c;
+  --accent2:#00b7ff;
+  --accent3:#ffcc00;
+  --chip:#eef4ff;
+  --chip-border: rgba(0,0,0,0.08);
+  --ring: rgba(0,227,140,0.25);
+  --ring2: rgba(0,183,255,0.25);
+  --shadow-soft: 0 8px 24px rgba(0,0,0,0.06);
+  --shadow-btn: 0 6px 18px rgba(0,227,140,0.35);
 }
 
 @media(prefers-color-scheme:light){
@@ -633,26 +628,26 @@ h1 span{
       <div class="variants" id="fmcbCard">
 
         <div class="row" data-model-group="fmcb-row" data-model="fat">
-          <div class="name">PS2 Fat (All Models) — <b>FMCB</b> <span class="pill">🟢 ₹999</span></div>
+          <div class="name">PS2 Fat (All Models) — <b>FMCB</b> <span class="pill">🟢 ₹799</span></div>
           <div></div>
           <div class="cta">
-            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Fat (All Models) — FMCB',999,'Card Only',false)">Buy</button>
+            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Fat (All Models) — FMCB',799,'Card Only',false)">Buy</button>
           </div>
         </div>
 
         <div class="row" data-model-group="fmcb-row" data-model="slim7">
-          <div class="name">PS2 Slim 7xxxx (All) — <b>FMCB</b> <span class="pill">🟢 ₹999</span></div>
+          <div class="name">PS2 Slim 7xxxx (All) — <b>FMCB</b> <span class="pill">🟢 ₹799</span></div>
           <div></div>
           <div class="cta">
-            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 7xxxx (All) — FMCB',999,'Card Only',false)">Buy</button>
+            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 7xxxx (All) — FMCB',799,'Card Only',false)">Buy</button>
           </div>
         </div>
 
         <div class="row" data-model-group="fmcb-row" data-model="slim9">
-          <div class="name">PS2 Slim 9xxxx (All) — <b>FunTuna</b> <span class="pill">🟢 ₹999</span></div>
+          <div class="name">PS2 Slim 9xxxx (All) — <b>FunTuna</b> <span class="pill">🟢 ₹799</span></div>
           <div></div>
           <div class="cta">
-            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 9xxxx (All) — FunTuna',999,'Card Only',false)">Buy</button>
+            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 9xxxx (All) — FunTuna',799,'Card Only',false)">Buy</button>
           </div>
         </div>
 
@@ -772,21 +767,23 @@ h1 span{
 // ===== Updated Product Data =====
 
 const usbVariants = [
-  { v:'64GB PD 2.0', top:979,  opt:1042, count:21 },
-  { v:'64GB PD 3.0', top:1149, opt:1212, count:21 },
-  { v:'128GB PD 3.0', top:1999, opt:2099, count:41 },
-  { v:'128GB SSD',   top:3699, opt:3799, count:41 },
-  { v:'256GB SSD',   top:5799, opt:5974, count:71 },
-  { v:'500GB HDD',   top:4199, opt:4574, count:175 },
+  { v:'64GB PD 2.0', top:1199, opt:1299, count:21 },
+  { v:'64GB PD 3.0', top:1299, opt:1399, count:21 },
+  { v:'128GB PD 3.0', top:2299, opt:2499, count:41 },
+  { v:'128GB SSD', top:3999, opt:4199, count:41 },
+  { v:'256GB SSD', top:6499, opt:6799, count:71 },
+  { v:'500GB HDD', top:6999, opt:7299, count:175 },
+  { v:'500GB SSD', top:10999, opt:11499, count:175 },
 ];
 
 const comboVariants = [
-  { v:'64GB PD 2.0', top:1479, opt:1542, count:21 },
-  { v:'64GB PD 3.0', top:1649, opt:1712, count:21 },
-  { v:'128GB PD 3.0',top:2499, opt:2599, count:41 },
-  { v:'128GB SSD',   top:4199, opt:4299, count:41 },
-  { v:'256GB SSD',   top:6299, opt:6474, count:71 },
-  { v:'500GB HDD',   top:4699, opt:5074, count:175 },
+  { v:'64GB PD 2.0', top:1799, opt:1899, count:21 },
+  { v:'64GB PD 3.0', top:1899, opt:1999, count:21 },
+  { v:'128GB PD 3.0', top:2899, opt:3099, count:41 },
+  { v:'128GB SSD', top:4599, opt:4799, count:41 },
+  { v:'256GB SSD', top:7099, opt:7399, count:71 },
+  { v:'500GB HDD', top:7499, opt:7799, count:175 },
+  { v:'500GB SSD', top:11499, opt:11999, count:175 },
 ];
 
 function fmt(n){return `₹${Number(n).toLocaleString('en-IN')}`;}
