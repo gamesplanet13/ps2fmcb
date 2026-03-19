@@ -8,22 +8,20 @@
 
 <style>
 :root{
-  --bg:#f8fbff;
-  --bg-alt:#eef4ff;
+  --bg:#eaeded;
+  --bg-alt:#f3f3f3;
   --card:#ffffff;
-  --card-soft:#f6faff;
-  --text:#020617;
-  --muted:#64748b;
-  --accent:#00e38c;
-  --accent-alt:#00c97c;
-  --accent2:#00b7ff;
-  --accent3:#ffcc00;
-  --chip:#eef4ff;
-  --chip-border: rgba(0,0,0,0.08);
-  --ring: rgba(0,227,140,0.25);
-  --ring2: rgba(0,183,255,0.25);
-  --shadow-soft: 0 8px 24px rgba(0,0,0,0.06);
-  --shadow-btn: 0 6px 18px rgba(0,227,140,0.35);
+  --card-soft:#ffffff;
+  --text:#0f1111;
+  --muted:#565959;
+  --accent:#ffd814;
+  --accent-alt:#f7ca00;
+  --accent2:#007185;
+  --accent3:#ffa41c;
+  --chip:#f3f3f3;
+  --chip-border:#d5d9d9;
+  --shadow-soft:none;
+  --shadow-btn:none;
 }
 
 @media(prefers-color-scheme:light){
@@ -44,15 +42,20 @@
 }
 
 *{box-sizing:border-box}
-html,body{height:100%}
+html,body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#eaeded;
+  color:#0f1111;
+}
 
 body{
   margin:0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   background:
-    radial-gradient(circle at 0% -10%, rgba(56,189,248,.20), transparent 55%),
-    radial-gradient(circle at 110% 0%, rgba(34,197,94,.20), transparent 50%),
-    radial-gradient(circle at 50% 120%, rgba(56,189,248,.16), transparent 55%),
+    none, transparent 55%),
+    none, transparent 50%),
+    none, transparent 55%),
     var(--bg);
   color:var(--text);
   -webkit-font-smoothing: antialiased;
@@ -108,7 +111,7 @@ h1{
 }
 
 h1 span{
-  background:linear-gradient(135deg,#22c55e,#38bdf8);
+  background:#ffffff;
   -webkit-background-clip:text;
   color:transparent;
 }
@@ -131,7 +134,7 @@ h1 span{
   padding:6px 10px;
   border-radius:var(--radius-pill);
   border:1px solid rgba(148,163,184,0.4);
-  background:radial-gradient(circle at 0 0,rgba(34,197,94,0.18),rgba(15,23,42,0.98));
+  background:none,rgba(15,23,42,0.98));
   font-size:0.72rem;
   color:var(--muted);
   display:flex;
@@ -159,7 +162,7 @@ h1 span{
   text-decoration:none;
   font-weight:600;
   font-size:0.8rem;
-  background:linear-gradient(135deg,rgba(15,23,42,0.96),rgba(15,23,42,0.9));
+  background:#ffffff,rgba(15,23,42,0.9));
   box-shadow:0 10px 24px rgba(15,23,42,0.7);
   transition:
     transform var(--transition-fast),
@@ -171,7 +174,7 @@ h1 span{
 .linkbtn:hover{
   transform:translateY(-1px);
   border-color:rgba(209,213,219,0.9);
-  background:linear-gradient(135deg,rgba(15,23,42,1),rgba(15,23,42,0.98));
+  background:#ffffff,rgba(15,23,42,0.98));
   box-shadow:0 16px 32px rgba(15,23,42,0.95);
 }
 
@@ -189,8 +192,8 @@ h1 span{
   padding:14px 14px 16px;
   border-radius:18px;
   background:
-    radial-gradient(circle at 0 0,rgba(56,189,248,0.18),transparent 55%),
-    radial-gradient(circle at 100% 100%,rgba(34,197,94,0.18),transparent 60%),
+    none,transparent 55%),
+    none,transparent 60%),
     rgba(15,23,42,0.9);
   border:1px solid rgba(31,41,55,0.9);
   box-shadow:0 16px 34px rgba(15,23,42,0.9);
@@ -219,7 +222,7 @@ h1 span{
   flex:1 1 120px;
   border-radius:18px;
   border:1px solid rgba(148,163,184,0.65);
-  background:radial-gradient(circle at 0 0,rgba(56,189,248,0.25),rgba(15,23,42,1));
+  background:none,rgba(15,23,42,1));
   padding:10px 12px;
   font-size:0.86rem;
   font-weight:800;
@@ -249,7 +252,7 @@ h1 span{
 }
 
 .model-btn.active{
-  background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.95));
+  background:#ffffff,rgba(16,185,129,0.95));
   border-color:rgba(190,242,100,0.9);
   color:#022c22;
   box-shadow:0 20px 42px rgba(22,163,74,0.9);
@@ -301,8 +304,8 @@ h1 span{
 /* Card base */
 .card{
   background:
-    radial-gradient(circle at 0 0,rgba(56,189,248,0.18),transparent 60%),
-    radial-gradient(circle at 105% 0,rgba(34,197,94,0.18),transparent 55%),
+    none,transparent 60%),
+    none,transparent 55%),
     var(--card-soft);
   border-radius:var(--radius-lg);
   padding:18px 18px 20px;
@@ -320,8 +323,8 @@ h1 span{
   width:250px;
   height:250px;
   background:
-    radial-gradient(circle at 20% 10%,var(--ring),transparent 60%),
-    radial-gradient(circle at 80% 80%,var(--ring2),transparent 65%);
+    none,transparent 60%),
+    none,transparent 65%);
   opacity:0.8;
   pointer-events:none;
 }
@@ -405,7 +408,7 @@ h1 span{
   display:inline-flex;
   align-items:center;
   gap:6px;
-  background:radial-gradient(circle at 0 0,rgba(34,197,94,0.3),rgba(15,23,42,0.98));
+  background:none,rgba(15,23,42,0.98));
   padding:5px 10px;
   border-radius:var(--radius-pill);
   font-weight:700;
@@ -454,7 +457,7 @@ h1 span{
 }
 
 .btn.buy{
-  background:linear-gradient(135deg,var(--accent),var(--accent-alt));
+  background:#ffffff,var(--accent-alt));
   color:#022c22;
   box-shadow:var(--shadow-btn);
 }
@@ -466,7 +469,7 @@ h1 span{
 }
 
 .btn.alt{
-  background:linear-gradient(135deg,var(--accent3),#f97316);
+  background:#ffffff,#f97316);
   color:#1f1300;
   box-shadow:0 14px 26px rgba(234,179,8,0.45);
 }
@@ -628,26 +631,26 @@ h1 span{
       <div class="variants" id="fmcbCard">
 
         <div class="row" data-model-group="fmcb-row" data-model="fat">
-          <div class="name">PS2 Fat (All Models) — <b>FMCB</b> <span class="pill">🟢 ₹799</span></div>
+          <div class="name">PS2 Fat (All Models) — <b>FMCB</b> <span class="pill">🟢 ₹999</span></div>
           <div></div>
           <div class="cta">
-            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Fat (All Models) — FMCB',799,'Card Only',false)">Buy</button>
+            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Fat (All Models) — FMCB',999,'Card Only',false)">Buy</button>
           </div>
         </div>
 
         <div class="row" data-model-group="fmcb-row" data-model="slim7">
-          <div class="name">PS2 Slim 7xxxx (All) — <b>FMCB</b> <span class="pill">🟢 ₹799</span></div>
+          <div class="name">PS2 Slim 7xxxx (All) — <b>FMCB</b> <span class="pill">🟢 ₹999</span></div>
           <div></div>
           <div class="cta">
-            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 7xxxx (All) — FMCB',799,'Card Only',false)">Buy</button>
+            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 7xxxx (All) — FMCB',999,'Card Only',false)">Buy</button>
           </div>
         </div>
 
         <div class="row" data-model-group="fmcb-row" data-model="slim9">
-          <div class="name">PS2 Slim 9xxxx (All) — <b>FunTuna</b> <span class="pill">🟢 ₹799</span></div>
+          <div class="name">PS2 Slim 9xxxx (All) — <b>FunTuna</b> <span class="pill">🟢 ₹999</span></div>
           <div></div>
           <div class="cta">
-            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 9xxxx (All) — FunTuna',799,'Card Only',false)">Buy</button>
+            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 9xxxx (All) — FunTuna',999,'Card Only',false)">Buy</button>
           </div>
         </div>
 
@@ -767,23 +770,23 @@ h1 span{
 // ===== Updated Product Data =====
 
 const usbVariants = [
-  { v:'64GB PD 2.0', top:1199, opt:1299, count:21 },
-  { v:'64GB PD 3.0', top:1299, opt:1399, count:21 },
-  { v:'128GB PD 3.0', top:2299, opt:2499, count:41 },
-  { v:'128GB SSD', top:3999, opt:4199, count:41 },
-  { v:'256GB SSD', top:6499, opt:6799, count:71 },
-  { v:'500GB HDD', top:6999, opt:7299, count:175 },
-  { v:'500GB SSD', top:10999, opt:11499, count:175 },
+  { v:'64GB PD 2.0', top:1029, opt:1286, count:21 },
+  { v:'64GB PD 3.0', top:1199, opt:1499, count:21 },
+  { v:'128GB PD 3.0', top:2099, opt:2624, count:41 },
+  { v:'128GB SSD', top:3799, opt:4749, count:41 },
+  { v:'256GB SSD', top:6299, opt:7874, count:71 },
+  { v:'500GB HDD', top:6599, opt:8249, count:175 },
+  { v:'500GB SSD', top:8599, opt:10749, count:175 },
 ];
 
 const comboVariants = [
-  { v:'64GB PD 2.0', top:1799, opt:1899, count:21 },
-  { v:'64GB PD 3.0', top:1899, opt:1999, count:21 },
-  { v:'128GB PD 3.0', top:2899, opt:3099, count:41 },
-  { v:'128GB SSD', top:4599, opt:4799, count:41 },
-  { v:'256GB SSD', top:7099, opt:7399, count:71 },
-  { v:'500GB HDD', top:7499, opt:7799, count:175 },
-  { v:'500GB SSD', top:11499, opt:11999, count:175 },
+  { v:'64GB PD 2.0', top:1529, opt:1911, count:21 },
+  { v:'64GB PD 3.0', top:1699, opt:2124, count:21 },
+  { v:'128GB PD 3.0', top:2599, opt:3249, count:41 },
+  { v:'128GB SSD', top:4299, opt:5374, count:41 },
+  { v:'256GB SSD', top:6799, opt:8499, count:71 },
+  { v:'500GB HDD', top:7099, opt:8874, count:175 },
+  { v:'500GB SSD', top:9099, opt:11374, count:175 },
 ];
 
 function fmt(n){return `₹${Number(n).toLocaleString('en-IN')}`;}
@@ -923,3 +926,50 @@ function clearModel(){
 
 </body>
 </html>
+
+
+<style>
+.btn.buy{
+  background:#ffd814 !important;
+  color:#0f1111 !important;
+  border:1px solid #fcd200;
+  box-shadow:none !important;
+}
+.btn.alt{
+  background:#ffa41c !important;
+  color:#0f1111 !important;
+  border:1px solid #ff8f00;
+}
+.card{
+  background:#ffffff !important;
+  border:1px solid #d5d9d9 !important;
+  box-shadow:none !important;
+}
+.pill{
+  color:#b12704 !important;
+  background:none !important;
+  border:none !important;
+}
+.model-btn{
+  background:#f3f3f3 !important;
+  border:1px solid #d5d9d9 !important;
+  color:#0f1111 !important;
+}
+.model-btn.active{
+  border:2px solid #ffa41c !important;
+  background:#ffffff !important;
+}
+</style>
+
+
+<style>
+.btn.buy{
+  background:#ffccd5 !important;
+  color:#0f1111 !important;
+  border:1px solid #ffb3c1 !important;
+  font-weight:700;
+}
+.btn.buy:hover{
+  background:#ffb3c1 !important;
+}
+</style>
