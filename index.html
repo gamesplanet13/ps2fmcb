@@ -9,19 +9,8 @@
 <style>
 :root{
   --bg:#eaeded;
-  --bg-alt:#f3f3f3;
   --card:#ffffff;
-  --card-soft:#ffffff;
   --text:#0f1111;
-  --muted:#565959;
-  --accent:#ffd814;
-  --accent-alt:#f7ca00;
-  --accent2:#007185;
-  --accent3:#ffa41c;
-  --chip:#f3f3f3;
-  --chip-border:#d5d9d9;
-  --shadow-soft:none;
-  --shadow-btn:none;
 }
 
 @media(prefers-color-scheme:light){
@@ -764,29 +753,52 @@ h1 span{
   <p class="foot">
     © Games Planet — WhatsApp: +91 79836 24797 • Prices in INR.
   </p>
+
+<div class="section">
+  <h3>💰 Price Breakdown</h3>
+  <ul class="list">
+    <li><b>Product Price:</b> Includes storage device + setup</li>
+    <li><b>Games Cost:</b> Calculated based on number of games</li>
+    <li><b>Software Setup:</b> Pre-installed FMCB / OPL configuration</li>
+    <li><b>Courier Charges:</b> Included in final price</li>
+    <li>⚠️ <b>No warranty on games or software</b></li>
+    <li>✔️ Warranty applies only on <b>hardware / physical items</b></li>
+  </ul>
+</div>
+
+
+
+<div style="margin-top:20px;text-align:center;">
+  <button onclick="window.location.href='price_breakdown.html'" 
+    style="padding:12px 18px;font-size:14px;font-weight:700;border-radius:8px;
+    background:#ffd814;border:1px solid #fcd200;cursor:pointer;">
+    📊 View Full Price Breakdown
+  </button>
+</div>
+
 </div>
 
 <script>
 // ===== Updated Product Data =====
 
 const usbVariants = [
-  { v:'64GB PD 2.0', top:1029, opt:1286, count:21 },
-  { v:'64GB PD 3.0', top:1199, opt:1499, count:21 },
-  { v:'128GB PD 3.0', top:2099, opt:2624, count:41 },
-  { v:'128GB SSD', top:3799, opt:4749, count:41 },
-  { v:'256GB SSD', top:6299, opt:7874, count:71 },
-  { v:'500GB HDD', top:6599, opt:8249, count:175 },
-  { v:'500GB SSD', top:8599, opt:10749, count:175 },
+  { v:'64GB PD 2.0', top:1199, opt:1299, count:21 },
+  { v:'64GB PD 3.0', top:1299, opt:1399, count:21 },
+  { v:'128GB PD 3.0', top:2299, opt:2499, count:41 },
+  { v:'128GB SSD', top:3999, opt:4199, count:41 },
+  { v:'256GB SSD', top:6499, opt:6799, count:71 },
+  { v:'500GB HDD', top:6999, opt:7299, count:175 },
+  { v:'500GB SSD', top:10999, opt:11499, count:175 },
 ];
 
 const comboVariants = [
-  { v:'64GB PD 2.0', top:1529, opt:1911, count:21 },
-  { v:'64GB PD 3.0', top:1699, opt:2124, count:21 },
-  { v:'128GB PD 3.0', top:2599, opt:3249, count:41 },
-  { v:'128GB SSD', top:4299, opt:5374, count:41 },
-  { v:'256GB SSD', top:6799, opt:8499, count:71 },
-  { v:'500GB HDD', top:7099, opt:8874, count:175 },
-  { v:'500GB SSD', top:9099, opt:11374, count:175 },
+  { v:'64GB PD 2.0', top:1799, opt:1899, count:21 },
+  { v:'64GB PD 3.0', top:1899, opt:1999, count:21 },
+  { v:'128GB PD 3.0', top:2899, opt:3099, count:41 },
+  { v:'128GB SSD', top:4599, opt:4799, count:41 },
+  { v:'256GB SSD', top:7099, opt:7399, count:71 },
+  { v:'500GB HDD', top:7499, opt:7799, count:175 },
+  { v:'500GB SSD', top:11499, opt:11999, count:175 },
 ];
 
 function fmt(n){return `₹${Number(n).toLocaleString('en-IN')}`;}
@@ -927,49 +939,30 @@ function clearModel(){
 </body>
 </html>
 
-
 <style>
-.btn.buy{
-  background:#ffd814 !important;
-  color:#0f1111 !important;
-  border:1px solid #fcd200;
+.card{
+  background:#fff !important;
+  border:1px solid #d5d9d9 !important;
   box-shadow:none !important;
+}
+.btn.buy{
+  background:#ffccd5 !important;
+  color:#0f1111 !important;
 }
 .btn.alt{
   background:#ffa41c !important;
   color:#0f1111 !important;
-  border:1px solid #ff8f00;
 }
-.card{
-  background:#ffffff !important;
+.model-btn{
+  background:#f3f3f3 !important;
+  color:#0f1111 !important;
   border:1px solid #d5d9d9 !important;
-  box-shadow:none !important;
+}
+.model-btn.active{
+  border:2px solid #ffa41c !important;
 }
 .pill{
   color:#b12704 !important;
   background:none !important;
-  border:none !important;
-}
-.model-btn{
-  background:#f3f3f3 !important;
-  border:1px solid #d5d9d9 !important;
-  color:#0f1111 !important;
-}
-.model-btn.active{
-  border:2px solid #ffa41c !important;
-  background:#ffffff !important;
-}
-</style>
-
-
-<style>
-.btn.buy{
-  background:#ffccd5 !important;
-  color:#0f1111 !important;
-  border:1px solid #ffb3c1 !important;
-  font-weight:700;
-}
-.btn.buy:hover{
-  background:#ffb3c1 !important;
 }
 </style>
