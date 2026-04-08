@@ -277,9 +277,9 @@ const UPI_ID="paytmqr5hyx5o@ptys";
 const UPI_NAME="Surender Kaur";
 
 /* === COD RULES === */
-const COD_CHARGE = 199;      // below this → No COD
-  // ≥ this → COD charges 0
-        // between 1399 and 1898 → ₹99
+const COD_ALLOW_MIN = 1399;      // below this → No COD
+const COD_FREE_THRESHOLD = 1899;  // ≥ this → COD charges 0
+const COD_MID_CHARGE = 99;        // between 1399 and 1898 → ₹99
 
 let discountValue=0,mode="prepaid";
 
@@ -356,43 +356,27 @@ function computeCouponDiscount(subtotal){
   if(gb===256) return 500;
   return 0;
 }
-
 function applyCoupon(){
-  const code = (document.getElementById("couponCode").value || "").trim().toLowerCase();
-
-  if(code === "gpz2026"){
-    const total = getSubtotal();
-
-    if(total <= 4999){
-      discountValue = 100;
-    }
-    else if(total >= 5000 && total <= 6999){
-      discountValue = 200;
-    }
-    else if(total >= 7000){
-      discountValue = 300;
-    }
-  } else {
-    discountValue = 0;
+  const code=(document.getElementById("couponCode").value||"").trim().toLowerCase();
+  if(code!=="gpz2025"){
+    discountValue=0;
+    document.getElementById("couponNote").innerText="❌ Invalid coupon";
+    computeTotals(); return;
   }
-
-  computeTotals();
-}
-
   if(mode!=="prepaid"){
     discountValue=0;
-    // hidden="❌ Coupon only valid on Prepaid";
+    document.getElementById("couponNote").innerText="❌ Coupon only valid on Prepaid";
     computeTotals(); return;
   }
   const subtotal=getSubtotal();
   const d=computeCouponDiscount(subtotal);
   discountValue=Math.max(0, Math.min(d, subtotal));
   if(isFMCBorUSBCombo()){
-    // hidden=`✅ Coupon applied: -₹${discountValue} (5% on FMCB/USB/Combo)`;
+    document.getElementById("couponNote").innerText=`✅ Coupon applied: -₹${discountValue} (5% on FMCB/USB/Combo)`;
   }else{
     const gb=getVariantGB();
     const slab=(gb===64?200:gb===128?300:gb===256?500:0);
-    // hidden = slab>0
+    document.getElementById("couponNote").innerText = slab>0
       ? `✅ Coupon applied: -₹${slab} (GB slab: ${gb}GB)`
       : `ℹ️ Coupon applied: ₹0 (no GB slab matched)`;
   }
@@ -423,11 +407,11 @@ function codEligible(){
   const sub=getSubtotal();
   return sub >= COD_ALLOW_MIN;
 }
-
 function currentCodCharge(sub){
-  return 199;
+  if(sub >= COD_FREE_THRESHOLD) return 0;
+  if(sub >= COD_ALLOW_MIN) return COD_MID_CHARGE;
+  return null; // not allowed
 }
-
 function updateCodButton(){
   const codBtn=document.getElementById("btn-cod");
   const sub=getSubtotal();
