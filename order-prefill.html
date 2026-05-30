@@ -600,7 +600,14 @@ function submitOrder(){
 
 /* ====== ETA / PINCODE ====== */
 let pincodeLatLng={};
-fetch('pincode_data.json').then(r=>r.json()).then(j=>pincodeLatLng=j); /* local coords json */
+let pincodeDB={};
+
+fetch('pincode_merged_final.json')
+.then(r=>r.json())
+.then(data=>{
+  pincodeLatLng=data;
+  pincodeDB=data;
+});
 
 /* Haversine distance (km) */
 function haversine(lat1,lon1,lat2,lon2){
@@ -650,50 +657,54 @@ function formatDateRange(minDays,maxDays){
 document.getElementById("pincode").addEventListener("input",function(){
   const pin=this.value.trim();
   if(pin.length===6){
-    fetch(`https://api.postalpincode.in/pincode/${pin}`).then(r=>r.json()).then(data=>{
-      if(data[0].Status==="Success"){
-        const po=data[0].PostOffice[0];
-        document.getElementById("state").value=po.State;
-        document.getElementById("city").value=po.District;
-        const sel=document.getElementById("postoffice");sel.innerHTML='<option value="">Select Post Office</option>';
-        data[0].PostOffice.forEach(p=>{const o=document.createElement("option");o.value=p.Name;o.text=p.Name;sel.appendChild(o);});
-        if(pincodeLatLng[pin]){
-          const baseLat=28.8,baseLng=79.0; // near 244901 (Rampur)
-          const {lat,lng}=pincodeLatLng[pin];
-          const d=Math.round(haversine(baseLat,baseLng,lat,lng));
-          const eta=etaByDist(d);                 // prepaid ETA bucket
-          const pre=parseEta(eta);
-          const preRangeFull = formatDateRange(pre.min, pre.max);
+    const rec=pincodeDB[pin];
 
-          // COD = Prepaid +2 to +3 days
-          const cod={min: pre.min+2, max: pre.max+3};
-          const codEtaText = (cod.min===cod.max) ? `${cod.min} days` : `${cod.min}–${cod.max} days`;
-          const codRangeFull = formatDateRange(cod.min, cod.max);
+    if(rec){
+      document.getElementById("state").value=rec.state||"";
+      document.getElementById("city").value=rec.city||"";
 
-          // Keep meta in hidden inputs
-          document.getElementById("distance").value=`${d} km`;
-          document.getElementById("etaText").value=eta;
-          document.getElementById("dateRange").value=preRangeFull;
+      const sel=document.getElementById("postoffice");
+      sel.innerHTML='<option value="">Select Post Office</option>';
 
-          // Hidden for COD template
-          if(!document.getElementById("etaTextCod")){
-            const h1=document.createElement("input"); h1.type="hidden"; h1.id="etaTextCod";
-            const h2=document.createElement("input"); h2.type="hidden"; h2.id="dateRangeCOD";
-            document.body.appendChild(h1); document.body.appendChild(h2);
-          }
-          document.getElementById("etaTextCod").value = codEtaText;
-          document.getElementById("dateRangeCOD").value = codRangeFull;
+      (rec.postoffices||[]).forEach(po=>{
+        const o=document.createElement("option");
+        o.value=po;
+        o.text=po;
+        sel.appendChild(o);
+      });
 
-          // Mini preview under pincode
-          document.getElementById("deliveryEstimate").innerText=`📍 Distance: ${d} km\n⏳ Prepaid ETA: ${eta}\n📅 Prepaid Delivery: ${preRangeFull}`;
-          document.getElementById("preEta").textContent = eta;
-          document.getElementById("preRange").textContent = preRangeFull;
-          document.getElementById("codEta").textContent = codEtaText;
-          document.getElementById("codRange").textContent = codRangeFull;
-          document.getElementById("miniPreview").style.display="block";
+      if(rec.lat && rec.lng){
+        const baseLat=28.8,baseLng=79.0;
+        const d=Math.round(haversine(baseLat,baseLng,rec.lat,rec.lng));
+        const eta=etaByDist(d);
+        const pre=parseEta(eta);
+        const preRangeFull=formatDateRange(pre.min,pre.max);
+
+        const cod={min:pre.min+2,max:pre.max+3};
+        const codEtaText=(cod.min===cod.max)?`${cod.min} days`:`${cod.min}–${cod.max} days`;
+        const codRangeFull=formatDateRange(cod.min,cod.max);
+
+        document.getElementById("distance").value=`${d} km`;
+        document.getElementById("etaText").value=eta;
+        document.getElementById("dateRange").value=preRangeFull;
+
+        if(!document.getElementById("etaTextCod")){
+          const h1=document.createElement("input"); h1.type="hidden"; h1.id="etaTextCod";
+          const h2=document.createElement("input"); h2.type="hidden"; h2.id="dateRangeCOD";
+          document.body.appendChild(h1); document.body.appendChild(h2);
         }
+
+        document.getElementById("etaTextCod").value=codEtaText;
+        document.getElementById("dateRangeCOD").value=codRangeFull;
+
+        document.getElementById("deliveryEstimate").innerText=`📍 Distance: ${d} km`;
+        document.getElementById("preEta").textContent=eta;
+        document.getElementById("preRange").textContent=preRangeFull;
+        document.getElementById("codEta").textContent=codEtaText;
+        document.getElementById("codRange").textContent=codRangeFull;
+        document.getElementById("miniPreview").style.display="block";
       }
-    });
+    }
   }
 });
 
