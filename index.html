@@ -547,6 +547,12 @@ h1 span{
     max-width:95px;
   }
 }
+
+.ps2-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0}
+.ps2-gallery img,.step-img{max-width:100%;height:120px;object-fit:contain;cursor:pointer;border:1px solid #ccc;border-radius:8px}
+#imagePopup{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center}
+#imagePopup img{max-width:95%;max-height:95%}
+#imagePopup .close{position:absolute;right:20px;top:10px;color:#fff;font-size:32px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -581,7 +587,12 @@ h1 span{
   <!-- MODEL SELECTOR -->
   <section class="model-selector">
     <h2 class="model-title">Step 1 — Select Your PS2 Model</h2>
-    <p class="model-sub">✔️ जैसे ही आप अपना PS2 मॉडल चुनेंगे, नीचे सिर्फ उसी मॉडल के FMCB कार्ड USB और Combo Packs दिखाई देंगे।</p>
+    <div class="ps2-gallery">
+<div><img src="Ps2fat.jpg" onclick="openImg(this.src)"><br>PS2 FAT</div>
+<div><img src="Ps2slim7x.jpg" onclick="openImg(this.src)"><br>PS2 Slim 7xxxx</div>
+<div><img src="Ps2slim90.jpg" onclick="openImg(this.src)"><br>PS2 Slim 9xxxx</div>
+</div>
+<p class="model-sub">✔️ जैसे ही आप अपना PS2 मॉडल चुनेंगे, नीचे सिर्फ उसी मॉडल के FMCB कार्ड USB और Combo Packs दिखाई देंगे।</p>
     <div class="model-btn-row">
       <button type="button" class="model-btn" data-model="fat" onclick="selectModel('fat')">
         <span>🔵</span> PS2 FAT
@@ -601,7 +612,31 @@ h1 span{
     </div>
   </section>
 
-  <!-- Anchor to scroll after selection -->
+  
+<section id="step2" class="model-selector hidden">
+<h2 class="model-title">Step 2 — Matrix Installed?</h2><img class="step-img" src="Matrixps2.jpg" onclick="openImg(this.src)">
+<div class="model-btn-row">
+<button class="model-btn" onclick="showStep3()">Yes</button>
+<button class="model-btn" onclick="showStep3()">No</button>
+<button class="model-btn" onclick="showStep3()">Don't Know</button>
+</div></section>
+
+<section id="step3" class="model-selector hidden">
+<h2 class="model-title">Step 3 — FMCB Type</h2><img class="step-img" src="Fmcb.jpeg" onclick="openImg(this.src)"><img class="step-img" src="OPL10.png" onclick="openImg(this.src)">
+<div class="model-btn-row">
+<button class="model-btn" onclick="showStep4()">FMCB / OPL Only</button>
+<button class="model-btn" onclick="showStep4()">Full FMCB + Apps</button>
+</div></section>
+
+<section id="step4" class="model-selector hidden">
+<h2 class="model-title">Step 4 — Product Type</h2>
+<div class="model-btn-row">
+<button class="model-btn" onclick="showProducts('fmcb')">FMCB Card</button>
+<button class="model-btn" onclick="showProducts('usb')">USB Only</button>
+<button class="model-btn" onclick="showProducts('combo')">Combo</button>
+</div></section>
+
+<!-- Anchor to scroll after selection -->
   <div id="cardsAnchor"></div>
 
   <div class="grid">
@@ -892,9 +927,7 @@ function selectModel(model){
   });
 
   // Show main product cards
-  document.querySelectorAll('.model-guard').forEach(el=>{
-    el.classList.remove('hidden');
-  });
+  
 
   // FMCB: show only selected model row
   document.querySelectorAll('[data-model-group="fmcb-row"]').forEach(row=>{
@@ -910,7 +943,7 @@ function selectModel(model){
   const wrap = document.getElementById('selectedModelWrap');
   const label = document.getElementById('selectedModelLabel');
   if(label){ label.textContent = modelLabels[model] || ""; }
-  if(wrap){ wrap.classList.remove('hidden'); }
+  if(wrap){ wrap.classList.remove('hidden'); } document.getElementById('step2').classList.remove('hidden');
 
   // Scroll to products
   const anchor = document.getElementById('cardsAnchor');
@@ -918,6 +951,11 @@ function selectModel(model){
     anchor.scrollIntoView({behavior:'smooth', block:'start'});
   }
 }
+
+
+function showStep3(){document.getElementById('step3').classList.remove('hidden');}
+function showStep4(){document.getElementById('step4').classList.remove('hidden');}
+function showProducts(){document.querySelectorAll('.model-guard').forEach(el=>el.classList.remove('hidden'));}
 
 function clearModel(){
   // Deactivate buttons
@@ -936,6 +974,20 @@ function clearModel(){
 }
 </script>
 
+
+<div id="imagePopup"><span class="close" onclick="closeImg()">✕</span><img id="popupImg"></div>
+<script>
+function openImg(s){document.getElementById('imagePopup').style.display='flex';document.getElementById('popupImg').src=s;}
+function closeImg(){document.getElementById('imagePopup').style.display='none';}
+
+function showProducts(type){
+ document.querySelectorAll('.model-guard').forEach(el=>el.classList.add('hidden'));
+ const cards=document.querySelectorAll('.model-guard');
+ if(type==='fmcb' && cards[0]) cards[0].classList.remove('hidden');
+ if(type==='usb' && cards[1]) cards[1].classList.remove('hidden');
+ if(type==='combo' && cards[2]) cards[2].classList.remove('hidden');
+}
+</script>
 </body>
 </html>
 
@@ -965,4 +1017,10 @@ function clearModel(){
   color:#b12704 !important;
   background:none !important;
 }
+
+.ps2-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0}
+.ps2-gallery img,.step-img{max-width:100%;height:120px;object-fit:contain;cursor:pointer;border:1px solid #ccc;border-radius:8px}
+#imagePopup{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center}
+#imagePopup img{max-width:95%;max-height:95%}
+#imagePopup .close{position:absolute;right:20px;top:10px;color:#fff;font-size:32px;cursor:pointer}
 </style>
