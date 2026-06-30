@@ -157,21 +157,21 @@
         <select id="addonSelect">
           <option value="" data-price="0">— Select —</option>
           <!-- Existing add-ons -->
-          <option value="Wire Gamepad" data-price="365">Wire Gamepad — ₹365</option>
+          <option value="Wire Gamepad" data-price="365">Wire Gamepad — ₹375</option>
 
 <option value="Wireless Gamepad" data-price="499">Wireless Gamepad — ₹499</option>
 
 <option value="PS2 Slim Sticker/Skin" data-price="60">PS2 Slim Sticker/Skin — ₹60</option>
 
-<option value="HDMI Converter" data-price="279">HDMI Converter — ₹279</option>
+<option value="HDMI Converter" data-price="279">HDMI Converter — ₹310</option>
 
 <option value="HDMI Cable" data-price="99">HDMI Cable — ₹99</option>
 
 <option value="Best HDMI Cable" data-price="349">Best HDMI Cable — ₹349</option>
 
-<option value="Blank Memory Card 8MB" data-price="299">Blank Memory Card 8MB — ₹299</option>
+<option value="Blank Memory Card 8MB" data-price="299">Blank Memory Card 8MB — ₹350</option>
 
-<option value="AAA Batteries of duaracel PACK OF 4" data-price="88">AAA Batteries of duaracel PACK OF 4 — ₹88</option>
+<option value="AAA Batteries of duaracel PACK OF 4" data-price="88">AAA Batteries of duaracel PACK OF 4 — ₹99</option>
 
 <option value="AAA RECHARGEABLE BATTERIES PACK OF 4" data-price="599">AAA RECHARGEABLE BATTERIES PACK OF 4 — ₹599</option>
 
@@ -204,7 +204,7 @@
       <button id="btn-prepaid" class="ghost" onclick="setMode('prepaid')">🟢 Prepaid</button>
       <button id="btn-cod" class="ghost" onclick="setMode('cod')">🔴 COD</button>
     </div>
-    <div class="hint" id="codNote">COD rules: ≥ ₹1899 → ₹0 • ₹1399–₹1898 → ₹99 • &lt; ₹1399 → No COD</div>
+    <div class="hint" id="codNote">COD rules: ≥ ₹1899 → ₹199 • ₹1399–₹1898 → ₹199 • &lt; ₹1399 → No COD</div>
   </div>
 
   <!-- Coupon (Prepaid only) -->
@@ -278,8 +278,8 @@ const UPI_NAME="Surender Kaur";
 
 /* === COD RULES === */
 const COD_ALLOW_MIN = 1399;      // below this → No COD
-const COD_FREE_THRESHOLD = 1899;  // ≥ this → COD charges 0
-const COD_MID_CHARGE = 99;        // between 1399 and 1898 → ₹99
+const COD_FREE_THRESHOLD = 1899;  // ≥ this → COD charges 199
+const COD_MID_CHARGE = 99;        // between 1399 and 1898 → ₹199
 
 let discountValue=0,mode="prepaid";
 
