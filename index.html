@@ -553,6 +553,44 @@ h1 span{
 #imagePopup{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center}
 #imagePopup img{max-width:95%;max-height:95%}
 #imagePopup .close{position:absolute;right:20px;top:10px;color:#fff;font-size:32px;cursor:pointer}
+
+.language-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px;margin-top:12px}
+.lang-btn{border-radius:14px;border:1px solid #d5d9d9;background:#f3f3f3;color:#0f1111;padding:10px 8px;font-weight:800;cursor:pointer;text-align:center}
+.lang-btn.active{border:2px solid #ffa41c;background:#fff7ed}
+.lang-note{font-size:.82rem;color:#6b7280;margin-top:10px;line-height:1.45}
+
+/* Language popup modal */
+#langStep.language-modal{
+  position:fixed;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  z-index:10000;
+  width:calc(100% - 28px);
+  max-width:540px;
+  margin:0;
+  background:#ffffff !important;
+  border:2px solid #ffa41c !important;
+  box-shadow:0 24px 80px rgba(0,0,0,.45) !important;
+}
+#langStep.language-modal::before{
+  content:"";
+  position:fixed;
+  inset:-200vh;
+  background:rgba(0,0,0,.58);
+  z-index:-1;
+}
+#langStep.language-modal > *{position:relative;z-index:1}
+body.lang-modal-open{overflow:hidden}
+#langNextBtn{width:100%;margin-top:12px}
+#langNextBtn:disabled{opacity:.45;cursor:not-allowed}
+
+
+.wizard-help{background:#fff7ed;border:1px solid #fdba74;border-radius:14px;padding:10px 12px;margin:10px 0;color:#7c2d12;font-size:.9rem;line-height:1.45}
+.voice-mini{font-size:.78rem;color:#6b7280;margin-top:8px}
+.name-input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid #cbd5e1;font-size:16px;margin:10px 0;background:#fff;color:#0f1111}
+.step-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.step-primary{background:#ffd814!important;color:#0f1111!important;border:1px solid #fcd200!important;box-shadow:none!important}
 </style>
 </head>
 <body>
@@ -582,59 +620,90 @@ h1 span{
   <div class="controls">
     <a class="linkbtn" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
     <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">▶️ Setup Video</a>
+    <button type="button" class="linkbtn" onclick="toggleVoice()" id="voiceToggle">🔊 Voice ON</button>
   </div>
 
+
+  <!-- LANGUAGE FIRST STEP -->
+  <section id="langStep" class="model-selector language-modal">
+    <h2 class="model-title" data-i18n="languageTitle">Select Your Language</h2>
+    <div class="wizard-help" data-i18n="languageHelp">Choose your language. Voice and main page text will continue in the selected language. Technical words like PS2, FMCB, USB, OPL and Combo will stay in English.</div>
+    <div class="language-grid">
+      <button type="button" class="lang-btn" data-lang="en" onclick="selectLanguage('en')">🇬🇧 English</button>
+      <button type="button" class="lang-btn" data-lang="hi" onclick="selectLanguage('hi')">🇮🇳 हिन्दी</button>
+      <button type="button" class="lang-btn" data-lang="pa" onclick="selectLanguage('pa')">🇮🇳 ਪੰਜਾਬੀ</button>
+    </div>
+    <div class="lang-note" data-i18n="languageNote">Select your language, then press Next.</div>
+    <button type="button" id="langNextBtn" class="btn buy step-primary" onclick="confirmLanguage()" disabled>Next</button>
+  </section>
+
+  <!-- NAME FIRST STEP -->
+  <section id="step0" class="model-selector hidden">
+    <h2 class="model-title" data-i18n="nameTitle">Please type your name</h2>
+    <div class="wizard-help" data-i18n="nameHelp">Please type your name. This helps us make your order message correctly.</div>
+    <input id="customerName" class="name-input" type="text" placeholder="Type your name" autocomplete="name" oninput="nameTypedAutoNext()" onkeydown="if(event.key==='Enter') startWizard()">
+    <div class="voice-mini" data-i18n="voiceMini">Type your name. Page will automatically move to the next step.</div>
+  </section>
+
   <!-- MODEL SELECTOR -->
-  <section class="model-selector">
-    <h2 class="model-title">Step 1 — Select Your PS2 Model</h2>
+  <section id="step1" class="model-selector hidden">
+    <h2 class="model-title" data-i18n="modelTitle">Step 1 — Select Your PS2 Model</h2>
     <div class="ps2-gallery">
 <div><img src="Ps2fat.jpg" onclick="openImg(this.src)"><br>PS2 FAT</div>
-<div><img src="Ps2slim7x.jpg" onclick="openImg(this.src)"><br>PS2 Slim 7xxxx</div>
-<div><img src="Ps2slim90.jpg" onclick="openImg(this.src)"><br>PS2 Slim 9xxxx</div>
+<div><img src="Ps2slim7x.jpg" onclick="openImg(this.src)"><br>PS2 Slim 70000 Series</div>
+<div><img src="Ps2slim90.jpg" onclick="openImg(this.src)"><br>PS2 Slim 90000 Series</div>
 </div>
-<p class="model-sub">✔️ जैसे ही आप अपना PS2 मॉडल चुनेंगे, नीचे सिर्फ उसी मॉडल के FMCB कार्ड USB और Combo Packs दिखाई देंगे।</p>
+<p class="model-sub" data-i18n="modelHelp">If you do not know your PS2 Model, check the pictures and select the matching model.</p>
     <div class="model-btn-row">
       <button type="button" class="model-btn" data-model="fat" onclick="selectModel('fat')">
         <span>🔵</span> PS2 FAT
       </button>
       <button type="button" class="model-btn" data-model="slim7" onclick="selectModel('slim7')">
-        <span>🟣</span> PS2 SLIM 7xxxx
+        <span>🟣</span> PS2 Slim 70000 Series
       </button>
       <button type="button" class="model-btn" data-model="slim9" onclick="selectModel('slim9')">
-        <span>🟢</span> PS2 SLIM 9xxxx
+        <span>🟢</span> PS2 Slim 90000 Series
       </button>
     </div>
     <div id="selectedModelWrap" class="selected-model hidden">
       <div class="selected-chip">
-        Selected Model: <strong id="selectedModelLabel"></strong>
+        <span data-i18n="selectedModel">Selected Model</span>: <strong id="selectedModelLabel"></strong>
       </div>
-      <button type="button" class="change-model-btn" onclick="clearModel()">Change Model</button>
+      <button type="button" class="change-model-btn" onclick="clearModel()"><span data-i18n="changeModel">Change Model</span></button>
     </div>
   </section>
 
   
 <section id="step2" class="model-selector hidden">
-<h2 class="model-title">Step 2 — Matrix Installed?</h2><img class="step-img" src="Matrixps2.jpg" onclick="openImg(this.src)">
+<h2 class="model-title" data-i18n="matrixTitle">Step 2 — Matrix Chip</h2>
+<div class="wizard-help" data-i18n="matrixHelp">Matrix is a boot chip. If Matrix appears on screen when PS2 starts, choose Matrix. If not, choose No. If you do not know, choose Don't Know.</div>
+<img class="step-img" src="Matrixps2.jpg" onclick="openImg(this.src)">
 <div class="model-btn-row">
-<button class="model-btn" onclick="showStep3()">Yes</button>
-<button class="model-btn" onclick="showStep3()">No</button>
-<button class="model-btn" onclick="showStep3()">Don't Know</button>
-</div></section>
+<button class="model-btn" onclick="selectMatrix('yes')">Matrix</button>
+<button class="model-btn" onclick="selectMatrix('no')">No</button>
+<button class="model-btn" onclick="selectMatrix('dontknow')">Don't Know</button>
+</div>
+</section>
 
 <section id="step3" class="model-selector hidden">
-<h2 class="model-title">Step 3 — FMCB Type</h2><img class="step-img" src="Fmcb.jpeg" onclick="openImg(this.src)"><img class="step-img" src="OPL10.png" onclick="openImg(this.src)">
+<h2 class="model-title" data-i18n="fmcbTitle">Step 3 — FMCB Type</h2>
+<div class="wizard-help" data-i18n="fmcbHelp">Choose FMCB with OPL Only for USB gameplay. Choose Full FMCB + Apps if you also need extra apps.</div>
+<img class="step-img" src="Fmcb.jpeg" onclick="openImg(this.src)"><img class="step-img" src="OPL10.png" onclick="openImg(this.src)">
 <div class="model-btn-row">
-<button class="model-btn" onclick="showStep4()">FMCB / OPL Only</button>
-<button class="model-btn" onclick="showStep4()">Full FMCB + Apps</button>
-</div></section>
+<button class="model-btn" onclick="selectFmcbType('opl')">FMCB with OPL Only</button>
+<button class="model-btn" onclick="selectFmcbType('full')">Full FMCB + Apps</button>
+</div>
+</section>
 
 <section id="step4" class="model-selector hidden">
-<h2 class="model-title">Step 4 — Product Type</h2>
+<h2 class="model-title" data-i18n="productTitle">Step 4 — Product Type</h2>
+<div class="wizard-help" data-i18n="productHelp">Choose FMCB Card, USB Only, or Combo according to your setup.</div>
 <div class="model-btn-row">
 <button class="model-btn" onclick="showProducts('fmcb')">FMCB Card</button>
 <button class="model-btn" onclick="showProducts('usb')">USB Only</button>
-<button class="model-btn" onclick="showProducts('combo')">Combo</button>
-</div></section>
+<button class="model-btn" onclick="showProducts('combo')">FMCB + USB Combo</button>
+</div>
+</section>
 
 <!-- Anchor to scroll after selection -->
   <div id="cardsAnchor"></div>
@@ -913,65 +982,238 @@ function goPrefill(product, variant, base, pack, allowCod){
   });
 })();
 
-// ===== MODEL SELECT LOGIC =====
+// ===== MULTI-LANGUAGE GUIDED WIZARD + ORIGINAL PRODUCT LOGIC =====
 const modelLabels = {
   fat: "PS2 Fat (All Models)",
-  slim7: "PS2 Slim 7xxxx",
-  slim9: "PS2 Slim 9xxxx"
+  slim7: "PS2 Slim 70000 Series",
+  slim9: "PS2 Slim 90000 Series"
 };
 
+let selectedModelKey = "";
+let customerNameValue = "";
+let voiceEnabled = true;
+let currentVoiceText = "";
+let repeatVoiceLoop = false;
+let nameAutoTimer = null;
+let currentLang = "en";
+
+const langVoice = {
+  en:'en-IN',
+  hi:'hi-IN',
+  pa:'pa-IN'
+};
+
+const T = {
+  en:{
+    languageTitle:'Select Your Language', languageHelp:'Choose your language. Voice and main page text will continue in the selected language. Technical words like PS2, FMCB, USB, OPL and Combo will stay in English.', languageNote:'Select your language, then press Next.',
+    nameTitle:'Please type your name', nameHelp:'Please type your name. This helps us make your order message correctly.', next:'Next', listenAgain:'🔊 Listen Again', voiceMini:'Type your name. Page will automatically move to the next step.',
+    modelTitle:'Step 1 — Select Your PS2 Model', modelHelp:'If you do not know your PS2 Model, check the pictures and select the matching model.', selectedModel:'Selected Model', changeModel:'Change Model',
+    matrixTitle:'Step 2 — Matrix Chip', matrixHelp:'Matrix is a boot chip. If Matrix appears on screen when PS2 starts, choose Matrix. If not, choose No. If you do not know, choose Don\'t Know.',
+    fmcbTitle:'Step 3 — FMCB Type', fmcbHelp:'Choose FMCB with OPL Only for USB gameplay. Choose Full FMCB + Apps if you also need extra apps.',
+    productTitle:'Step 4 — Product Type', productHelp:'Choose FMCB Card, USB Only, or FMCB + USB Combo. Top Games are pre-loaded; Optional Games are loaded after you submit your selected game list.',
+    vName:'Welcome to Games Planet. First choose your language, then type your name. This page will guide you step by step to choose the correct PS2 product.',
+    vAskName:'Please type your name. After typing your name, this page will automatically move to the next step.', vNeedName:'Please type your name first.',
+    vModel:'Now select your PlayStation 2 model. If you do not know your PS2 Model, look carefully at the pictures. Choose PS2 FAT, PS2 Slim 70000 Series, or PS2 Slim 90000 Series. Correct model helps us show the correct FMCB or FunTuna option.',
+    vMatrix:'Matrix is a boot chip. If Matrix appears on screen when your PS2 starts, choose Matrix. If Matrix does not appear, choose No. If you are not sure, choose Don\'t Know. Do not be confused; the next step will explain the benefit.',
+    vFmcb:'PlayStation 2 normally needs disc to play games. PS2 is discontinued, so discs are not easily available and working is not guaranteed. The best option is USB gameplay. Earlier PS2 had to be opened for Mod Chip, but now Soft Mod is available. FMCB Card can soft mod your PS2 without opening it. Choose FMCB with OPL Only if you only want USB gameplay. Choose Full FMCB + Apps if you need OPL, uLaunchELF, NES Emulator and extra Apps.',
+    vProduct:'Now choose Product Type. Top Games means your USB will already have our top demanding games loaded. To check which games are included in Top Games, use the Top Games List Video given below. Optional Games means we will load games according to your choice. For Optional Games, first book the order, fill your details, submit the order and complete payment. After that open Optional Games Selector, select your games, and submit the list on WhatsApp. If you already have OPL or FMCB in your PS2 and only need USB with games, choose USB Only. If you need FMCB Card plus USB games, choose FMCB + USB Combo. If you only need FMCB Card, choose FMCB Card.',
+    vFmcbProduct:'You selected FMCB Card. Choose this if you only need FMCB or FunTuna Memory Card for Soft Mod and OPL. After this, Buy will open the order page for your selected PS2 Model. If you also need USB with games, go back and choose Combo.', vUsbProduct:'You selected USB Only. Choose this only if OPL or FMCB already works on your PS2. In Top Games, our top demanding games are already loaded. To check which games are included, open the Top Games List Video given below. In Optional Games, games will be loaded according to your choice. For Optional Games, first book the order, fill your details, submit the order and complete payment. After payment, open Optional Games Selector, select your games, and submit the list on WhatsApp. Then those selected games will be loaded for you.', vComboProduct:'You selected FMCB + USB Combo. Choose this if you do not have FMCB Card, OPL setup, or USB games. Combo includes FMCB or FunTuna Card plus USB with games. In Top Games, our top demanding games are already loaded. To see the Top Games list, open the Top Games List Video below. If you want games of your own choice, choose Optional Games. First book the order, fill your details, submit the order and complete payment. After payment, open Optional Games Selector, select your games, and submit the list on WhatsApp. Then your selected games will be loaded.'
+  },
+  hi:{
+    languageTitle:'भाषा चुनें', languageHelp:'अपनी भाषा चुनें। Voice और main page text उसी भाषा में चलेगा। PS2, FMCB, USB, OPL और Combo जैसे English words English में ही रहेंगे।', languageNote:'Language select करके Next दबाएं।',
+    nameTitle:'अपना नाम टाइप करें', nameHelp:'कृपया अपना नाम टाइप करें। इससे order message सही बनेगा।', next:'Next', listenAgain:'🔊 फिर से सुनें', voiceMini:'अपना नाम type करें। Page अपने आप अगले step पर चला जाएगा।',
+    modelTitle:'Step 1 — अपना PS2 Model चुनें', modelHelp:'अगर आपको PS2 Model नहीं पता, तो pictures देखकर सही model चुनें।', selectedModel:'Selected Model', changeModel:'Change Model',
+    matrixTitle:'Step 2 — Matrix Chip', matrixHelp:'Matrix एक boot chip है। PS2 start होते ही screen पर Matrix लिखा आए तो Matrix चुनें। नहीं आए तो No चुनें। पता नहीं हो तो Don\'t Know चुनें।',
+    fmcbTitle:'Step 3 — FMCB Type', fmcbHelp:'USB gameplay के लिए FMCB with OPL Only चुनें। Extra Apps भी चाहिए तो Full FMCB + Apps चुनें।',
+    productTitle:'Step 4 — Product Type', productHelp:'अपने setup के हिसाब से FMCB Card, USB Only या FMCB + USB Combo चुनें। Top Games pre-loaded हैं; Optional Games आपकी selected list के अनुसार load होंगे।',
+    vName:'Games Planet में आपका स्वागत है। सबसे पहले अपनी भाषा चुनें, फिर अपना नाम टाइप करें। यह page आपको step by step सही PS2 product चुनने में मदद करेगा।',
+    vAskName:'कृपया अपना नाम टाइप करें। नाम लिखते ही page अपने आप अगले step पर जाएगा।', vNeedName:'कृपया पहले अपना नाम टाइप करें।',
+    vModel:'अब अपना PlayStation 2 model चुनें। अगर आपको PS2 Model नहीं पता, तो pictures ध्यान से देखें। PS2 FAT, PS2 Slim 70000 Series, या PS2 Slim 90000 Series में से सही button दबाएं। सही model से FMCB और FunTuna option सही दिखाई देगा।',
+    vMatrix:'Matrix एक boot chip है। अगर आपका PS2 start होते ही screen पर Matrix लिखा आता है, तो Matrix चुनें। अगर Matrix नहीं आता, तो No चुनें। अगर आपको पता नहीं है, तो Don\'t Know चुनें। Confuse न हों, अगले step में इसका फायदा समझ आ जाएगा।',
+    vFmcb:'PlayStation 2 में game खेलने के लिए पहले disc चाहिए होती थी। अब PlayStation 2 discontinued है, इसलिए disc आसानी से नहीं मिलती, और मिल भी जाए तो चलने की guarantee नहीं होती। इसलिए best option USB gameplay है। पहले PS2 को shop पर ले जाकर खुलवाना पड़ता था और Mod Chip लगवानी पड़ती थी। अब Soft Mod आ चुका है। FMCB Card से PS2 बिना खोले soft mod हो जाता है। सिर्फ USB gameplay चाहिए तो FMCB with OPL Only चुनें। OPL, uLaunchELF, NES Emulator और extra Apps चाहिए तो Full FMCB + Apps चुनें।',
+    vProduct:'अब Product Type चुनें। Top Games का मतलब है USB में हमारे top demanding games पहले से load होंगे। Top Games में कौन-कौन से games हैं, उसके लिए नीचे Top Games List Video दिया गया है। Optional Games का मतलब है आपकी पसंद के games load करके दिए जाएंगे। Optional Games के लिए पहले order book करें, अपनी details fill करें, submit करें और payment करें। उसके बाद Optional Games Selector पर जाकर games select करें और list WhatsApp पर submit करें। अगर आपके PS2 में पहले से OPL या FMCB चल रहा है और केवल USB with games चाहिए, तो USB Only चुनें। अगर FMCB Card plus USB games दोनों चाहिए, तो FMCB + USB Combo चुनें। अगर सिर्फ FMCB Card चाहिए, तो FMCB Card चुनें।',
+    vFmcbProduct:'आपने FMCB Card चुना है। यह option तब चुनें जब आपको केवल FMCB या FunTuna Memory Card चाहिए, जिससे PS2 में Soft Mod और OPL setup चले। Buy दबाने पर selected PS2 Model का order page खुलेगा। अगर आपको USB with games भी चाहिए, तो वापस जाकर Combo चुनें।', vUsbProduct:'आपने USB Only चुना है। यह option तभी सही है जब आपके PS2 में पहले से OPL या FMCB चल रहा हो। Top Games के अंदर हमारे top demanding games पहले से load हैं। Top Games में कौन-कौन से games हैं, उसके लिए नीचे Top Games List Video दिया गया है। Optional Games में आपकी पसंद के games load करके दिए जाएंगे। Optional Games के लिए पहले order book करें, अपनी details fill करें, submit करें और payment करें। Payment के बाद Optional Games Selector पर जाकर games select करें और list WhatsApp पर submit करें। फिर वही selected games आपके लिए load किए जाएंगे।', vComboProduct:'आपने FMCB + USB Combo चुना है। यह option तब सही है जब आपके पास FMCB Card, OPL setup या USB games कुछ भी नहीं है। Combo में FMCB या FunTuna Card plus USB with games दोनों मिलेंगे। Top Games के अंदर हमारे top demanding games पहले से load हैं। Top Games में कौन-कौन से games हैं, उसके लिए नीचे Top Games List Video दिया गया है। अगर आपको अपनी पसंद के games चाहिए, तो Optional Games चुनें। पहले order book करें, details fill करें, submit करें और payment करें। Payment के बाद Optional Games Selector पर जाकर games select करें और list WhatsApp पर submit करें। फिर आपकी selected games load की जाएंगी।'
+  }
+};
+
+function copyLang(base, overrides){ return Object.assign({}, T[base], overrides || {}); }
+T.pa = copyLang('hi',{
+  languageTitle:'Language ਚੁਣੋ',
+  languageHelp:'ਆਪਣੀ language ਚੁਣੋ। Voice ਅਤੇ main page text ਉਸੇ language ਵਿੱਚ ਚੱਲੇਗਾ। PS2, FMCB, USB, OPL ਅਤੇ Combo ਵਰਗੇ English words English ਵਿੱਚ ਹੀ ਰਹਿਣਗੇ।',
+  languageNote:'Language select ਕਰਕੇ Next ਦਬਾਓ।',
+  nameTitle:'ਆਪਣਾ ਨਾਮ type ਕਰੋ',
+  nameHelp:'ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਨਾਮ type ਕਰੋ। ਇਸ ਨਾਲ order message ਠੀਕ ਬਣੇਗਾ।',
+  voiceMini:'ਆਪਣਾ ਨਾਮ type ਕਰੋ। Page ਆਪਣੇ ਆਪ ਅਗਲੇ step ਤੇ ਚਲਾ ਜਾਵੇਗਾ।',
+  modelTitle:'Step 1 — ਆਪਣਾ PS2 Model ਚੁਣੋ',
+  modelHelp:'ਜੇ ਤੁਹਾਨੂੰ PS2 Model ਨਹੀਂ ਪਤਾ, ਤਾਂ pictures ਵੇਖ ਕੇ matching model ਚੁਣੋ।',
+  selectedModel:'Selected Model',
+  changeModel:'Change Model',
+  matrixTitle:'Step 2 — Matrix Chip',
+  matrixHelp:'Matrix ਇੱਕ boot chip ਹੈ। ਜੇ PS2 start ਹੁੰਦੇ ਹੀ screen ਤੇ Matrix ਲਿਖਿਆ ਆਵੇ, ਤਾਂ Matrix ਚੁਣੋ। ਨਹੀਂ ਆਉਂਦਾ ਤਾਂ No ਚੁਣੋ। ਪਤਾ ਨਹੀਂ ਤਾਂ Don\'t Know ਚੁਣੋ।',
+  fmcbTitle:'Step 3 — FMCB Type',
+  fmcbHelp:'USB gameplay ਲਈ FMCB with OPL Only ਚੁਣੋ। Extra Apps ਵੀ ਚਾਹੀਦੇ ਹਨ ਤਾਂ Full FMCB + Apps ਚੁਣੋ।',
+  productTitle:'Step 4 — Product Type',
+  productHelp:'ਆਪਣੇ setup ਦੇ ਹਿਸਾਬ ਨਾਲ FMCB Card, USB Only ਜਾਂ FMCB + USB Combo ਚੁਣੋ। Top Games pre-loaded ਹਨ; Optional Games ਤੁਹਾਡੀ selected list ਦੇ ਅਨੁਸਾਰ load ਹੋਣਗੀਆਂ।',
+  vName:'Games Planet ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ। ਪਹਿਲਾਂ language ਚੁਣੋ, ਫਿਰ ਆਪਣਾ ਨਾਮ type ਕਰੋ। ਇਹ page ਤੁਹਾਨੂੰ step by step ਸਹੀ PS2 product ਚੁਣਨ ਵਿੱਚ ਮਦਦ ਕਰੇਗਾ।',
+  vAskName:'ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਨਾਮ type ਕਰੋ। ਨਾਮ ਲਿਖਦੇ ਹੀ page ਆਪਣੇ ਆਪ ਅਗਲੇ step ਤੇ ਜਾਵੇਗਾ।',
+  vNeedName:'ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ ਆਪਣਾ ਨਾਮ type ਕਰੋ।',
+  vModel:'ਹੁਣ ਆਪਣਾ PlayStation 2 model ਚੁਣੋ। ਜੇ ਤੁਹਾਨੂੰ PS2 Model ਨਹੀਂ ਪਤਾ, ਤਾਂ pictures ਧਿਆਨ ਨਾਲ ਵੇਖੋ। PS2 FAT, PS2 Slim 70000 Series ਜਾਂ PS2 Slim 90000 Series ਵਿਚੋਂ ਸਹੀ button ਦਬਾਓ। ਸਹੀ model ਨਾਲ FMCB ਅਤੇ FunTuna option ਸਹੀ ਦਿਖੇਗਾ।',
+  vMatrix:'Matrix ਇੱਕ boot chip ਹੈ। ਜੇ ਤੁਹਾਡਾ PS2 start ਹੁੰਦੇ ਹੀ screen ਤੇ Matrix ਲਿਖਿਆ ਆਉਂਦਾ ਹੈ, ਤਾਂ Matrix ਚੁਣੋ। ਜੇ Matrix ਨਹੀਂ ਆਉਂਦਾ ਤਾਂ No ਚੁਣੋ। ਜੇ ਪਤਾ ਨਹੀਂ ਤਾਂ Don\'t Know ਚੁਣੋ। Confuse ਨਾ ਹੋਵੋ, ਅਗਲੇ step ਵਿੱਚ ਇਸਦਾ benefit ਸਮਝ ਆ ਜਾਵੇਗਾ।',
+  vFmcb:'PlayStation 2 ਵਿੱਚ game ਖੇਡਣ ਲਈ ਪਹਿਲਾਂ disc ਚਾਹੀਦੀ ਸੀ। ਹੁਣ PlayStation 2 discontinued ਹੈ, ਇਸ ਲਈ disc ਆਸਾਨੀ ਨਾਲ ਨਹੀਂ ਮਿਲਦੀ, ਅਤੇ ਮਿਲ ਵੀ ਜਾਵੇ ਤਾਂ ਚੱਲਣ ਦੀ guarantee ਨਹੀਂ ਹੁੰਦੀ। ਇਸ ਲਈ best option USB gameplay ਹੈ। ਪਹਿਲਾਂ PS2 ਨੂੰ shop ਤੇ ਲੈ ਜਾ ਕੇ ਖੁਲਵਾਉਣਾ ਪੈਂਦਾ ਸੀ ਅਤੇ Mod Chip ਲਗਵਾਉਣੀ ਪੈਂਦੀ ਸੀ। ਹੁਣ Soft Mod ਆ ਚੁੱਕਾ ਹੈ। FMCB Card ਨਾਲ PS2 ਬਿਨਾਂ ਖੋਲ੍ਹੇ soft mod ਹੋ ਜਾਂਦਾ ਹੈ। ਸਿਰਫ USB gameplay ਚਾਹੀਦਾ ਹੈ ਤਾਂ FMCB with OPL Only ਚੁਣੋ। OPL, uLaunchELF, NES Emulator ਅਤੇ extra Apps ਚਾਹੀਦੇ ਹਨ ਤਾਂ Full FMCB + Apps ਚੁਣੋ।',
+  vProduct:'ਹੁਣ Product Type ਚੁਣੋ। Top Games ਦਾ ਮਤਲਬ ਹੈ USB ਵਿੱਚ ਸਾਡੇ top demanding games ਪਹਿਲਾਂ ਤੋਂ load ਹੋਣਗੇ। Top Games ਵਿੱਚ ਕਿਹੜੀਆਂ games ਹਨ, ਉਸ ਲਈ ਹੇਠਾਂ Top Games List Video ਦਿੱਤਾ ਹੈ। Optional Games ਦਾ ਮਤਲਬ ਹੈ ਤੁਹਾਡੀ ਪਸੰਦ ਦੀਆਂ games load ਕਰਕੇ ਦਿੱਤੀਆਂ ਜਾਣਗੀਆਂ। Optional Games ਲਈ ਪਹਿਲਾਂ order book ਕਰੋ, ਆਪਣੀਆਂ details fill ਕਰੋ, submit ਕਰੋ ਅਤੇ payment ਕਰੋ। ਉਸ ਤੋਂ ਬਾਅਦ Optional Games Selector ਤੇ ਜਾ ਕੇ games select ਕਰੋ ਅਤੇ list WhatsApp ਤੇ submit ਕਰੋ। ਜੇ ਤੁਹਾਡੇ PS2 ਵਿੱਚ ਪਹਿਲਾਂ ਤੋਂ OPL ਜਾਂ FMCB ਚੱਲ ਰਿਹਾ ਹੈ ਅਤੇ ਸਿਰਫ USB with games ਚਾਹੀਦੀ ਹੈ, ਤਾਂ USB Only ਚੁਣੋ। ਜੇ FMCB Card plus USB games ਦੋਵੇਂ ਚਾਹੀਦੇ ਹਨ, ਤਾਂ FMCB + USB Combo ਚੁਣੋ। ਜੇ ਸਿਰਫ FMCB Card ਚਾਹੀਦਾ ਹੈ, ਤਾਂ FMCB Card ਚੁਣੋ।',
+  vFmcbProduct:'ਤੁਸੀਂ FMCB Card ਚੁਣਿਆ ਹੈ। ਇਹ option ਉਦੋਂ ਚੁਣੋ ਜਦੋਂ ਤੁਹਾਨੂੰ ਸਿਰਫ FMCB ਜਾਂ FunTuna Memory Card ਚਾਹੀਦਾ ਹੈ, ਜਿਸ ਨਾਲ PS2 ਵਿੱਚ Soft Mod ਅਤੇ OPL setup ਚੱਲੇਗਾ। Buy ਦਬਾਉਣ ਤੇ selected PS2 Model ਦਾ order page ਖੁਲੇਗਾ। ਜੇ ਤੁਹਾਨੂੰ USB with games ਵੀ ਚਾਹੀਦੀ ਹੈ, ਤਾਂ ਵਾਪਸ ਜਾ ਕੇ Combo ਚੁਣੋ.',
+  vUsbProduct:'ਤੁਸੀਂ USB Only ਚੁਣਿਆ ਹੈ। Top Games ਵਿੱਚ ਸਾਡੇ top demanding games ਪਹਿਲਾਂ ਤੋਂ load ਹਨ। ਕਿਹੜੀਆਂ games ਹਨ, ਇਹ ਹੇਠਾਂ Top Games List Video ਵਿੱਚ ਵੇਖੋ। Optional Games ਲਈ ਪਹਿਲਾਂ order ਅਤੇ payment complete ਕਰੋ, ਫਿਰ Optional Games Selector ਤੋਂ games ਚੁਣ ਕੇ WhatsApp ਤੇ list submit ਕਰੋ।',
+  vComboProduct:'ਤੁਸੀਂ FMCB + USB Combo ਚੁਣਿਆ ਹੈ। ਇਹ option ਉਦੋਂ ਸਹੀ ਹੈ ਜਦੋਂ ਤੁਹਾਡੇ ਕੋਲ FMCB Card, OPL setup ਜਾਂ USB games ਕੁਝ ਵੀ ਨਹੀਂ ਹੈ। Combo ਵਿੱਚ FMCB ਜਾਂ FunTuna Card plus USB with games ਦੋਵੇਂ ਮਿਲਣਗੇ। Top Games ਵਿੱਚ ਸਾਡੇ top demanding games ਪਹਿਲਾਂ ਤੋਂ load ਹਨ। Top Games ਵਿੱਚ ਕਿਹੜੀਆਂ games ਹਨ, ਉਸ ਲਈ ਹੇਠਾਂ Top Games List Video ਦਿੱਤਾ ਹੈ। ਜੇ ਤੁਹਾਨੂੰ ਆਪਣੀ choice ਦੀਆਂ games ਚਾਹੀਦੀਆਂ ਹਨ, ਤਾਂ Optional Games ਚੁਣੋ। ਪਹਿਲਾਂ order book ਕਰੋ, details fill ਕਰੋ, submit ਕਰੋ ਅਤੇ payment ਕਰੋ। Payment ਤੋਂ ਬਾਅਦ Optional Games Selector ਤੇ ਜਾ ਕੇ games select ਕਰੋ ਅਤੇ list WhatsApp ਤੇ submit ਕਰੋ। ਫਿਰ ਤੁਹਾਡੀਆਂ selected games load ਕੀਤੀਆਂ ਜਾਣਗੀਆਂ।'
+});
+
+function tr(key){ return (T[currentLang] && T[currentLang][key]) || T.en[key] || key; }
+
+function applyLanguage(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = tr(el.dataset.i18n); });
+  const nameInput = document.getElementById('customerName');
+  if(nameInput) nameInput.placeholder = currentLang === 'en' ? 'Type your name' : tr('nameTitle');
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active', b.dataset.lang===currentLang));
+}
+
+function speakText(text, repeat=true){
+  currentVoiceText = text || currentVoiceText;
+  repeatVoiceLoop = !!repeat;
+  if(!voiceEnabled || !('speechSynthesis' in window)) return;
+  try{
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(currentVoiceText);
+    u.lang = langVoice[currentLang] || 'en-IN';
+    u.rate = 0.88; u.pitch = 1;
+    const voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
+    let preferred = voices.find(v => (v.lang||'').toLowerCase() === u.lang.toLowerCase()) || voices.find(v => (v.lang||'').toLowerCase().startsWith(u.lang.split('-')[0].toLowerCase()));
+    // Punjabi voice हर browser में available नहीं होती। अगर pa-IN voice न मिले तो Hindi voice fallback रहेगी, फिर English fallback.
+    if(!preferred && currentLang === 'pa'){
+      preferred = voices.find(v => (v.lang||'').toLowerCase().startsWith('hi')) || voices.find(v => (v.lang||'').toLowerCase().startsWith('en'));
+      if(preferred) u.lang = preferred.lang || 'hi-IN';
+    }
+    if(!preferred && currentLang === 'hi'){
+      preferred = voices.find(v => (v.lang||'').toLowerCase().startsWith('en'));
+      if(preferred) u.lang = preferred.lang || 'en-IN';
+    }
+    if(preferred) u.voice = preferred;
+    u.onend = function(){
+      if(repeatVoiceLoop && voiceEnabled && currentVoiceText){
+        setTimeout(function(){ speakText(currentVoiceText, true); }, 700);
+      }
+    };
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+function stopVoice(){
+  repeatVoiceLoop = false;
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+}
+
+function selectLanguage(lang){
+  currentLang = lang;
+  applyLanguage();
+  const nextBtn = document.getElementById('langNextBtn');
+  if(nextBtn) nextBtn.disabled = false;
+  stopVoice();
+  currentVoiceText = currentLang === 'en'
+    ? 'Language selected. Press Next to continue.'
+    : (currentLang === 'pa' ? 'Language select ਹੋ ਗਈ ਹੈ। Continue ਕਰਨ ਲਈ Next ਦਬਾਓ।' : 'Language select हो गई है। आगे बढ़ने के लिए Next दबाएं।');
+  speakText(currentVoiceText, true);
+}
+function confirmLanguage(){
+  document.body.classList.remove('lang-modal-open');
+  showStep('step0', tr('vAskName'));
+}
+
+function toggleVoice(){
+  voiceEnabled = !voiceEnabled;
+  const btn = document.getElementById('voiceToggle');
+  if(btn) btn.textContent = voiceEnabled ? '🔊 Voice ON' : '🔇 Voice OFF';
+  if(!voiceEnabled) stopVoice();
+  if(voiceEnabled) speakText(currentVoiceText || tr('vName'));
+}
+function repeatCurrentVoice(){ speakText(currentVoiceText || tr('vName')); }
+
+function hideWizardSteps(){
+  ['langStep','step0','step1','step2','step3','step4'].forEach(id=>{
+    const el = document.getElementById(id); if(el) el.classList.add('hidden');
+  });
+}
+
+function showStep(id, voiceText){
+  stopVoice();
+  if(id !== 'langStep') document.body.classList.remove('lang-modal-open');
+  hideWizardSteps();
+  document.querySelectorAll('.model-guard').forEach(el=>el.classList.add('hidden'));
+  const el = document.getElementById(id);
+  if(el){ el.classList.remove('hidden'); el.scrollIntoView({behavior:'smooth', block:'start'}); }
+  if(voiceText) setTimeout(()=>speakText(voiceText), 180);
+}
+
+function nameTypedAutoNext(){
+  clearTimeout(nameAutoTimer);
+  const input = document.getElementById('customerName');
+  const name = (input && input.value ? input.value.trim() : '');
+  if(name.length < 2) return;
+  nameAutoTimer = setTimeout(function(){ startWizard(); }, 900);
+}
+
+function startWizard(){
+  const input = document.getElementById('customerName');
+  const name = (input && input.value ? input.value.trim() : '');
+  if(!name){ speakText(tr('vNeedName')); if(input) input.focus(); return; }
+  customerNameValue = name;
+  showStep('step1', (currentLang==='en' ? 'Thank you ' : 'धन्यवाद ') + name + '. ' + tr('vModel'));
+}
+
 function selectModel(model){
-  // Activate buttons
-  document.querySelectorAll('.model-btn').forEach(btn=>{
-    btn.classList.toggle('active', btn.dataset.model === model);
-  });
-
-  // Show main product cards
-  
-
-  // FMCB: show only selected model row
-  document.querySelectorAll('[data-model-group="fmcb-row"]').forEach(row=>{
-    row.style.display = (row.dataset.model === model) ? 'grid' : 'none';
-  });
-
-  // Combo sections: show only for selected model
-  document.querySelectorAll('[data-model-group="combo-section"]').forEach(block=>{
-    block.style.display = (block.dataset.model === model) ? 'block' : 'none';
-  });
-
-  // Selected label
+  selectedModelKey = model;
+  document.querySelectorAll('.model-btn[data-model]').forEach(btn=>btn.classList.toggle('active', btn.dataset.model === model));
+  document.querySelectorAll('[data-model-group="fmcb-row"]').forEach(row=>{ row.style.display = (row.dataset.model === model) ? 'grid' : 'none'; });
+  document.querySelectorAll('[data-model-group="combo-section"]').forEach(block=>{ block.style.display = (block.dataset.model === model) ? 'block' : 'none'; });
   const wrap = document.getElementById('selectedModelWrap');
   const label = document.getElementById('selectedModelLabel');
-  if(label){ label.textContent = modelLabels[model] || ""; }
-  if(wrap){ wrap.classList.remove('hidden'); } document.getElementById('step2').classList.remove('hidden');
-
-  // Scroll to products
-  const anchor = document.getElementById('cardsAnchor');
-  if(anchor){
-    anchor.scrollIntoView({behavior:'smooth', block:'start'});
-  }
+  if(label){ label.textContent = modelLabels[model] || ''; }
+  if(wrap){ wrap.classList.remove('hidden'); }
+  showStep('step2', (modelLabels[model] || 'PS2 Model') + ' selected. ' + tr('vMatrix'));
 }
 
+function selectMatrix(value){ showStep('step3', tr('vFmcb')); }
+function selectFmcbType(value){ showStep('step4', tr('vProduct')); }
+function showStep3(){ selectMatrix('old'); }
+function showStep4(){ selectFmcbType('old'); }
 
-function showStep3(){document.getElementById('step3').classList.remove('hidden');}
-function showStep4(){document.getElementById('step4').classList.remove('hidden');}
-function showProducts(){document.querySelectorAll('.model-guard').forEach(el=>el.classList.remove('hidden'));}
+function showProducts(type){
+  hideWizardSteps();
+  document.querySelectorAll('.model-guard').forEach(el=>el.classList.add('hidden'));
+  const cards = document.querySelectorAll('.model-guard');
+  if(type==='fmcb' && cards[0]) cards[0].classList.remove('hidden');
+  if(type==='usb' && cards[1]) cards[1].classList.remove('hidden');
+  if(type==='combo' && cards[2]) cards[2].classList.remove('hidden');
+  const visible = document.querySelector('.model-guard:not(.hidden)');
+  if(visible) visible.scrollIntoView({behavior:'smooth', block:'start'});
+  if(type==='fmcb') speakText(tr('vFmcbProduct'));
+  if(type==='usb') speakText(tr('vUsbProduct'));
+  if(type==='combo') speakText(tr('vComboProduct'));
+}
 
 function clearModel(){
-  // Deactivate buttons
-  document.querySelectorAll('.model-btn').forEach(btn=>{
-    btn.classList.remove('active');
-  });
-
-  // Hide product cards
-  document.querySelectorAll('.model-guard').forEach(el=>{
-    el.classList.add('hidden');
-  });
-
-  // Hide selected label
-  const wrap = document.getElementById('selectedModelWrap');
-  if(wrap){ wrap.classList.add('hidden'); }
+  selectedModelKey = '';
+  document.querySelectorAll('.model-btn').forEach(btn=>btn.classList.remove('active'));
+  document.querySelectorAll('.model-guard').forEach(el=>el.classList.add('hidden'));
+  const wrap = document.getElementById('selectedModelWrap'); if(wrap){ wrap.classList.add('hidden'); }
+  showStep('step1', tr('vModel'));
 }
+
+document.addEventListener('DOMContentLoaded', function(){
+  hideWizardSteps();
+  const lang = document.getElementById('langStep'); if(lang) lang.classList.remove('hidden'); document.body.classList.add('lang-modal-open');
+  const browser = (navigator.language || '').toLowerCase();
+  if(browser.startsWith('hi')) currentLang='hi'; else if(browser.startsWith('pa')) currentLang='pa'; else currentLang='en';
+  applyLanguage();
+  currentVoiceText = tr('vName');
+});
 </script>
 
 
@@ -980,13 +1222,6 @@ function clearModel(){
 function openImg(s){document.getElementById('imagePopup').style.display='flex';document.getElementById('popupImg').src=s;}
 function closeImg(){document.getElementById('imagePopup').style.display='none';}
 
-function showProducts(type){
- document.querySelectorAll('.model-guard').forEach(el=>el.classList.add('hidden'));
- const cards=document.querySelectorAll('.model-guard');
- if(type==='fmcb' && cards[0]) cards[0].classList.remove('hidden');
- if(type==='usb' && cards[1]) cards[1].classList.remove('hidden');
- if(type==='combo' && cards[2]) cards[2].classList.remove('hidden');
-}
 </script>
 </body>
 </html>
