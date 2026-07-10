@@ -592,6 +592,614 @@ body.lang-modal-open{overflow:hidden}
 .step-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
 .step-primary{background:#ffd814!important;color:#0f1111!important;border:1px solid #fcd200!important;box-shadow:none!important}
 </style>
+
+<style id="gpz-ui-polish">
+:root{
+  --max-width:1040px;
+  --radius-lg:22px;
+  --radius-md:16px;
+  --radius-pill:999px;
+  --accent:#16a34a;
+  --accent-dark:#15803d;
+  --accent2:#2563eb;
+  --accent-alt:#22c55e;
+  --warning:#f59e0b;
+  --danger:#dc2626;
+  --bg:#f3f6fb;
+  --card:#ffffff;
+  --card-soft:#ffffff;
+  --text:#111827;
+  --muted:#64748b;
+  --chip:#eef2ff;
+  --chip-border:#dbe3f0;
+  --border:#dfe6ef;
+  --shadow-soft:0 12px 34px rgba(15,23,42,.10);
+  --shadow-btn:0 8px 20px rgba(22,163,74,.24);
+  --transition-fast:.18s ease;
+}
+
+html{scroll-behavior:smooth;background:var(--bg)}
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 10% 0%,rgba(37,99,235,.08),transparent 26rem),
+    radial-gradient(circle at 100% 16%,rgba(22,163,74,.08),transparent 25rem),
+    var(--bg) !important;
+  color:var(--text) !important;
+  line-height:1.45;
+}
+
+.wrap{max-width:var(--max-width);padding:22px 16px 70px}
+
+.brand{
+  background:linear-gradient(135deg,#0f172a,#1e293b 58%,#0f5132);
+  color:#fff;
+  border-radius:24px;
+  padding:20px;
+  box-shadow:0 18px 44px rgba(15,23,42,.20);
+  margin-bottom:14px;
+}
+.logo{
+  width:54px;height:54px;border-radius:17px;
+  background:linear-gradient(135deg,#22c55e,#3b82f6);
+  color:#fff;box-shadow:0 10px 28px rgba(34,197,94,.3);
+  border:1px solid rgba(255,255,255,.26);
+}
+h1{font-size:clamp(21px,4vw,32px);line-height:1.15;letter-spacing:-.025em}
+h1 span{color:#a7f3d0;background:none;-webkit-text-fill-color:initial}
+.sub{color:#cbd5e1;font-size:.86rem;margin-top:7px}
+.brand-actions{align-items:center}
+.nav-pill{color:#e2e8f0;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);padding:8px 11px}
+.brand .linkbtn{background:#22c55e;color:#052e16;border:0;box-shadow:none}
+
+.controls{
+  padding:11px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.88);
+  border-radius:16px;
+  box-shadow:0 8px 24px rgba(15,23,42,.06);
+  position:sticky;top:8px;z-index:50;
+  backdrop-filter:blur(12px);
+}
+.linkbtn{
+  background:#fff;color:#1f2937;border:1px solid var(--border);
+  box-shadow:none;border-radius:12px;padding:9px 12px;
+}
+.linkbtn:hover{background:#f8fafc;border-color:#94a3b8;box-shadow:0 7px 18px rgba(15,23,42,.08)}
+button.linkbtn{font-family:inherit}
+
+.model-selector,.card,.section{
+  background:#fff !important;
+  border:1px solid var(--border) !important;
+  box-shadow:var(--shadow-soft) !important;
+  border-radius:var(--radius-lg) !important;
+}
+.model-selector{padding:18px;margin-bottom:16px}
+.model-title{font-size:1rem;color:#0f172a;letter-spacing:.035em;text-transform:none;margin-bottom:7px}
+.model-sub,.muted,.list,.voice-mini,.lang-note{color:var(--muted)}
+.wizard-help{
+  background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;
+  border-radius:14px;padding:11px 13px;
+}
+
+.language-grid{grid-template-columns:repeat(3,1fr)}
+.lang-btn,.model-btn{
+  min-height:48px;background:#f8fafc !important;color:#0f172a !important;
+  border:1px solid #cbd5e1 !important;border-radius:14px !important;
+  box-shadow:none !important;transition:.18s ease;
+}
+.lang-btn:hover,.model-btn:hover{transform:translateY(-1px);border-color:#64748b !important;background:#fff !important}
+.lang-btn.active,.model-btn.active{
+  background:#ecfdf5 !important;border:2px solid #22c55e !important;color:#14532d !important;
+}
+.model-btn-row{gap:9px}
+.selected-chip{background:#eff6ff;border-color:#bfdbfe;color:#1e3a8a}
+.change-model-btn{background:#fff;color:#475569;border-color:#cbd5e1}
+
+.ps2-gallery{gap:12px;margin:14px 0}
+.ps2-gallery>div{
+  text-align:center;font-weight:750;font-size:.82rem;color:#334155;
+  background:#f8fafc;border:1px solid var(--border);border-radius:15px;padding:9px;
+}
+.ps2-gallery img,.step-img{
+  height:132px;background:#fff;border:0;border-radius:11px;box-shadow:none;
+}
+.step-img{display:inline-block;max-width:min(230px,100%);margin:6px 6px 10px 0;padding:5px;border:1px solid var(--border)}
+
+.grid{gap:18px}
+.card{padding:20px;overflow:visible}
+.card::before{display:none}
+.badge{
+  background:#eef2ff;color:#3730a3;border:1px solid #c7d2fe;
+  text-transform:none;letter-spacing:.02em;font-size:.73rem;padding:6px 10px;
+}
+.badge::before{background:#4f46e5;box-shadow:none}
+.title{font-size:1.22rem;color:#0f172a;margin-top:12px}
+.card-images img{
+  width:120px;height:110px;object-fit:contain;padding:7px;background:#fff;
+  border:1px solid var(--border);box-shadow:0 8px 22px rgba(15,23,42,.08);
+}
+
+.variants{gap:10px}
+.row{
+  grid-template-columns:minmax(0,1.4fr) minmax(145px,.8fr) minmax(145px,.8fr);
+  gap:9px;padding:11px;border:1px solid #e2e8f0;border-radius:14px;background:#fbfdff;
+}
+.name{font-size:.9rem;color:#1f2937}
+.pill{
+  color:#166534 !important;background:#dcfce7 !important;border:1px solid #bbf7d0 !important;
+  margin-top:4px;white-space:nowrap;
+}
+.pill::before{display:none}
+.cta{gap:7px}
+.btn{
+  min-height:42px;border-radius:12px;font-size:.82rem;padding:9px 10px;
+  box-shadow:none !important;
+}
+.btn.buy{background:#16a34a !important;color:#fff !important;border:1px solid #15803d !important}
+.btn.buy:hover{background:#15803d !important;transform:translateY(-1px)}
+.btn.alt{background:#fff7ed !important;color:#9a3412 !important;border:1px solid #fdba74 !important}
+.btn.alt:hover{background:#ffedd5 !important;transform:translateY(-1px)}
+.step-primary{background:#16a34a !important;color:#fff !important;border-color:#15803d !important;font-size:.95rem}
+
+.section{padding:18px 20px;margin-top:18px}
+.section h3{font-size:.95rem;color:#0f172a;margin:0 0 10px;text-transform:none;letter-spacing:.01em}
+.list{padding-left:20px;margin-top:4px}
+.list li{margin:7px 0}
+.foot{justify-content:center;text-align:center;margin-top:22px}
+
+.name-input{border:1px solid #94a3b8;box-shadow:0 0 0 3px rgba(37,99,235,.06)}
+.name-input:focus{outline:0;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.13)}
+
+#langStep.language-modal{
+  max-width:570px;border:1px solid #cbd5e1 !important;border-radius:24px !important;
+  box-shadow:0 30px 90px rgba(0,0,0,.35) !important;padding:22px !important;
+}
+#langStep.language-modal::before{background:rgba(2,6,23,.68);backdrop-filter:blur(5px)}
+#langNextBtn{margin-top:14px}
+
+#imagePopup{backdrop-filter:blur(5px)}
+#imagePopup img{background:#fff;padding:8px;border-radius:16px}
+#imagePopup .close{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center;right:14px;top:14px}
+
+/* Mobile bottom safety space and touch-friendly layout */
+@media(max-width:760px){
+  .wrap{padding:12px 10px 50px}
+  .brand{padding:16px;border-radius:19px}
+  .brand-left{align-items:flex-start}
+  .logo{width:46px;height:46px;border-radius:14px;flex:0 0 auto}
+  .brand-actions{width:100%}
+  .brand-actions>*{flex:1 1 100%;justify-content:center}
+  .controls{position:static;display:grid;grid-template-columns:1fr 1fr;padding:9px}
+  .controls>*:first-child{grid-column:1/-1}
+  .linkbtn{justify-content:center;text-align:center;padding:10px 8px}
+  .language-grid{grid-template-columns:1fr}
+  .model-selector,.card,.section{border-radius:17px !important}
+  .model-selector,.card{padding:15px}
+  .ps2-gallery{grid-template-columns:1fr 1fr 1fr;gap:7px}
+  .ps2-gallery>div{padding:6px;font-size:.68rem}
+  .ps2-gallery img{height:92px}
+  .row{grid-template-columns:1fr;padding:10px}
+  .row>.cta{width:100%}
+  .row>.cta .btn{width:100%}
+  .card-images img{width:100px;height:92px}
+  .btn{font-size:.85rem;min-height:44px}
+}
+
+@media(max-width:390px){
+  .ps2-gallery{grid-template-columns:1fr}
+  .ps2-gallery img{height:125px}
+  .controls{grid-template-columns:1fr}
+  .controls>*:first-child{grid-column:auto}
+}
+</style>
+
+
+<style id="premium-ui-overrides">
+:root{
+  --gpz-blue:#1d4ed8;
+  --gpz-blue-dark:#1e3a8a;
+  --gpz-cyan:#0ea5e9;
+  --gpz-green:#16a34a;
+  --gpz-yellow:#facc15;
+  --gpz-orange:#f97316;
+  --gpz-red:#dc2626;
+  --gpz-bg:#f6f8fc;
+  --gpz-card:#ffffff;
+  --gpz-border:#dbe3ef;
+  --gpz-text:#0f172a;
+  --gpz-muted:#64748b;
+  --gpz-shadow:0 18px 50px rgba(15,23,42,.10);
+  --gpz-shadow-soft:0 8px 24px rgba(15,23,42,.08);
+  --gpz-radius:22px;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(circle at top left,rgba(14,165,233,.10),transparent 32%),
+    radial-gradient(circle at top right,rgba(29,78,216,.10),transparent 34%),
+    linear-gradient(180deg,#f9fbff 0%,#f4f7fb 52%,#eef3f9 100%) !important;
+  color:var(--gpz-text) !important;
+  min-height:100vh;
+}
+
+.wrap{
+  max-width:1180px !important;
+  padding:24px 18px 70px !important;
+}
+
+.brand{
+  position:relative;
+  padding:22px;
+  border-radius:26px;
+  background:linear-gradient(135deg,#0f172a 0%,#172554 52%,#1e3a8a 100%);
+  color:#fff;
+  box-shadow:0 24px 70px rgba(15,23,42,.24);
+  overflow:hidden;
+  margin-bottom:16px !important;
+}
+.brand::before{
+  content:"";
+  position:absolute;
+  width:240px;
+  height:240px;
+  right:-80px;
+  top:-120px;
+  border-radius:999px;
+  background:rgba(56,189,248,.18);
+}
+.brand::after{
+  content:"";
+  position:absolute;
+  width:170px;
+  height:170px;
+  left:35%;
+  bottom:-115px;
+  border-radius:999px;
+  background:rgba(250,204,21,.12);
+}
+.brand-left,.brand-actions{position:relative;z-index:1}
+.logo{
+  width:58px !important;
+  height:58px !important;
+  border-radius:18px !important;
+  background:linear-gradient(145deg,#facc15,#fb923c) !important;
+  color:#111827 !important;
+  border:2px solid rgba(255,255,255,.45);
+  box-shadow:0 12px 30px rgba(0,0,0,.28) !important;
+  font-size:1rem !important;
+}
+h1{
+  font-size:clamp(24px,3vw,38px) !important;
+  line-height:1.12;
+  color:#fff;
+  letter-spacing:-.02em !important;
+}
+h1 span{
+  color:#bfdbfe !important;
+  -webkit-text-fill-color:initial !important;
+  background:none !important;
+}
+.sub{
+  color:#cbd5e1 !important;
+  font-size:.92rem !important;
+  line-height:1.55;
+}
+.nav-pill{
+  background:rgba(255,255,255,.12) !important;
+  color:#e2e8f0 !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+  backdrop-filter:blur(12px);
+  padding:9px 12px !important;
+}
+.brand .linkbtn{
+  background:#fff !important;
+  color:#0f172a !important;
+  border:none !important;
+  box-shadow:0 10px 24px rgba(0,0,0,.20) !important;
+}
+
+.controls{
+  padding:12px;
+  border-radius:18px;
+  background:rgba(255,255,255,.76);
+  border:1px solid rgba(219,227,239,.9);
+  box-shadow:var(--gpz-shadow-soft);
+  backdrop-filter:blur(14px);
+}
+.controls .linkbtn{
+  background:#fff !important;
+  color:#0f172a !important;
+  border:1px solid var(--gpz-border) !important;
+  box-shadow:none !important;
+  min-height:42px;
+}
+
+.model-selector{
+  background:rgba(255,255,255,.96) !important;
+  border:1px solid var(--gpz-border) !important;
+  box-shadow:var(--gpz-shadow) !important;
+  border-radius:var(--gpz-radius) !important;
+  padding:20px !important;
+}
+.model-title{
+  color:var(--gpz-blue-dark);
+  font-size:1rem !important;
+  letter-spacing:.06em !important;
+}
+.model-sub,.muted,.lang-note,.voice-mini{
+  color:var(--gpz-muted) !important;
+  line-height:1.6;
+}
+.wizard-help{
+  background:linear-gradient(135deg,#eff6ff,#f8fbff) !important;
+  border:1px solid #bfdbfe !important;
+  color:#1e3a8a !important;
+  border-left:5px solid var(--gpz-blue) !important;
+  padding:13px 15px !important;
+}
+.language-grid{gap:12px !important}
+.lang-btn{
+  background:#fff !important;
+  border:1px solid var(--gpz-border) !important;
+  padding:14px 10px !important;
+  border-radius:16px !important;
+  box-shadow:0 6px 18px rgba(15,23,42,.06);
+  transition:.2s ease;
+}
+.lang-btn:hover{transform:translateY(-2px);border-color:#93c5fd !important}
+.lang-btn.active{
+  border:2px solid var(--gpz-blue) !important;
+  background:#eff6ff !important;
+  color:var(--gpz-blue-dark) !important;
+  box-shadow:0 10px 24px rgba(29,78,216,.15);
+}
+
+#langStep.language-modal{
+  border:0 !important;
+  border-radius:26px !important;
+  padding:24px !important;
+  max-width:600px !important;
+}
+#langStep.language-modal::before{background:rgba(2,6,23,.72) !important;backdrop-filter:blur(6px)}
+
+.name-input{
+  border:1px solid var(--gpz-border) !important;
+  box-shadow:0 6px 18px rgba(15,23,42,.05);
+}
+.name-input:focus{
+  outline:none;
+  border-color:#60a5fa !important;
+  box-shadow:0 0 0 4px rgba(59,130,246,.14);
+}
+
+.ps2-gallery{
+  gap:14px !important;
+  margin:16px 0 !important;
+}
+.ps2-gallery > div{
+  background:#fff;
+  border:1px solid var(--gpz-border);
+  border-radius:18px;
+  padding:12px;
+  text-align:center;
+  font-weight:800;
+  color:#334155;
+  box-shadow:0 8px 22px rgba(15,23,42,.06);
+}
+.ps2-gallery img,.step-img{
+  height:145px !important;
+  border:0 !important;
+  background:#f8fafc;
+  border-radius:14px !important;
+  padding:8px;
+}
+
+.model-btn{
+  background:#fff !important;
+  color:#0f172a !important;
+  border:1px solid var(--gpz-border) !important;
+  border-radius:16px !important;
+  min-height:52px;
+  box-shadow:0 7px 20px rgba(15,23,42,.06) !important;
+}
+.model-btn:hover{
+  transform:translateY(-2px);
+  border-color:#93c5fd !important;
+  box-shadow:0 12px 26px rgba(29,78,216,.12) !important;
+}
+.model-btn.active{
+  background:linear-gradient(135deg,#eff6ff,#dbeafe) !important;
+  color:var(--gpz-blue-dark) !important;
+  border:2px solid var(--gpz-blue) !important;
+}
+
+.grid{gap:22px !important}
+.card{
+  background:rgba(255,255,255,.98) !important;
+  border:1px solid var(--gpz-border) !important;
+  border-radius:var(--gpz-radius) !important;
+  box-shadow:var(--gpz-shadow) !important;
+  padding:22px !important;
+}
+.card::before{display:none !important}
+.badge{
+  background:#eff6ff !important;
+  color:var(--gpz-blue-dark) !important;
+  border:1px solid #bfdbfe !important;
+  border-radius:999px !important;
+  padding:7px 11px !important;
+  letter-spacing:.08em !important;
+}
+.badge::before{
+  background:var(--gpz-blue) !important;
+  box-shadow:0 0 0 4px rgba(29,78,216,.12) !important;
+}
+.title{
+  font-size:1.35rem !important;
+  color:#0f172a;
+  margin-top:14px !important;
+}
+.card-images img{
+  max-width:145px !important;
+  background:#f8fafc;
+  padding:8px;
+  border:1px solid var(--gpz-border) !important;
+  box-shadow:0 10px 28px rgba(15,23,42,.08) !important;
+}
+
+.variants{
+  gap:12px !important;
+}
+.row{
+  background:#fbfdff;
+  border:1px solid #e7edf5;
+  border-radius:16px;
+  padding:12px;
+}
+.name{
+  color:#1e293b;
+  line-height:1.45;
+}
+.pill{
+  background:#fff7ed !important;
+  color:#c2410c !important;
+  border:1px solid #fed7aa !important;
+  box-shadow:none !important;
+  margin-top:4px;
+}
+.pill::before{background:#f97316 !important}
+
+.btn{
+  min-height:46px;
+  border-radius:13px !important;
+  transition:.2s ease !important;
+}
+.btn.buy{
+  background:linear-gradient(135deg,#16a34a,#22c55e) !important;
+  color:#fff !important;
+  box-shadow:0 10px 22px rgba(22,163,74,.22) !important;
+}
+.btn.alt{
+  background:linear-gradient(135deg,#f59e0b,#f97316) !important;
+  color:#fff !important;
+  box-shadow:0 10px 22px rgba(249,115,22,.20) !important;
+}
+.btn:hover{transform:translateY(-2px) !important;filter:none !important}
+.step-primary{
+  background:linear-gradient(135deg,#2563eb,#1d4ed8) !important;
+  color:#fff !important;
+  border:0 !important;
+  box-shadow:0 12px 26px rgba(37,99,235,.24) !important;
+}
+
+.section{
+  background:#fff;
+  border:1px solid var(--gpz-border);
+  border-radius:20px;
+  padding:20px;
+  box-shadow:var(--gpz-shadow-soft);
+  margin-top:18px !important;
+}
+.section h3{
+  color:var(--gpz-blue-dark);
+  font-size:1rem !important;
+  margin-bottom:10px !important;
+}
+.list{
+  line-height:1.65;
+  color:#475569 !important;
+}
+.foot{
+  background:#0f172a;
+  color:#cbd5e1 !important;
+  padding:15px 18px;
+  border-radius:16px;
+  justify-content:center;
+}
+
+#imagePopup{
+  backdrop-filter:blur(8px);
+}
+#imagePopup img{
+  border-radius:20px;
+  background:#fff;
+  padding:10px;
+  box-shadow:0 24px 70px rgba(0,0,0,.4);
+}
+
+@media(max-width:760px){
+  .wrap{padding:14px 12px 50px !important}
+  .brand{padding:18px !important;border-radius:22px}
+  .brand-left{align-items:flex-start}
+  .logo{width:50px !important;height:50px !important;flex:0 0 auto}
+  .brand-actions{width:100%}
+  .brand-actions>*{width:100%;justify-content:center}
+  .controls{display:grid !important;grid-template-columns:1fr}
+  .controls .linkbtn{width:100%;justify-content:center}
+  .model-selector,.card,.section{padding:16px !important;border-radius:18px !important}
+  .ps2-gallery{grid-template-columns:1fr !important}
+  .ps2-gallery img{height:180px !important}
+  .row{
+    grid-template-columns:1fr !important;
+    gap:10px !important;
+  }
+  .row > .cta{width:100%}
+  .row .btn{width:100%}
+  .card-images img{max-width:125px !important}
+  .model-btn-row{display:grid !important;grid-template-columns:1fr}
+  #langStep.language-modal{padding:18px !important}
+}
+</style>
+
+
+<style id="all-wizard-popup-style">
+.wizard-modal{
+  position:fixed !important;
+  left:50% !important;
+  top:50% !important;
+  transform:translate(-50%,-50%) !important;
+  width:calc(100% - 28px) !important;
+  max-width:680px !important;
+  max-height:88vh !important;
+  overflow:auto !important;
+  z-index:10000 !important;
+  margin:0 !important;
+  background:#ffffff !important;
+  border:1px solid #dbe3ef !important;
+  border-radius:26px !important;
+  box-shadow:0 30px 100px rgba(2,6,23,.45) !important;
+}
+.wizard-modal::after{
+  content:"";
+  position:fixed;
+  inset:-200vh;
+  background:rgba(2,6,23,.72);
+  backdrop-filter:blur(7px);
+  z-index:-2;
+}
+.wizard-modal > *{
+  position:relative;
+  z-index:1;
+}
+body.wizard-popup-open{
+  overflow:hidden !important;
+}
+.wizard-modal .ps2-gallery{
+  max-height:330px;
+  overflow:auto;
+}
+@media(max-width:760px){
+  .wizard-modal{
+    width:calc(100% - 18px) !important;
+    max-height:92vh !important;
+    border-radius:20px !important;
+    padding:16px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="wrap">
@@ -601,8 +1209,9 @@ body.lang-modal-open{overflow:hidden}
     <div class="brand-left">
       <div class="logo">GPZ</div>
       <div>
-        <h1>PS2 Quick Buy — <span>FMCB, USB & Combo</span></h1>
-        <div class="sub">One-tap WhatsApp Prefill • Top & Optional Packs • Auto Light/Dark</div>
+        <h1>PS2 Quick Buy <span>FMCB • USB • Combo</span></h1>
+        <div class="sub">Choose the correct PS2 setup with guided steps, voice help and one-tap WhatsApp order</div>
+        <div style="margin-top:8px;font-size:.78rem;color:#bbf7d0;font-weight:700">✓ Model-wise guidance &nbsp;•&nbsp; ✓ Transparent pricing &nbsp;•&nbsp; ✓ WhatsApp order</div>
       </div>
     </div>
     <div class="brand-actions">
@@ -618,14 +1227,14 @@ body.lang-modal-open{overflow:hidden}
 
   <!-- Top navigation shortcuts -->
   <div class="controls">
-    <a class="linkbtn" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
+    <a class="linkbtn optional-selector-link hidden" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
     <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">▶️ Setup Video</a>
     <button type="button" class="linkbtn" onclick="toggleVoice()" id="voiceToggle">🔊 Voice ON</button>
   </div>
 
 
   <!-- LANGUAGE FIRST STEP -->
-  <section id="langStep" class="model-selector language-modal">
+  <section id="langStep" class="model-selector language-modal wizard-modal">
     <h2 class="model-title" data-i18n="languageTitle">Select Your Language</h2>
     <div class="wizard-help" data-i18n="languageHelp">Choose your language. Voice and main page text will continue in the selected language. Technical words like PS2, FMCB, USB, OPL and Combo will stay in English.</div>
     <div class="language-grid">
@@ -638,7 +1247,7 @@ body.lang-modal-open{overflow:hidden}
   </section>
 
   <!-- NAME FIRST STEP -->
-  <section id="step0" class="model-selector hidden">
+  <section id="step0" class="model-selector wizard-modal hidden">
     <h2 class="model-title" data-i18n="nameTitle">Please type your name</h2>
     <div class="wizard-help" data-i18n="nameHelp">Please type your name. This helps us make your order message correctly.</div>
     <input id="customerName" class="name-input" type="text" placeholder="Type your name" autocomplete="name" oninput="nameTypedAutoNext()" onkeydown="if(event.key==='Enter') startWizard()">
@@ -646,7 +1255,7 @@ body.lang-modal-open{overflow:hidden}
   </section>
 
   <!-- MODEL SELECTOR -->
-  <section id="step1" class="model-selector hidden">
+  <section id="step1" class="model-selector wizard-modal hidden">
     <h2 class="model-title" data-i18n="modelTitle">Step 1 — Select Your PS2 Model</h2>
     <div class="ps2-gallery">
 <div><img src="Ps2fat.jpg" onclick="openImg(this.src)"><br>PS2 FAT</div>
@@ -674,7 +1283,7 @@ body.lang-modal-open{overflow:hidden}
   </section>
 
   
-<section id="step2" class="model-selector hidden">
+<section id="step2" class="model-selector wizard-modal hidden">
 <h2 class="model-title" data-i18n="matrixTitle">Step 2 — Matrix Chip</h2>
 <div class="wizard-help" data-i18n="matrixHelp">Matrix is a boot chip. If Matrix appears on screen when PS2 starts, choose Matrix. If not, choose No. If you do not know, choose Don't Know.</div>
 <img class="step-img" src="Matrixps2.jpg" onclick="openImg(this.src)">
@@ -685,17 +1294,18 @@ body.lang-modal-open{overflow:hidden}
 </div>
 </section>
 
-<section id="step3" class="model-selector hidden">
+<section id="step3" class="model-selector wizard-modal hidden">
 <h2 class="model-title" data-i18n="fmcbTitle">Step 3 — FMCB Type</h2>
-<div class="wizard-help" data-i18n="fmcbHelp">Choose FMCB with OPL Only for USB gameplay. Choose Full FMCB + Apps if you also need extra apps.</div>
+<div class="wizard-help" data-i18n="fmcbHelp">Choose FMCB with OPL Only for USB gameplay. Choose Full FMCB + Apps if you also need extra apps. If FMCB/OPL already works and you only need a USB with games, choose Need Only USB with Games.</div>
 <img class="step-img" src="Fmcb.jpeg" onclick="openImg(this.src)"><img class="step-img" src="OPL10.png" onclick="openImg(this.src)">
 <div class="model-btn-row">
 <button class="model-btn" onclick="selectFmcbType('opl')">FMCB with OPL Only</button>
 <button class="model-btn" onclick="selectFmcbType('full')">Full FMCB + Apps</button>
+<button class="model-btn" onclick="selectFmcbType('usbOnly')">Need Only USB with Games</button>
 </div>
 </section>
 
-<section id="step4" class="model-selector hidden">
+<section id="step4" class="model-selector wizard-modal hidden">
 <h2 class="model-title" data-i18n="productTitle">Step 4 — Product Type</h2>
 <div class="wizard-help" data-i18n="productHelp">Choose FMCB Card, USB Only, or Combo according to your setup.</div>
 <div class="model-btn-row">
@@ -770,7 +1380,7 @@ body.lang-modal-open{overflow:hidden}
 
       <div class="links" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
         <a class="linkbtn" href="https://youtu.be/xGR0vUM1-Jw" target="_blank" rel="noopener">🎞️ Top Games List (Video)</a>
-        <a class="linkbtn" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
+        <a class="linkbtn optional-selector-link hidden" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
         <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">🧩 Setup Guide</a>
       </div>
     </section>
@@ -805,7 +1415,7 @@ body.lang-modal-open{overflow:hidden}
 
       <div class="links" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
         <a class="linkbtn" href="https://youtu.be/xGR0vUM1-Jw" target="_blank" rel="noopener">🎞️ Top Games List (Video)</a>
-        <a class="linkbtn" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
+        <a class="linkbtn optional-selector-link hidden" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
         <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">📺 Setup Video</a>
       </div>
 
@@ -873,9 +1483,7 @@ body.lang-modal-open{overflow:hidden}
 
 
 <div style="margin-top:20px;text-align:center;">
-  <button onclick="window.location.href='price_breakdown.html'" 
-    style="padding:12px 18px;font-size:14px;font-weight:700;border-radius:8px;
-    background:#ffd814;border:1px solid #fcd200;cursor:pointer;">
+  <button class="btn buy" onclick="window.location.href='price_breakdown.html'" style="max-width:340px;width:100%;">
     📊 View Full Price Breakdown
   </button>
 </div>
@@ -1009,7 +1617,7 @@ const T = {
     nameTitle:'Please type your name', nameHelp:'Please type your name. This helps us make your order message correctly.', next:'Next', listenAgain:'🔊 Listen Again', voiceMini:'Type your name. Page will automatically move to the next step.',
     modelTitle:'Step 1 — Select Your PS2 Model', modelHelp:'If you do not know your PS2 Model, check the pictures and select the matching model.', selectedModel:'Selected Model', changeModel:'Change Model',
     matrixTitle:'Step 2 — Matrix Chip', matrixHelp:'Matrix is a boot chip. If Matrix appears on screen when PS2 starts, choose Matrix. If not, choose No. If you do not know, choose Don\'t Know.',
-    fmcbTitle:'Step 3 — FMCB Type', fmcbHelp:'Choose FMCB with OPL Only for USB gameplay. Choose Full FMCB + Apps if you also need extra apps.',
+    fmcbTitle:'Step 3 — FMCB Type', fmcbHelp:'Choose FMCB with OPL Only for USB gameplay. Choose Full FMCB + Apps if you also need extra apps. If FMCB/OPL already works and you only need a USB with games, choose Need Only USB with Games.',
     productTitle:'Step 4 — Product Type', productHelp:'Choose FMCB Card, USB Only, or FMCB + USB Combo. Top Games are pre-loaded; Optional Games are loaded after you submit your selected game list.',
     vName:'Welcome to Games Planet. First choose your language, then type your name. This page will guide you step by step to choose the correct PS2 product.',
     vAskName:'Please type your name. After typing your name, this page will automatically move to the next step.', vNeedName:'Please type your name first.',
@@ -1024,7 +1632,7 @@ const T = {
     nameTitle:'अपना नाम टाइप करें', nameHelp:'कृपया अपना नाम टाइप करें। इससे order message सही बनेगा।', next:'Next', listenAgain:'🔊 फिर से सुनें', voiceMini:'अपना नाम type करें। Page अपने आप अगले step पर चला जाएगा।',
     modelTitle:'Step 1 — अपना PS2 Model चुनें', modelHelp:'अगर आपको PS2 Model नहीं पता, तो pictures देखकर सही model चुनें।', selectedModel:'Selected Model', changeModel:'Change Model',
     matrixTitle:'Step 2 — Matrix Chip', matrixHelp:'Matrix एक boot chip है। PS2 start होते ही screen पर Matrix लिखा आए तो Matrix चुनें। नहीं आए तो No चुनें। पता नहीं हो तो Don\'t Know चुनें।',
-    fmcbTitle:'Step 3 — FMCB Type', fmcbHelp:'USB gameplay के लिए FMCB with OPL Only चुनें। Extra Apps भी चाहिए तो Full FMCB + Apps चुनें।',
+    fmcbTitle:'Step 3 — FMCB Type', fmcbHelp:'USB gameplay के लिए FMCB with OPL Only चुनें। Extra Apps भी चाहिए तो Full FMCB + Apps चुनें। अगर आपके PS2 में FMCB/OPL पहले से चलता है और सिर्फ games वाली USB चाहिए, तो Need Only USB with Games चुनें।',
     productTitle:'Step 4 — Product Type', productHelp:'अपने setup के हिसाब से FMCB Card, USB Only या FMCB + USB Combo चुनें। Top Games pre-loaded हैं; Optional Games आपकी selected list के अनुसार load होंगे।',
     vName:'Games Planet में आपका स्वागत है। सबसे पहले अपनी भाषा चुनें, फिर अपना नाम टाइप करें। यह page आपको step by step सही PS2 product चुनने में मदद करेगा।',
     vAskName:'कृपया अपना नाम टाइप करें। नाम लिखते ही page अपने आप अगले step पर जाएगा।', vNeedName:'कृपया पहले अपना नाम टाइप करें।',
@@ -1051,7 +1659,7 @@ T.pa = copyLang('hi',{
   matrixTitle:'Step 2 — Matrix Chip',
   matrixHelp:'Matrix ਇੱਕ boot chip ਹੈ। ਜੇ PS2 start ਹੁੰਦੇ ਹੀ screen ਤੇ Matrix ਲਿਖਿਆ ਆਵੇ, ਤਾਂ Matrix ਚੁਣੋ। ਨਹੀਂ ਆਉਂਦਾ ਤਾਂ No ਚੁਣੋ। ਪਤਾ ਨਹੀਂ ਤਾਂ Don\'t Know ਚੁਣੋ।',
   fmcbTitle:'Step 3 — FMCB Type',
-  fmcbHelp:'USB gameplay ਲਈ FMCB with OPL Only ਚੁਣੋ। Extra Apps ਵੀ ਚਾਹੀਦੇ ਹਨ ਤਾਂ Full FMCB + Apps ਚੁਣੋ।',
+  fmcbHelp:'USB gameplay ਲਈ FMCB with OPL Only ਚੁਣੋ। Extra Apps ਵੀ ਚਾਹੀਦੇ ਹਨ ਤਾਂ Full FMCB + Apps ਚੁਣੋ। ਜੇ ਤੁਹਾਡੇ PS2 ਵਿੱਚ FMCB/OPL ਪਹਿਲਾਂ ਤੋਂ ਚੱਲਦਾ ਹੈ ਅਤੇ ਸਿਰਫ games ਵਾਲੀ USB ਚਾਹੀਦੀ ਹੈ, ਤਾਂ Need Only USB with Games ਚੁਣੋ।',
   productTitle:'Step 4 — Product Type',
   productHelp:'ਆਪਣੇ setup ਦੇ ਹਿਸਾਬ ਨਾਲ FMCB Card, USB Only ਜਾਂ FMCB + USB Combo ਚੁਣੋ। Top Games pre-loaded ਹਨ; Optional Games ਤੁਹਾਡੀ selected list ਦੇ ਅਨੁਸਾਰ load ਹੋਣਗੀਆਂ।',
   vName:'Games Planet ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ। ਪਹਿਲਾਂ language ਚੁਣੋ, ਫਿਰ ਆਪਣਾ ਨਾਮ type ਕਰੋ। ਇਹ page ਤੁਹਾਨੂੰ step by step ਸਹੀ PS2 product ਚੁਣਨ ਵਿੱਚ ਮਦਦ ਕਰੇਗਾ।',
@@ -1075,34 +1683,59 @@ function applyLanguage(){
   document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active', b.dataset.lang===currentLang));
 }
 
-function speakText(text, repeat=true){
+function speakText(text, repeat=false){
   currentVoiceText = text || currentVoiceText;
   repeatVoiceLoop = !!repeat;
-  if(!voiceEnabled || !('speechSynthesis' in window)) return;
-  try{
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(currentVoiceText);
-    u.lang = langVoice[currentLang] || 'en-IN';
-    u.rate = 0.88; u.pitch = 1;
-    const voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
-    let preferred = voices.find(v => (v.lang||'').toLowerCase() === u.lang.toLowerCase()) || voices.find(v => (v.lang||'').toLowerCase().startsWith(u.lang.split('-')[0].toLowerCase()));
-    // Punjabi voice हर browser में available नहीं होती। अगर pa-IN voice न मिले तो Hindi voice fallback रहेगी, फिर English fallback.
-    if(!preferred && currentLang === 'pa'){
-      preferred = voices.find(v => (v.lang||'').toLowerCase().startsWith('hi')) || voices.find(v => (v.lang||'').toLowerCase().startsWith('en'));
-      if(preferred) u.lang = preferred.lang || 'hi-IN';
-    }
-    if(!preferred && currentLang === 'hi'){
-      preferred = voices.find(v => (v.lang||'').toLowerCase().startsWith('en'));
-      if(preferred) u.lang = preferred.lang || 'en-IN';
-    }
-    if(preferred) u.voice = preferred;
-    u.onend = function(){
-      if(repeatVoiceLoop && voiceEnabled && currentVoiceText){
-        setTimeout(function(){ speakText(currentVoiceText, true); }, 700);
+  if(!voiceEnabled || !('speechSynthesis' in window) || !currentVoiceText) return;
+
+  const runSpeech = function(){
+    try{
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(currentVoiceText);
+      u.lang = langVoice[currentLang] || 'en-IN';
+      u.rate = 0.90;
+      u.pitch = 1;
+      u.volume = 1;
+
+      const voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
+      let preferred =
+        voices.find(v => (v.lang||'').toLowerCase() === u.lang.toLowerCase()) ||
+        voices.find(v => (v.lang||'').toLowerCase().startsWith(u.lang.split('-')[0].toLowerCase()));
+
+      if(!preferred && currentLang === 'pa'){
+        preferred =
+          voices.find(v => (v.lang||'').toLowerCase().startsWith('hi')) ||
+          voices.find(v => (v.lang||'').toLowerCase().startsWith('en'));
       }
+      if(!preferred && currentLang === 'hi'){
+        preferred = voices.find(v => (v.lang||'').toLowerCase().startsWith('en'));
+      }
+      if(preferred){
+        u.voice = preferred;
+        u.lang = preferred.lang || u.lang;
+      }
+
+      u.onend = function(){
+        if(repeatVoiceLoop && voiceEnabled && currentVoiceText){
+          setTimeout(function(){ speakText(currentVoiceText, false); }, 900);
+        }
+      };
+      window.speechSynthesis.speak(u);
+    }catch(e){
+      console.log('Voice error:', e);
+    }
+  };
+
+  const voicesNow = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
+  if(voicesNow.length){
+    runSpeech();
+  }else{
+    window.speechSynthesis.onvoiceschanged = function(){
+      runSpeech();
+      window.speechSynthesis.onvoiceschanged = null;
     };
-    window.speechSynthesis.speak(u);
-  }catch(e){}
+    setTimeout(runSpeech, 500);
+  }
 }
 
 function stopVoice(){
@@ -1130,25 +1763,34 @@ function toggleVoice(){
   voiceEnabled = !voiceEnabled;
   const btn = document.getElementById('voiceToggle');
   if(btn) btn.textContent = voiceEnabled ? '🔊 Voice ON' : '🔇 Voice OFF';
-  if(!voiceEnabled) stopVoice();
-  if(voiceEnabled) speakText(currentVoiceText || tr('vName'));
+  if(!voiceEnabled){
+    stopVoice();
+  }else{
+    speakText(currentVoiceText || tr('vName'), false);
+  }
 }
 function repeatCurrentVoice(){ speakText(currentVoiceText || tr('vName')); }
 
 function hideWizardSteps(){
   ['langStep','step0','step1','step2','step3','step4'].forEach(id=>{
-    const el = document.getElementById(id); if(el) el.classList.add('hidden');
+    const el = document.getElementById(id);
+    if(el) el.classList.add('hidden');
   });
+  document.body.classList.remove('wizard-popup-open');
 }
 
 function showStep(id, voiceText){
   stopVoice();
-  if(id !== 'langStep') document.body.classList.remove('lang-modal-open');
+  document.body.classList.remove('lang-modal-open');
   hideWizardSteps();
   document.querySelectorAll('.model-guard').forEach(el=>el.classList.add('hidden'));
   const el = document.getElementById(id);
-  if(el){ el.classList.remove('hidden'); el.scrollIntoView({behavior:'smooth', block:'start'}); }
-  if(voiceText) setTimeout(()=>speakText(voiceText), 180);
+  if(el){
+    el.classList.remove('hidden');
+    document.body.classList.add('wizard-popup-open');
+    el.scrollTop = 0;
+  }
+  if(voiceText) setTimeout(()=>speakText(voiceText, false), 180);
 }
 
 function nameTypedAutoNext(){
@@ -1180,12 +1822,27 @@ function selectModel(model){
 }
 
 function selectMatrix(value){ showStep('step3', tr('vFmcb')); }
-function selectFmcbType(value){ showStep('step4', tr('vProduct')); }
+function selectFmcbType(value){
+  if(value === 'usbOnly'){
+    showProducts('usb');
+    return;
+  }
+  showStep('step4', tr('vProduct'));
+}
 function showStep3(){ selectMatrix('old'); }
 function showStep4(){ selectFmcbType('old'); }
 
+function updateOptionalSelectorVisibility(type){
+  document.querySelectorAll('.optional-selector-link').forEach(link=>{
+    const show = (type === 'usb' || type === 'combo');
+    link.classList.toggle('hidden', !show);
+  });
+}
+
 function showProducts(type){
   hideWizardSteps();
+  document.body.classList.remove('wizard-popup-open');
+  updateOptionalSelectorVisibility(type);
   document.querySelectorAll('.model-guard').forEach(el=>el.classList.add('hidden'));
   const cards = document.querySelectorAll('.model-guard');
   if(type==='fmcb' && cards[0]) cards[0].classList.remove('hidden');
@@ -1193,9 +1850,9 @@ function showProducts(type){
   if(type==='combo' && cards[2]) cards[2].classList.remove('hidden');
   const visible = document.querySelector('.model-guard:not(.hidden)');
   if(visible) visible.scrollIntoView({behavior:'smooth', block:'start'});
-  if(type==='fmcb') speakText(tr('vFmcbProduct'));
-  if(type==='usb') speakText(tr('vUsbProduct'));
-  if(type==='combo') speakText(tr('vComboProduct'));
+  if(type==='fmcb') speakText(tr('vFmcbProduct'), false);
+  if(type==='usb') speakText(tr('vUsbProduct'), false);
+  if(type==='combo') speakText(tr('vComboProduct'), false);
 }
 
 function clearModel(){
@@ -1203,15 +1860,20 @@ function clearModel(){
   document.querySelectorAll('.model-btn').forEach(btn=>btn.classList.remove('active'));
   document.querySelectorAll('.model-guard').forEach(el=>el.classList.add('hidden'));
   const wrap = document.getElementById('selectedModelWrap'); if(wrap){ wrap.classList.add('hidden'); }
+  updateOptionalSelectorVisibility('fmcb');
   showStep('step1', tr('vModel'));
 }
 
 document.addEventListener('DOMContentLoaded', function(){
   hideWizardSteps();
-  const lang = document.getElementById('langStep'); if(lang) lang.classList.remove('hidden'); document.body.classList.add('lang-modal-open');
+  const lang = document.getElementById('langStep');
+  if(lang) lang.classList.remove('hidden');
+  document.body.classList.add('lang-modal-open');
+  document.body.classList.add('wizard-popup-open');
   const browser = (navigator.language || '').toLowerCase();
   if(browser.startsWith('hi')) currentLang='hi'; else if(browser.startsWith('pa')) currentLang='pa'; else currentLang='en';
   applyLanguage();
+  updateOptionalSelectorVisibility('fmcb');
   currentVoiceText = tr('vName');
 });
 </script>
@@ -1225,37 +1887,3 @@ function closeImg(){document.getElementById('imagePopup').style.display='none';}
 </script>
 </body>
 </html>
-
-<style>
-.card{
-  background:#fff !important;
-  border:1px solid #d5d9d9 !important;
-  box-shadow:none !important;
-}
-.btn.buy{
-  background:#ffccd5 !important;
-  color:#0f1111 !important;
-}
-.btn.alt{
-  background:#ffa41c !important;
-  color:#0f1111 !important;
-}
-.model-btn{
-  background:#f3f3f3 !important;
-  color:#0f1111 !important;
-  border:1px solid #d5d9d9 !important;
-}
-.model-btn.active{
-  border:2px solid #ffa41c !important;
-}
-.pill{
-  color:#b12704 !important;
-  background:none !important;
-}
-
-.ps2-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0}
-.ps2-gallery img,.step-img{max-width:100%;height:120px;object-fit:contain;cursor:pointer;border:1px solid #ccc;border-radius:8px}
-#imagePopup{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center}
-#imagePopup img{max-width:95%;max-height:95%}
-#imagePopup .close{position:absolute;right:20px;top:10px;color:#fff;font-size:32px;cursor:pointer}
-</style>
