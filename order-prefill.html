@@ -157,13 +157,15 @@
         <select id="addonSelect">
           <option value="" data-price="0">— Select —</option>
           <!-- Existing add-ons -->
-          <option value="Wire Gamepad" data-price="365">Wire Gamepad — ₹375</option>
+          <option value="Wire Gamepad" data-price="375">Wire Gamepad — ₹375</option>
 
 <option value="Wireless Gamepad" data-price="499">Wireless Gamepad — ₹499</option>
 
 <option value="PS2 Slim Sticker/Skin" data-price="60">PS2 Slim Sticker/Skin — ₹60</option>
+<option value="PS2 AV Cable" data-price="110">PS2 AV Cable — ₹110</option>
 
-<option value="HDMI Converter" data-price="279">HDMI Converter — ₹310</option>
+
+<option value="HDMI Converter" data-price="330">HDMI Converter — ₹330</option>
 
 <option value="HDMI Cable" data-price="99">HDMI Cable — ₹99</option>
 
@@ -179,7 +181,7 @@
 
 <option value="AAA 4 BATTERIES AND 4 PORT CHARGER COMBO" data-price="919">AAA 4 BATTERIES AND 4 PORT CHARGER COMBO — ₹919</option>
 
-<option value="TRACKON.IN PRIME COURIER SERVICE" data-price="200">TRACKON.IN PRIME COURIER SERVICE — ₹200</option>
+<option id="primeCourierOption" value="TRACKON.IN PRIME COURIER SERVICE" data-price="200">TRACKON.IN PRIME COURIER SERVICE — ₹200 (Urban city only)</option>
         </select>
       </div>
       <div>
@@ -195,6 +197,7 @@
       </div>
     </div>
     <div class="hint" id="addonsHelp">Add-ons are optional. Pick from dropdown → set Qty → “Add this to your order”. Names & prices fixed; only quantity editable.</div>
+    <div class="hint" id="primeCourierNote" style="display:block;margin-top:8px"></div>
   </div>
 
   <!-- Payment Mode -->
@@ -205,6 +208,24 @@
       <button id="btn-cod" class="ghost" onclick="setMode('cod')">🔴 COD</button>
     </div>
     <div class="hint" id="codNote">COD rules: ≥ ₹1899 → ₹199 • ₹1399–₹1898 → ₹199 • &lt; ₹1399 → No COD</div>
+  </div>
+
+
+  <!-- Prepaid Courier Selection -->
+  <div class="card" id="prepaidCourierCard">
+    <span class="badge">Prepaid Courier</span>
+    <div class="label">Choose Courier Company</div>
+    <select id="prepaidCourier">
+      <option value="">— Select Courier —</option>
+      <option value="Trackon.in">Trackon.in</option>
+      <option value="ShreeMaruti.com">ShreeMaruti.com</option>
+      <option value="DTDC.in">DTDC.in</option>
+      <option value="Speed Post">Speed Post</option>
+      <option value="Delhivery">Delhivery</option>
+      <option value="Blue Dart">Blue Dart</option>
+      <option value="Ecom Express">Ecom Express</option>
+    </select>
+    <div class="hint">Courier availability destination pincode ke service area par depend karegi.</div>
   </div>
 
   <!-- Coupon (Prepaid only) -->
@@ -331,6 +352,54 @@ document.getElementById("addonSelect").addEventListener("change", e=>{
   document.getElementById("addAddonBtn").disabled = !opt.value;
 });
 
+
+/* ===== Prime Courier: Urban city only ===== */
+function isRuralDeliveryAddress(){
+  const text = [
+    document.getElementById("house")?.value,
+    document.getElementById("address")?.value,
+    document.getElementById("landmark")?.value,
+    document.getElementById("city")?.value,
+    document.getElementById("postoffice")?.value
+  ].filter(Boolean).join(" ").toLowerCase();
+
+  // Common rural-address words used in Indian addresses.
+  const ruralWords = [
+    "village", "vill ", "vill.", "gaon", "गांव", "गाँव", "gram ",
+    "gram-", "p.o. village", "post village", "rural", "purwa",
+    "tola", "majra", "chak ", "kheda", "खेड़ा"
+  ];
+  return ruralWords.some(word => text.includes(word));
+}
+function updatePrimeCourierAvailability(){
+  const option = document.getElementById("primeCourierOption");
+  const note = document.getElementById("primeCourierNote");
+  const select = document.getElementById("addonSelect");
+  if(!option || !note || !select) return;
+
+  const city = (document.getElementById("city")?.value || "").trim();
+  const pin = (document.getElementById("pincode")?.value || "").trim();
+  const rural = isRuralDeliveryAddress();
+  const locationLoaded = pin.length === 6 && city.length > 0;
+  const allowed = locationLoaded && !rural;
+
+  option.disabled = !allowed;
+
+  if(!locationLoaded){
+    note.textContent = "ℹ️ Prime Courier availability check ke liye pehle valid pincode aur address bharein.";
+  }else if(rural){
+    note.textContent = "❌ Prime Courier rural village address ke liye available nahi hai.";
+  }else{
+    note.textContent = "✅ Prime Courier urban city address ke liye available hai.";
+  }
+
+  if(!allowed && select.value === option.value){
+    select.value = "";
+    document.getElementById("addonPrice").value = "";
+    document.getElementById("addAddonBtn").disabled = true;
+  }
+}
+
 /* ===== Coupon helpers & logic ===== */
 function norm(s){return (s||"").toString().trim().toUpperCase();}
 function getBaseProduct(){ return norm(document.getElementById("product").value); }
@@ -440,6 +509,7 @@ function setMode(m){
   document.getElementById("btn-prepaid").className=(m==="prepaid"?"ghost act":"ghost");
   document.getElementById("btn-cod").className=(m==="cod"?"ghost act":"ghost");
   document.getElementById("couponCard").style.display=(m==="prepaid")?"block":"none";
+  document.getElementById("prepaidCourierCard").style.display=(m==="prepaid")?"block":"none";
   document.getElementById("prepaidBlock").style.display=(m==="prepaid")?"block":"none";
   document.getElementById("codBlock").style.display=(m==="cod")?"block":"none";
   setModeBadge();
@@ -552,6 +622,7 @@ function buildWhatsAppTemplate(forMode){
       "🟢 Prepaid Order on WhatsApp",
       "",
       ...common,
+      `Courier Company: ${document.getElementById("prepaidCourier").value || "Not selected"}`,
       `Discount Applied:${(typeof discountValue==='number' && discountValue>0) ? " "+rs(discountValue) : ""}`,
       `Amount Paid: ${rs(paid)}`,
       "",
@@ -579,6 +650,11 @@ function buildWhatsAppTemplate(forMode){
 
 /* ===== Single action: Submit this order ===== */
 function submitOrder(){
+  if(mode==="prepaid" && !document.getElementById("prepaidCourier").value){
+    alert("Please choose a prepaid courier company.");
+    document.getElementById("prepaidCourier").focus();
+    return;
+  }
   const text = buildWhatsAppTemplate(mode === "cod" ? "cod" : "prepaid");
   window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`,'_blank','noopener,noreferrer');
 }
@@ -596,6 +672,7 @@ function submitOrder(){
   document.getElementById("addonsTotal").value = 0;
   updateCodButton();
   computeTotals();
+  updatePrimeCourierAvailability();
 })();
 
 /* ====== ETA / PINCODE ====== */
@@ -703,6 +780,7 @@ document.getElementById("pincode").addEventListener("input",function(){
         document.getElementById("codEta").textContent=codEtaText;
         document.getElementById("codRange").textContent=codRangeFull;
         document.getElementById("miniPreview").style.display="block";
+        updatePrimeCourierAvailability();
       }
     }
   }
@@ -710,8 +788,15 @@ document.getElementById("pincode").addEventListener("input",function(){
 
 /* Live updates that might affect totals/eligibility */
 ["name","mobile","altMobile","email","address","landmark","pincode","state","city","product","variant","basePrice","house"]
-.forEach(id=>{const el=document.getElementById(id); if(el){ el.addEventListener("input",()=>{ /* no-op: submit builds fresh text */ }); }});
-document.getElementById("postoffice").addEventListener("change",()=>{});
+.forEach(id=>{
+  const el=document.getElementById(id);
+  if(el){
+    el.addEventListener("input",()=>{
+      if(["address","landmark","pincode","city","house"].includes(id)) updatePrimeCourierAvailability();
+    });
+  }
+});
+document.getElementById("postoffice").addEventListener("change",()=>{ updatePrimeCourierAvailability(); });
 </script>
 </body>
 </html>
