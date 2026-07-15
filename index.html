@@ -1200,8 +1200,39 @@ body.wizard-popup-open{
 }
 </style>
 
-</head>
+
+<style id="game-selector-warning-style">
+#gameSelectorWarning{display:none;position:fixed;inset:0;z-index:20000;align-items:center;justify-content:center;padding:16px;background:rgba(2,6,23,.76);backdrop-filter:blur(7px)}
+#gameSelectorWarning.show{display:flex}
+.game-selector-warning-box{position:relative;width:min(520px,100%);background:#fff;border-radius:22px;padding:28px 20px 20px;text-align:center;box-shadow:0 30px 100px rgba(0,0,0,.45);border:2px solid #f59e0b}
+.game-selector-warning-close{position:absolute;right:12px;top:10px;width:40px;height:40px;border:0;border-radius:50%;background:#f1f5f9;color:#0f172a;font-size:22px;font-weight:900;cursor:pointer}
+.game-selector-warning-icon{font-size:48px;line-height:1;margin-bottom:8px}
+.game-selector-warning-box h3{margin:0 0 10px;color:#b45309;font-size:1.35rem}
+.game-selector-warning-box p{margin:0;color:#334155;font-size:1rem;line-height:1.6;font-weight:700}
+.game-selector-warning-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.game-selector-warning-actions button{flex:1 1 180px;min-height:46px;border-radius:12px;font-weight:800;cursor:pointer;font-size:.92rem}
+.game-selector-cancel{background:#fff;border:1px solid #cbd5e1;color:#334155}
+.game-selector-continue{background:linear-gradient(135deg,#16a34a,#22c55e);border:0;color:#fff}
+@media(max-width:480px){.game-selector-warning-box{padding:26px 16px 16px}.game-selector-warning-actions{flex-direction:column}}
+</style>
+
+
+<style id="back-buy-confirm-style">
+.wizard-back-wrap{display:flex;justify-content:flex-start;margin-top:14px}
+.wizard-back-btn{border:1px solid #cbd5e1;background:#f8fafc;color:#0f172a;border-radius:12px;padding:10px 15px;font-weight:800;font-size:.9rem;cursor:pointer;min-height:44px}
+.wizard-back-btn:hover{background:#eef2ff;border-color:#93c5fd}
+#buyConfirmPopup{display:none;position:fixed;inset:0;z-index:12000;background:rgba(2,6,23,.76);backdrop-filter:blur(7px);align-items:center;justify-content:center;padding:14px}
+#buyConfirmPopup.open{display:flex}
+.buy-confirm-box{position:relative;width:min(520px,100%);background:#fff;border-radius:24px;padding:24px;border:1px solid #dbe3ef;box-shadow:0 30px 100px rgba(0,0,0,.42);text-align:center}
+.buy-confirm-close{position:absolute;right:12px;top:10px;width:40px;height:40px;border:0;border-radius:50%;background:#f1f5f9;font-size:20px;cursor:pointer}
+.buy-confirm-icon{font-size:42px;margin-bottom:6px}.buy-confirm-box h3{margin:4px 35px 10px;color:#0f172a;font-size:1.3rem}.buy-confirm-box p{color:#475569;line-height:1.6;margin:0 0 18px}
+.buy-confirm-actions{display:grid;grid-template-columns:1fr 1.35fr;gap:10px}.buy-confirm-actions button{min-height:46px;border-radius:13px;font-weight:800;cursor:pointer;padding:10px}
+.buy-confirm-cancel{background:#fff;border:1px solid #cbd5e1;color:#334155}.buy-confirm-agree{background:linear-gradient(135deg,#16a34a,#22c55e);border:0;color:#fff}
+@media(max-width:520px){.buy-confirm-actions{grid-template-columns:1fr}.buy-confirm-box{padding:22px 16px}}
+</style>
+<style id="gpz-ticker">.gpz-ticker{position:sticky;top:0;z-index:30000;background:#000;color:#fff;height:30px;overflow:hidden;display:flex;align-items:center}.gpz-ticker .track{white-space:nowrap;padding-left:100%;display:inline-block;animation:gpzmar 45s linear infinite;font-weight:700;font-size:13px}@keyframes gpzmar{from{transform:translateX(0)}to{transform:translateX(-100%)}}</style></head>
 <body>
+<div class="gpz-ticker"><div class="track">🎮 आपका Games Planet में स्वागत है। हमारे पास Classic Retro Gaming Consoles, Arcade Machines, Commercial & Non‑Commercial Game Boxes, Coin Machines, Parts, Spare Parts, Repair Services, New & Used PlayStation Consoles, Game Sticks, Controllers और Gaming Accessories उपलब्ध हैं। अधिक जानकारी के लिए हमारी WhatsApp Profile Catalog देखें या हमसे संपर्क करें।</div></div>
 <div class="wrap">
 
   <!-- BRAND / HERO BAR -->
@@ -1519,9 +1550,50 @@ function link(prefill){
   return `order-prefill.html?${q}`;
 }
 
+let pendingBuyUrl = '';
 function goPrefill(product, variant, base, pack, allowCod){
-  location.href = link({product,variant,base,pack,allowCod});
+  pendingBuyUrl = link({product,variant,base,pack,allowCod});
+  openBuyConfirmation();
 }
+
+function buyConfirmCopy(){
+  if(currentLang==='hi') return {
+    title:'क्या आप पुष्टि करते हैं?',
+    message:'अगले स्टेप पर जाने के लिए नीचे Agree करें। फिर अपनी डिटेल भरें, पेमेंट पूरा करें और अपना ऑर्डर बुक करें।',
+    close:'बंद करें', agree:'मैं सहमत हूँ — आगे जाएँ'
+  };
+  if(currentLang==='pa') return {
+    title:'ਕੀ ਤੁਸੀਂ ਪੁਸ਼ਟੀ ਕਰਦੇ ਹੋ ਜੀ?',
+    message:'ਅਗਲੇ Step ਉੱਤੇ ਜਾਣ ਲਈ ਹੇਠਾਂ Agree ਕਰੋ ਜੀ। ਫਿਰ ਆਪਣੀਆਂ Details ਭਰੋ, Payment ਪੂਰੀ ਕਰੋ ਅਤੇ ਆਪਣਾ Order Book ਕਰੋ ਜੀ।',
+    close:'ਬੰਦ ਕਰੋ', agree:'ਮੈਂ ਸਹਿਮਤ ਹਾਂ — ਅੱਗੇ ਜਾਓ'
+  };
+  return {
+    title:'Are you confirmed?',
+    message:'To go to the next step, please agree below. Then fill in your details, complete the payment, and book your order.',
+    close:'Close', agree:'I Agree — Continue'
+  };
+}
+function openBuyConfirmation(){
+  const c=buyConfirmCopy();
+  document.getElementById('buyConfirmTitle').textContent=c.title;
+  document.getElementById('buyConfirmMessage').textContent=c.message;
+  const pop=document.getElementById('buyConfirmPopup');
+  const buttons=pop.querySelectorAll('.buy-confirm-actions button');
+  buttons[0].textContent=c.close; buttons[1].textContent=c.agree;
+  pop.classList.add('open'); document.body.style.overflow='hidden';
+  speakText(c.title+' '+c.message, false);
+}
+function closeBuyConfirmation(){
+  const pop=document.getElementById('buyConfirmPopup'); if(pop) pop.classList.remove('open');
+  document.body.style.overflow=''; pendingBuyUrl=''; stopVoice();
+}
+function agreeAndContinueBuy(){
+  const url=pendingBuyUrl;
+  const pop=document.getElementById('buyConfirmPopup'); if(pop) pop.classList.remove('open');
+  document.body.style.overflow=''; stopVoice();
+  if(url) location.href=url;
+}
+
 
 // ===== USB renderer =====
 (function renderUSB(){
@@ -1681,6 +1753,42 @@ function applyLanguage(){
   const nameInput = document.getElementById('customerName');
   if(nameInput) nameInput.placeholder = currentLang === 'en' ? 'Type your name' : tr('nameTitle');
   document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active', b.dataset.lang===currentLang));
+  refreshBackButtonText();
+}
+
+let speechRunId = 0;
+
+function getBestVoice(langCode){
+  const voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
+  const base = (langCode || 'en-IN').toLowerCase().split('-')[0];
+  const bad = /espeak|robot|compact/i;
+  const good = /google|microsoft|natural|premium|enhanced|siri/i;
+  const matches = voices.filter(v => {
+    const l=(v.lang||'').toLowerCase();
+    return l === (langCode||'').toLowerCase() || l.startsWith(base+'-') || l===base;
+  });
+  matches.sort((a,b) => {
+    const score = v => (good.test(v.name)?4:0) + (!bad.test(v.name)?2:0) + ((v.lang||'').toLowerCase()===(langCode||'').toLowerCase()?2:0) + (v.localService?1:0);
+    return score(b)-score(a);
+  });
+  return matches[0] || null;
+}
+
+function makeSpeechSegments(text){
+  const parts=[];
+  let buf='', mode='';
+  const flush=()=>{ if(buf.trim()) parts.push({text:buf, mode}); buf=''; };
+  for(const ch of String(text||'')){
+    let nextMode;
+    if(/[A-Za-z0-9+]/.test(ch)) nextMode='en';
+    else if(/[\u0900-\u097F\u0A00-\u0A7F]/.test(ch)) nextMode='native';
+    else nextMode=mode || 'native';
+    if(mode && nextMode!==mode && buf.trim()) flush();
+    mode=nextMode;
+    buf+=ch;
+  }
+  flush();
+  return parts.length ? parts : [{text:String(text||''),mode:'native'}];
 }
 
 function speakText(text, repeat=false){
@@ -1688,58 +1796,58 @@ function speakText(text, repeat=false){
   repeatVoiceLoop = !!repeat;
   if(!voiceEnabled || !('speechSynthesis' in window) || !currentVoiceText) return;
 
-  const runSpeech = function(){
-    try{
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(currentVoiceText);
-      u.lang = langVoice[currentLang] || 'en-IN';
-      u.rate = 0.90;
-      u.pitch = 1;
-      u.volume = 1;
+  const myRun = ++speechRunId;
+  window.speechSynthesis.cancel();
+  const segments = makeSpeechSegments(currentVoiceText);
+  let index=0;
 
-      const voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
-      let preferred =
-        voices.find(v => (v.lang||'').toLowerCase() === u.lang.toLowerCase()) ||
-        voices.find(v => (v.lang||'').toLowerCase().startsWith(u.lang.split('-')[0].toLowerCase()));
-
-      if(!preferred && currentLang === 'pa'){
-        preferred =
-          voices.find(v => (v.lang||'').toLowerCase().startsWith('hi')) ||
-          voices.find(v => (v.lang||'').toLowerCase().startsWith('en'));
+  function speakNext(){
+    if(myRun!==speechRunId || !voiceEnabled) return;
+    if(index>=segments.length){
+      if(repeatVoiceLoop && currentVoiceText){
+        setTimeout(()=>{ if(myRun===speechRunId) speakText(currentVoiceText,true); },1200);
       }
-      if(!preferred && currentLang === 'hi'){
-        preferred = voices.find(v => (v.lang||'').toLowerCase().startsWith('en'));
-      }
-      if(preferred){
-        u.voice = preferred;
-        u.lang = preferred.lang || u.lang;
-      }
-
-      u.onend = function(){
-        if(repeatVoiceLoop && voiceEnabled && currentVoiceText){
-          setTimeout(function(){ speakText(currentVoiceText, false); }, 900);
-        }
-      };
-      window.speechSynthesis.speak(u);
-    }catch(e){
-      console.log('Voice error:', e);
+      return;
     }
-  };
 
-  const voicesNow = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
-  if(voicesNow.length){
-    runSpeech();
-  }else{
-    window.speechSynthesis.onvoiceschanged = function(){
-      runSpeech();
-      window.speechSynthesis.onvoiceschanged = null;
+    const seg=segments[index++];
+    const u=new SpeechSynthesisUtterance(seg.text);
+    const isEnglish = seg.mode==='en';
+    const nativeLang = currentLang==='pa' ? 'pa-IN' : (currentLang==='hi' ? 'hi-IN' : 'en-IN');
+    const wantedLang = isEnglish ? 'en-IN' : nativeLang;
+    let voice=getBestVoice(wantedLang);
+
+    // Punjabi voice न मिले तो Hindi voice की जगह browser default Punjabi pronunciation try करें.
+    if(!voice && currentLang==='pa' && !isEnglish) voice=getBestVoice('pa');
+    if(!voice && !isEnglish && currentLang==='hi') voice=getBestVoice('hi-IN');
+    if(!voice && isEnglish) voice=getBestVoice('en-US') || getBestVoice('en-GB');
+
+    u.lang = voice ? (voice.lang || wantedLang) : wantedLang;
+    if(voice) u.voice=voice;
+    u.rate = isEnglish ? 0.88 : 0.92;
+    u.pitch = isEnglish ? 1.02 : 1.0;
+    u.volume = 1;
+    u.onend=()=>setTimeout(speakNext, isEnglish ? 70 : 35);
+    u.onerror=()=>speakNext();
+    window.speechSynthesis.speak(u);
+  }
+
+  const voicesNow=window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
+  if(voicesNow.length) speakNext();
+  else{
+    const old=window.speechSynthesis.onvoiceschanged;
+    window.speechSynthesis.onvoiceschanged=function(){
+      if(typeof old==='function') old();
+      speakNext();
+      window.speechSynthesis.onvoiceschanged=null;
     };
-    setTimeout(runSpeech, 500);
+    setTimeout(()=>{ if(myRun===speechRunId && index===0) speakNext(); },600);
   }
 }
 
 function stopVoice(){
   repeatVoiceLoop = false;
+  speechRunId++;
   if('speechSynthesis' in window) window.speechSynthesis.cancel();
 }
 
@@ -1770,6 +1878,30 @@ function toggleVoice(){
   }
 }
 function repeatCurrentVoice(){ speakText(currentVoiceText || tr('vName')); }
+
+const previousWizardStep = {step0:'langStep',step1:'step0',step2:'step1',step3:'step2',step4:'step3'};
+function backButtonText(){ return currentLang==='pa' ? '⬅ ਪਿੱਛੇ' : (currentLang==='hi' ? '⬅ पीछे' : '⬅ Back'); }
+function addWizardBackButtons(){
+  ['step0','step1','step2','step3','step4'].forEach(id=>{
+    const step=document.getElementById(id); if(!step || step.querySelector('.wizard-back-wrap')) return;
+    const wrap=document.createElement('div'); wrap.className='wizard-back-wrap';
+    const btn=document.createElement('button'); btn.type='button'; btn.className='wizard-back-btn'; btn.dataset.backFor=id; btn.textContent=backButtonText();
+    btn.onclick=()=>goBackWizard(id); wrap.appendChild(btn); step.appendChild(wrap);
+  });
+}
+function refreshBackButtonText(){ document.querySelectorAll('.wizard-back-btn').forEach(b=>b.textContent=backButtonText()); }
+function goBackWizard(currentId){
+  clearTimeout(nameAutoTimer); stopVoice();
+  const prev=previousWizardStep[currentId]; if(!prev) return;
+  if(prev==='langStep'){
+    hideWizardSteps(); const el=document.getElementById('langStep'); el.classList.remove('hidden');
+    document.body.classList.add('lang-modal-open','wizard-popup-open');
+    const welcome=currentLang==='hi'?'कृपया अपनी भाषा चुनें। Please select your language. कृपा करके ਆਪਣੀ language select ਕਰੋ ਜੀ।':'Please select your language.';
+    speakText(welcome,false); return;
+  }
+  const voiceMap={step0:tr('vAskName'),step1:tr('vModel'),step2:tr('vMatrix'),step3:tr('vFmcb')};
+  showStep(prev,voiceMap[prev]||'');
+}
 
 function hideWizardSteps(){
   ['langStep','step0','step1','step2','step3','step4'].forEach(id=>{
@@ -1865,6 +1997,7 @@ function clearModel(){
 }
 
 document.addEventListener('DOMContentLoaded', function(){
+  addWizardBackButtons();
   hideWizardSteps();
   const lang = document.getElementById('langStep');
   if(lang) lang.classList.remove('hidden');
@@ -1874,10 +2007,39 @@ document.addEventListener('DOMContentLoaded', function(){
   if(browser.startsWith('hi')) currentLang='hi'; else if(browser.startsWith('pa')) currentLang='pa'; else currentLang='en';
   applyLanguage();
   updateOptionalSelectorVisibility('fmcb');
-  currentVoiceText = tr('vName');
+  currentVoiceText = 'कृपया अपनी भाषा चुनें। Please select your language. कृपा ਕਰਕੇ ਆਪਣੀ language select ਕਰੋ ਜੀ।';
+  setTimeout(()=>speakText(currentVoiceText,false),450);
 });
 </script>
 
+
+
+
+<div id="buyConfirmPopup" role="dialog" aria-modal="true" aria-labelledby="buyConfirmTitle">
+  <div class="buy-confirm-box">
+    <button type="button" class="buy-confirm-close" onclick="closeBuyConfirmation()" aria-label="Close">✕</button>
+    <div class="buy-confirm-icon">✅</div>
+    <h3 id="buyConfirmTitle">Are you confirmed?</h3>
+    <p id="buyConfirmMessage">To go to the next step, agree below, fill in your details, complete the payment, and book your order.</p>
+    <div class="buy-confirm-actions">
+      <button type="button" class="buy-confirm-cancel" onclick="closeBuyConfirmation()">Close</button>
+      <button type="button" class="buy-confirm-agree" onclick="agreeAndContinueBuy()">I Agree — Continue</button>
+    </div>
+  </div>
+</div>
+
+<div id="gameSelectorWarning" role="dialog" aria-modal="true" aria-labelledby="gameSelectorWarningTitle">
+  <div class="game-selector-warning-box">
+    <button type="button" class="game-selector-warning-close" onclick="closeGameSelectorWarning()" aria-label="Close">✕</button>
+    <div class="game-selector-warning-icon">⚠️</div>
+    <h3 id="gameSelectorWarningTitle">Important Warning</h3>
+    <p>पहले अपना ऑर्डर बुक करें और पेमेंट करें। उसके बाद ही Game Selector का उपयोग करें।</p>
+    <div class="game-selector-warning-actions">
+      <button type="button" class="game-selector-cancel" onclick="closeGameSelectorWarning()">Close</button>
+      <button type="button" class="game-selector-continue" onclick="continueToGameSelector()">Continue to Game Selector</button>
+    </div>
+  </div>
+</div>
 
 <div id="imagePopup"><span class="close" onclick="closeImg()">✕</span><img id="popupImg"></div>
 <script>
@@ -1885,5 +2047,44 @@ function openImg(s){document.getElementById('imagePopup').style.display='flex';d
 function closeImg(){document.getElementById('imagePopup').style.display='none';}
 
 </script>
+
+<script id="game-selector-warning-script">
+let pendingGameSelectorUrl = '';
+function openGameSelectorWarning(url){
+  pendingGameSelectorUrl = url || '';
+  const popup = document.getElementById('gameSelectorWarning');
+  if(popup) popup.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeGameSelectorWarning(){
+  const popup = document.getElementById('gameSelectorWarning');
+  if(popup) popup.classList.remove('show');
+  document.body.style.overflow = '';
+  pendingGameSelectorUrl = '';
+}
+function continueToGameSelector(){
+  const url = pendingGameSelectorUrl;
+  closeGameSelectorWarning();
+  if(url) window.open(url, '_blank', 'noopener');
+}
+document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('.optional-selector-link').forEach(function(link){
+    link.addEventListener('click', function(event){
+      event.preventDefault();
+      openGameSelectorWarning(link.href);
+    });
+  });
+  const popup = document.getElementById('gameSelectorWarning');
+  if(popup){
+    popup.addEventListener('click', function(event){
+      if(event.target === popup) closeGameSelectorWarning();
+    });
+  }
+  document.addEventListener('keydown', function(event){
+    if(event.key === 'Escape') closeGameSelectorWarning();
+  });
+});
+</script>
+
 </body>
 </html>
