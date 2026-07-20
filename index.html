@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Games Planet • PS2 Quick Buy — FMCB, USB & Combo</title>
+<title>Games Planet • PS2 Quick Buy — Updated v7</title>
+<!-- Games Planet patched build: 20-Jul-2026 v7
+     Includes Simple/Detail mode, manual Name Next button, smaller PS2 images,
+     faster voice and continuous Hindi/Punjabi mixed-language speech. -->
 <meta name="description" content="Buy FMCB/FunTuna card, USB-only, or FMCB+USB Combo for PlayStation 2 with one-tap WhatsApp redirect. Top & Optional game packs supported."/>
 
 <style>
@@ -558,6 +561,11 @@ h1 span{
 .lang-btn{border-radius:14px;border:1px solid #d5d9d9;background:#f3f3f3;color:#0f1111;padding:10px 8px;font-weight:800;cursor:pointer;text-align:center}
 .lang-btn.active{border:2px solid #ffa41c;background:#fff7ed}
 .lang-note{font-size:.82rem;color:#6b7280;margin-top:10px;line-height:1.45}
+.version-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+.version-btn{border:2px solid #dbe3ef;border-radius:18px;background:#fff;padding:18px 14px;cursor:pointer;text-align:left;color:#0f172a;box-shadow:0 8px 24px rgba(15,23,42,.08)}
+.version-btn:hover{border-color:#2563eb;transform:translateY(-1px)}
+.version-btn strong{display:block;font-size:1.05rem;margin-bottom:6px}
+.version-btn small{display:block;color:#64748b;line-height:1.45;font-weight:600}
 
 /* Language popup modal */
 #langStep.language-modal{
@@ -988,8 +996,8 @@ h1 span{
   color:#334155;
   box-shadow:0 8px 22px rgba(15,23,42,.06);
 }
-.ps2-gallery img,.step-img{
-  height:145px !important;
+  .ps2-gallery img,.step-img{
+  height:120px !important;
   border:0 !important;
   background:#f8fafc;
   border-radius:14px !important;
@@ -1140,7 +1148,7 @@ h1 span{
   .controls .linkbtn{width:100%;justify-content:center}
   .model-selector,.card,.section{padding:16px !important;border-radius:18px !important}
   .ps2-gallery{grid-template-columns:1fr !important}
-  .ps2-gallery img{height:180px !important}
+  .ps2-gallery img{height:120px !important;max-width:220px !important}
   .row{
     grid-template-columns:1fr !important;
     gap:10px !important;
@@ -1197,6 +1205,7 @@ body.wizard-popup-open{
     border-radius:20px !important;
     padding:16px !important;
   }
+  .version-grid{grid-template-columns:1fr}
 }
 </style>
 
@@ -1260,12 +1269,28 @@ body.wizard-popup-open{
   <div class="controls">
     <a class="linkbtn optional-selector-link hidden" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
     <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">▶️ Setup Video</a>
-    <button type="button" class="linkbtn" onclick="toggleVoice()" id="voiceToggle">🔊 Voice ON</button>
+    <button type="button" class="linkbtn hidden" onclick="toggleVoice()" id="voiceToggle">🔊 Voice ON</button>
   </div>
+
+  <!-- VERSION SELECTOR -->
+  <section id="modeStep" class="model-selector wizard-modal">
+    <h2 class="model-title">Choose Page Version</h2>
+    <div class="wizard-help">अपनी जरूरत के हिसाब से Simple या Detail Version चुनें।</div>
+    <div class="version-grid">
+      <button type="button" class="version-btn" onclick="chooseSimpleVersion()">
+        <strong>⚡ Simple Version</strong>
+        <small>सीधे PS2 Model से शुरू होगा। कोई voice guidance नहीं चलेगी।</small>
+      </button>
+      <button type="button" class="version-btn" onclick="chooseDetailVersion()">
+        <strong>🔊 Detail Version</strong>
+        <small>Language, Name और पूरी step-by-step voice guidance के साथ शुरू होगा।</small>
+      </button>
+    </div>
+  </section>
 
 
   <!-- LANGUAGE FIRST STEP -->
-  <section id="langStep" class="model-selector language-modal wizard-modal">
+  <section id="langStep" class="model-selector language-modal wizard-modal hidden">
     <h2 class="model-title" data-i18n="languageTitle">Select Your Language</h2>
     <div class="wizard-help" data-i18n="languageHelp">Choose your language. Voice and main page text will continue in the selected language. Technical words like PS2, FMCB, USB, OPL and Combo will stay in English.</div>
     <div class="language-grid">
@@ -1281,8 +1306,9 @@ body.wizard-popup-open{
   <section id="step0" class="model-selector wizard-modal hidden">
     <h2 class="model-title" data-i18n="nameTitle">Please type your name</h2>
     <div class="wizard-help" data-i18n="nameHelp">Please type your name. This helps us make your order message correctly.</div>
-    <input id="customerName" class="name-input" type="text" placeholder="Type your name" autocomplete="name" oninput="nameTypedAutoNext()" onkeydown="if(event.key==='Enter') startWizard()">
+    <input id="customerName" class="name-input" type="text" placeholder="Type your name" autocomplete="name" oninput="updateNameNextButton()" onkeydown="if(event.key==='Enter') startWizard()">
     <div class="voice-mini" data-i18n="voiceMini">Type your name. Page will automatically move to the next step.</div>
+    <button type="button" id="nameNextBtn" class="btn buy step-primary" onclick="startWizard()" disabled data-i18n="next">Next</button>
   </section>
 
   <!-- MODEL SELECTOR -->
@@ -1676,6 +1702,8 @@ let currentVoiceText = "";
 let repeatVoiceLoop = false;
 let nameAutoTimer = null;
 let currentLang = "en";
+let experienceMode = "";
+let languageSelectedForVoice = false;
 
 const langVoice = {
   en:'en-IN',
@@ -1686,13 +1714,13 @@ const langVoice = {
 const T = {
   en:{
     languageTitle:'Select Your Language', languageHelp:'Choose your language. Voice and main page text will continue in the selected language. Technical words like PS2, FMCB, USB, OPL and Combo will stay in English.', languageNote:'Select your language, then press Next.',
-    nameTitle:'Please type your name', nameHelp:'Please type your name. This helps us make your order message correctly.', next:'Next', listenAgain:'🔊 Listen Again', voiceMini:'Type your name. Page will automatically move to the next step.',
+    nameTitle:'Please type your name', nameHelp:'Please type your name. This helps us make your order message correctly.', next:'Next', listenAgain:'🔊 Listen Again', voiceMini:'Type your name, then press the Next button.',
     modelTitle:'Step 1 — Select Your PS2 Model', modelHelp:'If you do not know your PS2 Model, check the pictures and select the matching model.', selectedModel:'Selected Model', changeModel:'Change Model',
     matrixTitle:'Step 2 — Matrix Chip', matrixHelp:'Matrix is a boot chip. If Matrix appears on screen when PS2 starts, choose Matrix. If not, choose No. If you do not know, choose Don\'t Know.',
     fmcbTitle:'Step 3 — FMCB Type', fmcbHelp:'Choose FMCB with OPL Only for USB gameplay. Choose Full FMCB + Apps if you also need extra apps. If FMCB/OPL already works and you only need a USB with games, choose Need Only USB with Games.',
     productTitle:'Step 4 — Product Type', productHelp:'Choose FMCB Card, USB Only, or FMCB + USB Combo. Top Games are pre-loaded; Optional Games are loaded after you submit your selected game list.',
     vName:'Welcome to Games Planet. First choose your language, then type your name. This page will guide you step by step to choose the correct PS2 product.',
-    vAskName:'Please type your name. After typing your name, this page will automatically move to the next step.', vNeedName:'Please type your name first.',
+    vAskName:'Please type your name, then press the Next button.', vNeedName:'Please type your name first.',
     vModel:'Now select your PlayStation 2 model. If you do not know your PS2 Model, look carefully at the pictures. Choose PS2 FAT, PS2 Slim 70000 Series, or PS2 Slim 90000 Series. Correct model helps us show the correct FMCB or FunTuna option.',
     vMatrix:'Matrix is a boot chip. If Matrix appears on screen when your PS2 starts, choose Matrix. If Matrix does not appear, choose No. If you are not sure, choose Don\'t Know. Do not be confused; the next step will explain the benefit.',
     vFmcb:'PlayStation 2 normally needs disc to play games. PS2 is discontinued, so discs are not easily available and working is not guaranteed. The best option is USB gameplay. Earlier PS2 had to be opened for Mod Chip, but now Soft Mod is available. FMCB Card can soft mod your PS2 without opening it. Choose FMCB with OPL Only if you only want USB gameplay. Choose Full FMCB + Apps if you need OPL, uLaunchELF, NES Emulator and extra Apps.',
@@ -1701,13 +1729,13 @@ const T = {
   },
   hi:{
     languageTitle:'भाषा चुनें', languageHelp:'अपनी भाषा चुनें। Voice और main page text उसी भाषा में चलेगा। PS2, FMCB, USB, OPL और Combo जैसे English words English में ही रहेंगे।', languageNote:'Language select करके Next दबाएं।',
-    nameTitle:'अपना नाम टाइप करें', nameHelp:'कृपया अपना नाम टाइप करें। इससे order message सही बनेगा।', next:'Next', listenAgain:'🔊 फिर से सुनें', voiceMini:'अपना नाम type करें। Page अपने आप अगले step पर चला जाएगा।',
+    nameTitle:'अपना नाम टाइप करें', nameHelp:'कृपया अपना नाम टाइप करें। इससे order message सही बनेगा।', next:'Next', listenAgain:'🔊 फिर से सुनें', voiceMini:'अपना नाम type करें, फिर Next button दबाएं।',
     modelTitle:'Step 1 — अपना PS2 Model चुनें', modelHelp:'अगर आपको PS2 Model नहीं पता, तो pictures देखकर सही model चुनें।', selectedModel:'Selected Model', changeModel:'Change Model',
     matrixTitle:'Step 2 — Matrix Chip', matrixHelp:'Matrix एक boot chip है। PS2 start होते ही screen पर Matrix लिखा आए तो Matrix चुनें। नहीं आए तो No चुनें। पता नहीं हो तो Don\'t Know चुनें।',
     fmcbTitle:'Step 3 — FMCB Type', fmcbHelp:'USB gameplay के लिए FMCB with OPL Only चुनें। Extra Apps भी चाहिए तो Full FMCB + Apps चुनें। अगर आपके PS2 में FMCB/OPL पहले से चलता है और सिर्फ games वाली USB चाहिए, तो Need Only USB with Games चुनें।',
     productTitle:'Step 4 — Product Type', productHelp:'अपने setup के हिसाब से FMCB Card, USB Only या FMCB + USB Combo चुनें। Top Games pre-loaded हैं; Optional Games आपकी selected list के अनुसार load होंगे।',
     vName:'Games Planet में आपका स्वागत है। सबसे पहले अपनी भाषा चुनें, फिर अपना नाम टाइप करें। यह page आपको step by step सही PS2 product चुनने में मदद करेगा।',
-    vAskName:'कृपया अपना नाम टाइप करें। नाम लिखते ही page अपने आप अगले step पर जाएगा।', vNeedName:'कृपया पहले अपना नाम टाइप करें।',
+    vAskName:'कृपया अपना नाम टाइप करें, फिर Next button दबाएं।', vNeedName:'कृपया पहले अपना नाम टाइप करें।',
     vModel:'अब अपना PlayStation 2 model चुनें। अगर आपको PS2 Model नहीं पता, तो pictures ध्यान से देखें। PS2 FAT, PS2 Slim 70000 Series, या PS2 Slim 90000 Series में से सही button दबाएं। सही model से FMCB और FunTuna option सही दिखाई देगा।',
     vMatrix:'Matrix एक boot chip है। अगर आपका PS2 start होते ही screen पर Matrix लिखा आता है, तो Matrix चुनें। अगर Matrix नहीं आता, तो No चुनें। अगर आपको पता नहीं है, तो Don\'t Know चुनें। Confuse न हों, अगले step में इसका फायदा समझ आ जाएगा।',
     vFmcb:'PlayStation 2 में game खेलने के लिए पहले disc चाहिए होती थी। अब PlayStation 2 discontinued है, इसलिए disc आसानी से नहीं मिलती, और मिल भी जाए तो चलने की guarantee नहीं होती। इसलिए best option USB gameplay है। पहले PS2 को shop पर ले जाकर खुलवाना पड़ता था और Mod Chip लगवानी पड़ती थी। अब Soft Mod आ चुका है। FMCB Card से PS2 बिना खोले soft mod हो जाता है। सिर्फ USB gameplay चाहिए तो FMCB with OPL Only चुनें। OPL, uLaunchELF, NES Emulator और extra Apps चाहिए तो Full FMCB + Apps चुनें।',
@@ -1723,7 +1751,7 @@ T.pa = copyLang('hi',{
   languageNote:'Language select ਕਰਕੇ Next ਦਬਾਓ।',
   nameTitle:'ਆਪਣਾ ਨਾਮ type ਕਰੋ',
   nameHelp:'ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਨਾਮ type ਕਰੋ। ਇਸ ਨਾਲ order message ਠੀਕ ਬਣੇਗਾ।',
-  voiceMini:'ਆਪਣਾ ਨਾਮ type ਕਰੋ। Page ਆਪਣੇ ਆਪ ਅਗਲੇ step ਤੇ ਚਲਾ ਜਾਵੇਗਾ।',
+  voiceMini:'ਆਪਣਾ ਨਾਮ type ਕਰੋ, ਫਿਰ Next button ਦਬਾਓ।',
   modelTitle:'Step 1 — ਆਪਣਾ PS2 Model ਚੁਣੋ',
   modelHelp:'ਜੇ ਤੁਹਾਨੂੰ PS2 Model ਨਹੀਂ ਪਤਾ, ਤਾਂ pictures ਵੇਖ ਕੇ matching model ਚੁਣੋ।',
   selectedModel:'Selected Model',
@@ -1735,7 +1763,7 @@ T.pa = copyLang('hi',{
   productTitle:'Step 4 — Product Type',
   productHelp:'ਆਪਣੇ setup ਦੇ ਹਿਸਾਬ ਨਾਲ FMCB Card, USB Only ਜਾਂ FMCB + USB Combo ਚੁਣੋ। Top Games pre-loaded ਹਨ; Optional Games ਤੁਹਾਡੀ selected list ਦੇ ਅਨੁਸਾਰ load ਹੋਣਗੀਆਂ।',
   vName:'Games Planet ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ। ਪਹਿਲਾਂ language ਚੁਣੋ, ਫਿਰ ਆਪਣਾ ਨਾਮ type ਕਰੋ। ਇਹ page ਤੁਹਾਨੂੰ step by step ਸਹੀ PS2 product ਚੁਣਨ ਵਿੱਚ ਮਦਦ ਕਰੇਗਾ।',
-  vAskName:'ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਨਾਮ type ਕਰੋ। ਨਾਮ ਲਿਖਦੇ ਹੀ page ਆਪਣੇ ਆਪ ਅਗਲੇ step ਤੇ ਜਾਵੇਗਾ।',
+  vAskName:'ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਨਾਮ type ਕਰੋ, ਫਿਰ Next button ਦਬਾਓ।',
   vNeedName:'ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ ਆਪਣਾ ਨਾਮ type ਕਰੋ।',
   vModel:'ਹੁਣ ਆਪਣਾ PlayStation 2 model ਚੁਣੋ। ਜੇ ਤੁਹਾਨੂੰ PS2 Model ਨਹੀਂ ਪਤਾ, ਤਾਂ pictures ਧਿਆਨ ਨਾਲ ਵੇਖੋ। PS2 FAT, PS2 Slim 70000 Series ਜਾਂ PS2 Slim 90000 Series ਵਿਚੋਂ ਸਹੀ button ਦਬਾਓ। ਸਹੀ model ਨਾਲ FMCB ਅਤੇ FunTuna option ਸਹੀ ਦਿਖੇਗਾ।',
   vMatrix:'Matrix ਇੱਕ boot chip ਹੈ। ਜੇ ਤੁਹਾਡਾ PS2 start ਹੁੰਦੇ ਹੀ screen ਤੇ Matrix ਲਿਖਿਆ ਆਉਂਦਾ ਹੈ, ਤਾਂ Matrix ਚੁਣੋ। ਜੇ Matrix ਨਹੀਂ ਆਉਂਦਾ ਤਾਂ No ਚੁਣੋ। ਜੇ ਪਤਾ ਨਹੀਂ ਤਾਂ Don\'t Know ਚੁਣੋ। Confuse ਨਾ ਹੋਵੋ, ਅਗਲੇ step ਵਿੱਚ ਇਸਦਾ benefit ਸਮਝ ਆ ਜਾਵੇਗਾ।',
@@ -1775,6 +1803,12 @@ function getBestVoice(langCode){
 }
 
 function makeSpeechSegments(text){
+  const fullText=String(text||'');
+  // Hindi/Punjabi mixed-language sentences use one continuous native utterance.
+  // This removes the noticeable pause caused by switching voices at every English word.
+  if((currentLang==='hi' || currentLang==='pa') && languageSelectedForVoice){
+    return [{text:fullText,mode:'native'}];
+  }
   const parts=[];
   let buf='', mode='';
   const flush=()=>{ if(buf.trim()) parts.push({text:buf, mode}); buf=''; };
@@ -1799,49 +1833,53 @@ function speakText(text, repeat=false){
   const myRun = ++speechRunId;
   window.speechSynthesis.cancel();
   const segments = makeSpeechSegments(currentVoiceText);
-  let index=0;
+  let queueStarted=false;
 
-  function speakNext(){
-    if(myRun!==speechRunId || !voiceEnabled) return;
-    if(index>=segments.length){
-      if(repeatVoiceLoop && currentVoiceText){
-        setTimeout(()=>{ if(myRun===speechRunId) speakText(currentVoiceText,true); },1200);
+  function startSpeechQueue(){
+    if(queueStarted || myRun!==speechRunId || !voiceEnabled) return;
+    queueStarted=true;
+
+    segments.forEach((seg,segmentIndex)=>{
+      const u=new SpeechSynthesisUtterance(seg.text);
+      const isEnglish = seg.mode==='en';
+      const nativeLang = currentLang==='pa' ? 'pa-IN' : (currentLang==='hi' ? 'hi-IN' : 'en-IN');
+      const wantedLang = isEnglish ? 'en-IN' : nativeLang;
+      let voice=getBestVoice(wantedLang);
+
+      // Punjabi voice न मिले तो Hindi voice की जगह browser default Punjabi pronunciation try करें.
+      if(!voice && currentLang==='pa' && !isEnglish) voice=getBestVoice('pa');
+      if(!voice && !isEnglish && currentLang==='hi') voice=getBestVoice('hi-IN');
+      if(!voice && isEnglish) voice=getBestVoice('en-US') || getBestVoice('en-GB');
+
+      u.lang = voice ? (voice.lang || wantedLang) : wantedLang;
+      if(voice) u.voice=voice;
+      u.rate = isEnglish ? 1.15 : 1.20;
+      u.pitch = isEnglish ? 1.02 : 1.0;
+      u.volume = 1;
+
+      if(segmentIndex===segments.length-1){
+        const finishSpeech=()=>{
+          if(repeatVoiceLoop && currentVoiceText && myRun===speechRunId){
+            setTimeout(()=>{ if(myRun===speechRunId) speakText(currentVoiceText,true); },1200);
+          }
+        };
+        u.onend=finishSpeech;
+        u.onerror=finishSpeech;
       }
-      return;
-    }
-
-    const seg=segments[index++];
-    const u=new SpeechSynthesisUtterance(seg.text);
-    const isEnglish = seg.mode==='en';
-    const nativeLang = currentLang==='pa' ? 'pa-IN' : (currentLang==='hi' ? 'hi-IN' : 'en-IN');
-    const wantedLang = isEnglish ? 'en-IN' : nativeLang;
-    let voice=getBestVoice(wantedLang);
-
-    // Punjabi voice न मिले तो Hindi voice की जगह browser default Punjabi pronunciation try करें.
-    if(!voice && currentLang==='pa' && !isEnglish) voice=getBestVoice('pa');
-    if(!voice && !isEnglish && currentLang==='hi') voice=getBestVoice('hi-IN');
-    if(!voice && isEnglish) voice=getBestVoice('en-US') || getBestVoice('en-GB');
-
-    u.lang = voice ? (voice.lang || wantedLang) : wantedLang;
-    if(voice) u.voice=voice;
-    u.rate = isEnglish ? 0.88 : 0.92;
-    u.pitch = isEnglish ? 1.02 : 1.0;
-    u.volume = 1;
-    u.onend=()=>setTimeout(speakNext, isEnglish ? 70 : 35);
-    u.onerror=()=>speakNext();
-    window.speechSynthesis.speak(u);
+      window.speechSynthesis.speak(u);
+    });
   }
 
   const voicesNow=window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
-  if(voicesNow.length) speakNext();
+  if(voicesNow.length) startSpeechQueue();
   else{
     const old=window.speechSynthesis.onvoiceschanged;
     window.speechSynthesis.onvoiceschanged=function(){
       if(typeof old==='function') old();
-      speakNext();
+      startSpeechQueue();
       window.speechSynthesis.onvoiceschanged=null;
     };
-    setTimeout(()=>{ if(myRun===speechRunId && index===0) speakNext(); },600);
+    setTimeout(startSpeechQueue,600);
   }
 }
 
@@ -1853,6 +1891,7 @@ function stopVoice(){
 
 function selectLanguage(lang){
   currentLang = lang;
+  languageSelectedForVoice = true;
   applyLanguage();
   const nextBtn = document.getElementById('langNextBtn');
   if(nextBtn) nextBtn.disabled = false;
@@ -1892,6 +1931,10 @@ function addWizardBackButtons(){
 function refreshBackButtonText(){ document.querySelectorAll('.wizard-back-btn').forEach(b=>b.textContent=backButtonText()); }
 function goBackWizard(currentId){
   clearTimeout(nameAutoTimer); stopVoice();
+  if(currentId==='step1' && experienceMode==='simple'){
+    showModeSelector();
+    return;
+  }
   const prev=previousWizardStep[currentId]; if(!prev) return;
   if(prev==='langStep'){
     hideWizardSteps(); const el=document.getElementById('langStep'); el.classList.remove('hidden');
@@ -1904,11 +1947,51 @@ function goBackWizard(currentId){
 }
 
 function hideWizardSteps(){
-  ['langStep','step0','step1','step2','step3','step4'].forEach(id=>{
+  ['modeStep','langStep','step0','step1','step2','step3','step4'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.classList.add('hidden');
   });
   document.body.classList.remove('wizard-popup-open');
+}
+
+function setVoiceButtonState(show){
+  const btn=document.getElementById('voiceToggle');
+  if(!btn) return;
+  btn.classList.toggle('hidden', !show);
+  btn.textContent=voiceEnabled ? '🔊 Voice ON' : '🔇 Voice OFF';
+}
+
+function showModeSelector(){
+  stopVoice();
+  experienceMode='';
+  languageSelectedForVoice=false;
+  voiceEnabled=false;
+  setVoiceButtonState(false);
+  document.body.classList.remove('lang-modal-open');
+  hideWizardSteps();
+  const mode=document.getElementById('modeStep');
+  if(mode) mode.classList.remove('hidden');
+  document.body.classList.add('wizard-popup-open');
+}
+
+function chooseSimpleVersion(){
+  experienceMode='simple';
+  voiceEnabled=false;
+  setVoiceButtonState(false);
+  showStep('step1','');
+}
+
+function chooseDetailVersion(){
+  experienceMode='detail';
+  languageSelectedForVoice=false;
+  voiceEnabled=true;
+  setVoiceButtonState(true);
+  hideWizardSteps();
+  const lang=document.getElementById('langStep');
+  if(lang) lang.classList.remove('hidden');
+  document.body.classList.add('lang-modal-open','wizard-popup-open');
+  currentVoiceText='कृपया अपनी भाषा चुनें। Please select your language. कृपा ਕਰਕੇ ਆਪਣੀ language select ਕਰੋ ਜੀ।';
+  setTimeout(()=>speakText(currentVoiceText,false),200);
 }
 
 function showStep(id, voiceText){
@@ -1925,12 +2008,11 @@ function showStep(id, voiceText){
   if(voiceText) setTimeout(()=>speakText(voiceText, false), 180);
 }
 
-function nameTypedAutoNext(){
-  clearTimeout(nameAutoTimer);
+function updateNameNextButton(){
   const input = document.getElementById('customerName');
   const name = (input && input.value ? input.value.trim() : '');
-  if(name.length < 2) return;
-  nameAutoTimer = setTimeout(function(){ startWizard(); }, 900);
+  const nextBtn = document.getElementById('nameNextBtn');
+  if(nextBtn) nextBtn.disabled = name.length < 2;
 }
 
 function startWizard(){
@@ -1998,17 +2080,11 @@ function clearModel(){
 
 document.addEventListener('DOMContentLoaded', function(){
   addWizardBackButtons();
-  hideWizardSteps();
-  const lang = document.getElementById('langStep');
-  if(lang) lang.classList.remove('hidden');
-  document.body.classList.add('lang-modal-open');
-  document.body.classList.add('wizard-popup-open');
   const browser = (navigator.language || '').toLowerCase();
   if(browser.startsWith('hi')) currentLang='hi'; else if(browser.startsWith('pa')) currentLang='pa'; else currentLang='en';
   applyLanguage();
   updateOptionalSelectorVisibility('fmcb');
-  currentVoiceText = 'कृपया अपनी भाषा चुनें। Please select your language. कृपा ਕਰਕੇ ਆਪਣੀ language select ਕਰੋ ਜੀ।';
-  setTimeout(()=>speakText(currentVoiceText,false),450);
+  showModeSelector();
 });
 </script>
 
