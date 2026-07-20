@@ -1,2183 +1,3313 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Games Planet • PS2 Quick Buy — Updated v9</title>
-<!-- Games Planet patched build: 20-Jul-2026 v9
-     Includes Simple/Detail mode, manual Name Next button, smaller PS2 images,
-     per-variant Top/Optional actions and animated purchase-button pointers. -->
-<meta name="description" content="Buy FMCB/FunTuna card, USB-only, or FMCB+USB Combo for PlayStation 2 with one-tap WhatsApp redirect. Top & Optional game packs supported."/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="same-origin">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<title>Games Planet – Arcade Accessories & PS2 USB Game Drives</title>
+
 
 <style>
 :root{
-  --bg:#eaeded;
-  --card:#ffffff;
-  --text:#0f1111;
+  --bg:#07111f;
+  --bg2:#0b1728;
+  --panel:rgba(15,27,46,.82);
+  --panel-strong:#101d31;
+  --border:rgba(255,255,255,.10);
+  --border-strong:rgba(255,255,255,.16);
+  --text:#f8fafc;
+  --muted:#9fb0c7;
+  --cyan:#22d3ee;
+  --blue:#3b82f6;
+  --violet:#8b5cf6;
+  --green:#22c55e;
+  --yellow:#facc15;
+  --red:#ef4444;
+  --shadow:0 18px 45px rgba(0,0,0,.30);
 }
-
-@media(prefers-color-scheme:light){
-  :root{
-    --bg:#f3f4ff;
-    --bg-alt:#e5e7ff;
-    --card:#ffffff;
-    --card-soft:#eef2ff;
-    --text:#020617;
-    --muted:#6b7280;
-    --chip:#e5e7ff;
-    --chip-border: rgba(148,163,184,.7);
-    --ring: rgba(34,197,94,.18);
-    --ring2: rgba(56,189,248,.18);
-    --shadow-soft: 0 14px 32px rgba(15,23,42,0.18);
-    --shadow-btn: 0 10px 22px rgba(34,197,94,0.45);
-  }
-}
-
 *{box-sizing:border-box}
-html,body{
-  margin:0;
-  font-family: Arial, sans-serif;
-  background:#eaeded;
-  color:#0f1111;
-}
-
+html{scroll-behavior:smooth}
 body{
   margin:0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  background:
-    none, transparent 55%),
-    none, transparent 50%),
-    none, transparent 55%),
-    var(--bg);
+  padding-bottom:120px;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
   color:var(--text);
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Generic hidden */
-.hidden{
-  display:none !important;
-}
-
-/* Page shell */
-.wrap{
-  max-width:var(--max-width);
-  margin:0 auto;
-  padding:24px 16px 56px;
-}
-
-/* Brand / top bar */
-.brand{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:14px;
-  margin-bottom:12px;
-}
-
-.brand-left{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.logo{
-  width:44px;
-  height:44px;
-  border-radius:16px;
-  display:grid;
-  place-items:center;
-  font-weight:900;
-  font-size:0.9rem;
   background:
-    conic-gradient(from 210deg,#22c55e,#38bdf8,#a855f7,#22c55e);
-  color:#020617;
-  box-shadow:
-    0 0 0 1px rgba(15,23,42,0.85),
-    0 18px 38px rgba(0,0,0,0.85);
+    radial-gradient(circle at 0 0,rgba(34,211,238,.14),transparent 28%),
+    radial-gradient(circle at 100% 0,rgba(139,92,246,.16),transparent 30%),
+    linear-gradient(145deg,var(--bg),var(--bg2));
+  min-height:100vh;
 }
-
-h1{
-  font-size:clamp(22px,3.3vw,32px);
-  margin:0;
-  letter-spacing:0.03em;
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:28px 28px;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.9),transparent 85%);
 }
-
-h1 span{
-  background:#ffffff;
+button,select{font:inherit}
+.header{
+  max-width:1100px;
+  margin:auto;
+  padding:26px 16px 12px;
+}
+.hero{
+  position:relative;
+  overflow:hidden;
+  border:1px solid var(--border);
+  background:linear-gradient(135deg,rgba(17,31,52,.94),rgba(10,23,40,.90));
+  border-radius:28px;
+  padding:30px 24px;
+  box-shadow:var(--shadow);
+}
+.hero:after{
+  content:"";
+  position:absolute;
+  width:220px;height:220px;
+  border-radius:50%;
+  right:-80px;top:-90px;
+  background:radial-gradient(circle,rgba(34,211,238,.28),transparent 68%);
+}
+.brand-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 11px;
+  border-radius:999px;
+  background:rgba(34,211,238,.10);
+  border:1px solid rgba(34,211,238,.25);
+  color:#bff7ff;
+  font-weight:800;
+  font-size:12px;
+  letter-spacing:.7px;
+  text-transform:uppercase;
+}
+.header h1{
+  margin:12px 0 6px;
+  font-size:clamp(34px,7vw,58px);
+  line-height:1;
+  letter-spacing:-2px;
+  background:linear-gradient(90deg,#fff 0%,#67e8f9 38%,#a78bfa 82%);
   -webkit-background-clip:text;
   color:transparent;
 }
-
-.sub{
-  color:var(--muted);
-  margin:4px 0 0;
-  font-size:0.82rem;
-}
-
-/* top right actions */
-.brand-actions{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-  gap:8px;
-}
-
-.nav-pill{
-  padding:6px 10px;
-  border-radius:var(--radius-pill);
-  border:1px solid rgba(148,163,184,0.4);
-  background:none,rgba(15,23,42,0.98));
-  font-size:0.72rem;
-  color:var(--muted);
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-
-.nav-pill-dot{
-  width:7px;
-  height:7px;
-  border-radius:999px;
-  background-color:var(--accent);
-  box-shadow:0 0 0 4px rgba(34,197,94,0.28);
-}
-
-/* small nav link buttons */
-.linkbtn{
-  display:inline-flex;
-  align-items:center;
-  gap:7px;
-  border:1px solid rgba(148,163,184,0.5);
-  padding:7px 11px;
-  border-radius:12px;
-  color:var(--text);
-  text-decoration:none;
-  font-weight:600;
-  font-size:0.8rem;
-  background:#ffffff,rgba(15,23,42,0.9));
-  box-shadow:0 10px 24px rgba(15,23,42,0.7);
-  transition:
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast),
-    border-color var(--transition-fast),
-    background var(--transition-fast);
-}
-
-.linkbtn:hover{
-  transform:translateY(-1px);
-  border-color:rgba(209,213,219,0.9);
-  background:#ffffff,rgba(15,23,42,0.98));
-  box-shadow:0 16px 32px rgba(15,23,42,0.95);
-}
-
-/* controls row */
-.controls{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  margin:8px 0 18px;
-}
-
-/* MODEL SELECTOR */
-.model-selector{
-  margin-bottom:18px;
-  padding:14px 14px 16px;
-  border-radius:18px;
-  background:
-    none,transparent 55%),
-    none,transparent 60%),
-    rgba(15,23,42,0.9);
-  border:1px solid rgba(31,41,55,0.9);
-  box-shadow:0 16px 34px rgba(15,23,42,0.9);
-}
-
-.model-title{
-  font-size:0.9rem;
-  letter-spacing:0.08em;
-  text-transform:uppercase;
-  margin:0 0 4px;
-}
-
-.model-sub{
-  margin:0 0 10px;
-  font-size:0.8rem;
-  color:var(--muted);
-}
-
-.model-btn-row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-}
-
-.model-btn{
-  flex:1 1 120px;
-  border-radius:18px;
-  border:1px solid rgba(148,163,184,0.65);
-  background:none,rgba(15,23,42,1));
-  padding:10px 12px;
-  font-size:0.86rem;
-  font-weight:800;
-  color:var(--text);
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  box-shadow:0 14px 30px rgba(15,23,42,1);
-  transition:
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast),
-    border-color var(--transition-fast),
-    background var(--transition-fast),
-    color var(--transition-fast);
-}
-
-.model-btn span{
-  font-size:1.1rem;
-}
-
-.model-btn:hover{
-  transform:translateY(-1px);
-  border-color:rgba(209,213,219,0.9);
-  box-shadow:0 20px 40px rgba(15,23,42,1);
-}
-
-.model-btn.active{
-  background:#ffffff,rgba(16,185,129,0.95));
-  border-color:rgba(190,242,100,0.9);
-  color:#022c22;
-  box-shadow:0 20px 42px rgba(22,163,74,0.9);
-}
-
-.selected-model{
-  margin-top:10px;
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  gap:8px;
-  font-size:0.78rem;
-  color:var(--muted);
-}
-
-.selected-chip{
-  padding:4px 9px;
-  border-radius:var(--radius-pill);
-  border:1px solid rgba(148,163,184,0.7);
-  background:rgba(15,23,42,0.9);
-}
-
-.change-model-btn{
-  border-radius:var(--radius-pill);
-  border:0;
-  padding:5px 10px;
-  font-size:0.75rem;
-  font-weight:700;
-  cursor:pointer;
-  background:rgba(15,23,42,0.95);
-  color:var(--muted);
-  border:1px solid rgba(148,163,184,0.8);
-  transition:background var(--transition-fast),color var(--transition-fast),transform var(--transition-fast);
-}
-
-.change-model-btn:hover{
-  background:rgba(31,41,55,1);
-  color:#e5e7eb;
-  transform:translateY(-1px);
-}
-
-/* Cards grid */
-.grid{
-  display:flex;
-  flex-direction:column;
-  gap:18px;
-}
-
-/* Card base */
-.card{
-  background:
-    none,transparent 60%),
-    none,transparent 55%),
-    var(--card-soft);
-  border-radius:var(--radius-lg);
-  padding:18px 18px 20px;
-  box-shadow:var(--shadow-soft);
-  position:relative;
-  overflow:hidden;
-  border:1px solid rgba(31,41,55,0.95);
-}
-
-/* inner glow decoration */
-.card::before{
-  content:"";
-  position:absolute;
-  inset:auto -40% -40% auto;
-  width:250px;
-  height:250px;
-  background:
-    none,transparent 60%),
-    none,transparent 65%);
-  opacity:0.8;
-  pointer-events:none;
-}
-
-/* badge at top of card */
-.badge{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding:5px 9px;
-  background:rgba(15,23,42,0.95);
-  color:var(--muted);
-  border-radius:var(--radius-pill);
-  font-size:11px;
-  font-weight:700;
-  border:1px solid var(--chip-border);
-  text-transform:uppercase;
-  letter-spacing:0.12em;
-}
-
-.badge::before{
-  content:"";
-  width:7px;
-  height:7px;
-  border-radius:999px;
-  background:var(--accent2);
-  box-shadow:0 0 0 4px rgba(56,189,248,0.3);
-}
-
-/* Title + text */
-.title{
-  margin:10px 0 6px;
-  font-size:1.1rem;
-  letter-spacing:0.03em;
-}
-
-.muted{
-  color:var(--muted);
-  font-size:0.86rem;
-}
-
-/* product images row */
-.card-images{
-  display:flex;
-  justify-content:center;
-  gap:14px;
-  margin:10px 0;
-  flex-wrap:wrap;
-}
-
-.card-images img{
-  max-width:110px;
-  border-radius:14px;
-  box-shadow:0 18px 32px rgba(15,23,42,0.9);
-  border:1px solid rgba(30,64,175,0.8);
-}
-
-/* variants grid */
-.variants{
-  margin-top:16px;
-  display:grid;
-  gap:10px;
-}
-
-/* variant row */
-.row{
-  display:grid;
-  grid-template-columns: minmax(0,1.35fr) minmax(0,.9fr) minmax(0,.9fr);
-  gap:10px;
-  align-items:center;
-  position:relative;
-}
-
-.name{
-  font-weight:600;
-  font-size:0.9rem;
-}
-
-/* pill label */
-.pill{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  background:none,rgba(15,23,42,0.98));
-  padding:5px 10px;
-  border-radius:var(--radius-pill);
-  font-weight:700;
-  font-size:11px;
-  border:1px solid rgba(34,197,94,0.7);
-  color:#bbf7d0;
-  margin-left:4px;
-}
-
-.pill::before{
-  content:"";
-  width:6px;
-  height:6px;
-  border-radius:999px;
-  background-color:var(--accent);
-}
-
-/* CTA buttons block */
-.cta{
-  display:flex;
-  gap:8px;
-  position:relative;
-  z-index:1;
-}
-
-/* big buttons */
-.btn{
-  flex:1;
-  border:0;
-  padding:9px 11px;
-  border-radius:14px;
-  font-weight:800;
-  cursor:pointer;
-  font-size:0.83rem;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  transition:
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast),
-    filter var(--transition-fast),
-    background var(--transition-fast),
-    color var(--transition-fast);
-  white-space:nowrap;
-}
-
-.btn.buy{
-  background:#ffffff,var(--accent-alt));
-  color:#022c22;
-  box-shadow:var(--shadow-btn);
-}
-
-.btn.buy:hover{
-  transform:translateY(-1px);
-  filter:brightness(1.03);
-  box-shadow:0 20px 40px rgba(22,163,74,0.75);
-}
-
-.btn.alt{
-  background:#ffffff,#f97316);
-  color:#1f1300;
-  box-shadow:0 14px 26px rgba(234,179,8,0.45);
-}
-
-.btn.alt:hover{
-  transform:translateY(-1px);
-  filter:brightness(1.03);
-  box-shadow:0 18px 34px rgba(234,179,8,0.7);
-}
-
-/* Sections below cards */
-.section{
-  margin-top:26px;
-}
-
-.section h3{
-  font-size:0.96rem;
-  letter-spacing:0.05em;
-  text-transform:uppercase;
-  margin:0 0 6px;
-}
-
-.list{
-  margin:10px 0 0 0;
-  padding-left:18px;
-  font-size:0.86rem;
-  color:var(--muted);
-}
-
-.list li{
-  margin-bottom:4px;
-}
-
-.list li b{
-  color:var(--text);
-}
-
-.foot{
-  opacity:.9;
-  margin-top:30px;
-  font-size:0.75rem;
-  color:var(--muted);
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-}
-
-/* Responsive */
-@media(max-width:900px){
-  .row{
-    grid-template-columns: minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr);
-  }
-}
-
-@media(max-width:720px){
-  .brand{
-    flex-direction:column;
-    align-items:flex-start;
-  }
-
-  .brand-actions{
-    width:100%;
-    justify-content:flex-start;
-  }
-}
-
-@media(max-width:640px){
-  .wrap{
-    padding-inline:14px;
-  }
-
-  .row{
-    grid-template-columns: minmax(0,1.4fr) minmax(0,1fr);
-    grid-template-rows:auto auto;
-  }
-
-  .row > .cta:last-child{
-    grid-column:1 / -1;
-  }
-
-  .card{
-    padding:16px 14px 18px;
-  }
-
-  .card-images img{
-    max-width:95px;
-  }
-}
-
-.ps2-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0}
-.ps2-gallery img,.step-img{max-width:100%;height:120px;object-fit:contain;cursor:pointer;border:1px solid #ccc;border-radius:8px}
-#imagePopup{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center}
-#imagePopup img{max-width:95%;max-height:95%}
-#imagePopup .close{position:absolute;right:20px;top:10px;color:#fff;font-size:32px;cursor:pointer}
-
-.language-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px;margin-top:12px}
-.lang-btn{border-radius:14px;border:1px solid #d5d9d9;background:#f3f3f3;color:#0f1111;padding:10px 8px;font-weight:800;cursor:pointer;text-align:center}
-.lang-btn.active{border:2px solid #ffa41c;background:#fff7ed}
-.lang-note{font-size:.82rem;color:#6b7280;margin-top:10px;line-height:1.45}
-.version-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
-.version-btn{border:2px solid #dbe3ef;border-radius:18px;background:#fff;padding:18px 14px;cursor:pointer;text-align:left;color:#0f172a;box-shadow:0 8px 24px rgba(15,23,42,.08)}
-.version-btn:hover{border-color:#2563eb;transform:translateY(-1px)}
-.version-btn strong{display:block;font-size:1.05rem;margin-bottom:6px}
-.version-btn small{display:block;color:#64748b;line-height:1.45;font-weight:600}
-
-/* Language popup modal */
-#langStep.language-modal{
-  position:fixed;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  z-index:10000;
-  width:calc(100% - 28px);
-  max-width:540px;
+.hero-sub{
   margin:0;
-  background:#ffffff !important;
-  border:2px solid #ffa41c !important;
-  box-shadow:0 24px 80px rgba(0,0,0,.45) !important;
+  max-width:650px;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.7;
 }
-#langStep.language-modal::before{
-  content:"";
-  position:fixed;
-  inset:-200vh;
-  background:rgba(0,0,0,.58);
-  z-index:-1;
+.trust-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin-top:18px;
 }
-#langStep.language-modal > *{position:relative;z-index:1}
-body.lang-modal-open{overflow:hidden}
-#langNextBtn{width:100%;margin-top:12px}
-#langNextBtn:disabled{opacity:.45;cursor:not-allowed}
-
-
-.wizard-help{background:#fff7ed;border:1px solid #fdba74;border-radius:14px;padding:10px 12px;margin:10px 0;color:#7c2d12;font-size:.9rem;line-height:1.45}
-.voice-mini{font-size:.78rem;color:#6b7280;margin-top:8px}
-.name-input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid #cbd5e1;font-size:16px;margin:10px 0;background:#fff;color:#0f1111}
-.step-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
-.step-primary{background:#ffd814!important;color:#0f1111!important;border:1px solid #fcd200!important;box-shadow:none!important}
-</style>
-
-<style id="gpz-ui-polish">
-:root{
-  --max-width:1040px;
-  --radius-lg:22px;
-  --radius-md:16px;
-  --radius-pill:999px;
-  --accent:#16a34a;
-  --accent-dark:#15803d;
-  --accent2:#2563eb;
-  --accent-alt:#22c55e;
-  --warning:#f59e0b;
-  --danger:#dc2626;
-  --bg:#f3f6fb;
-  --card:#ffffff;
-  --card-soft:#ffffff;
-  --text:#111827;
-  --muted:#64748b;
-  --chip:#eef2ff;
-  --chip-border:#dbe3f0;
-  --border:#dfe6ef;
-  --shadow-soft:0 12px 34px rgba(15,23,42,.10);
-  --shadow-btn:0 8px 20px rgba(22,163,74,.24);
-  --transition-fast:.18s ease;
-}
-
-html{scroll-behavior:smooth;background:var(--bg)}
-body{
-  min-height:100vh;
-  background:
-    radial-gradient(circle at 10% 0%,rgba(37,99,235,.08),transparent 26rem),
-    radial-gradient(circle at 100% 16%,rgba(22,163,74,.08),transparent 25rem),
-    var(--bg) !important;
-  color:var(--text) !important;
-  line-height:1.45;
-}
-
-.wrap{max-width:var(--max-width);padding:22px 16px 70px}
-
-.brand{
-  background:linear-gradient(135deg,#0f172a,#1e293b 58%,#0f5132);
-  color:#fff;
-  border-radius:24px;
-  padding:20px;
-  box-shadow:0 18px 44px rgba(15,23,42,.20);
-  margin-bottom:14px;
-}
-.logo{
-  width:54px;height:54px;border-radius:17px;
-  background:linear-gradient(135deg,#22c55e,#3b82f6);
-  color:#fff;box-shadow:0 10px 28px rgba(34,197,94,.3);
-  border:1px solid rgba(255,255,255,.26);
-}
-h1{font-size:clamp(21px,4vw,32px);line-height:1.15;letter-spacing:-.025em}
-h1 span{color:#a7f3d0;background:none;-webkit-text-fill-color:initial}
-.sub{color:#cbd5e1;font-size:.86rem;margin-top:7px}
-.brand-actions{align-items:center}
-.nav-pill{color:#e2e8f0;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);padding:8px 11px}
-.brand .linkbtn{background:#22c55e;color:#052e16;border:0;box-shadow:none}
-
-.controls{
-  padding:11px;
+.trust-chip{
+  padding:8px 11px;
+  border-radius:11px;
+  background:rgba(255,255,255,.05);
   border:1px solid var(--border);
-  background:rgba(255,255,255,.88);
-  border-radius:16px;
-  box-shadow:0 8px 24px rgba(15,23,42,.06);
-  position:sticky;top:8px;z-index:50;
-  backdrop-filter:blur(12px);
+  color:#dbeafe;
+  font-size:12px;
+  font-weight:700;
 }
-.linkbtn{
-  background:#fff;color:#1f2937;border:1px solid var(--border);
-  box-shadow:none;border-radius:12px;padding:9px 12px;
+.notice{
+  max-width:1068px;
+  margin:14px auto 18px;
+  padding:0 16px;
 }
-.linkbtn:hover{background:#f8fafc;border-color:#94a3b8;box-shadow:0 7px 18px rgba(15,23,42,.08)}
-button.linkbtn{font-family:inherit}
-
-.model-selector,.card,.section{
-  background:#fff !important;
-  border:1px solid var(--border) !important;
-  box-shadow:var(--shadow-soft) !important;
-  border-radius:var(--radius-lg) !important;
+.notice-inner{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:14px;
+  align-items:center;
+  border:1px solid rgba(248,113,113,.28);
+  background:linear-gradient(135deg,rgba(127,29,29,.72),rgba(69,10,10,.70));
+  border-radius:18px;
+  padding:16px;
+  box-shadow:0 12px 28px rgba(0,0,0,.22);
 }
-.model-selector{padding:18px;margin-bottom:16px}
-.model-title{font-size:1rem;color:#0f172a;letter-spacing:.035em;text-transform:none;margin-bottom:7px}
-.model-sub,.muted,.list,.voice-mini,.lang-note{color:var(--muted)}
-.wizard-help{
-  background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;
-  border-radius:14px;padding:11px 13px;
+.notice-icon{
+  width:48px;height:48px;
+  display:grid;place-items:center;
+  border-radius:14px;
+  background:rgba(255,255,255,.08);
+  font-size:24px;
 }
-
-.language-grid{grid-template-columns:repeat(3,1fr)}
-.lang-btn,.model-btn{
-  min-height:48px;background:#f8fafc !important;color:#0f172a !important;
-  border:1px solid #cbd5e1 !important;border-radius:14px !important;
-  box-shadow:none !important;transition:.18s ease;
+.notice-title{font-weight:900;font-size:16px;margin-bottom:3px}
+.notice-text{color:#fecaca;font-size:13px;line-height:1.6}
+.container{max-width:1068px;margin:auto;padding:0 16px 18px}
+h2{
+  position:sticky;
+  top:8px;
+  z-index:20;
+  margin:24px 0 12px;
+  padding:12px 14px;
+  border-radius:15px;
+  border:1px solid rgba(34,211,238,.16);
+  background:rgba(7,17,31,.90);
+  backdrop-filter:blur(14px);
+  color:#bff7ff!important;
+  font-size:18px;
+  letter-spacing:.2px;
+  box-shadow:0 8px 20px rgba(0,0,0,.18);
 }
-.lang-btn:hover,.model-btn:hover{transform:translateY(-1px);border-color:#64748b !important;background:#fff !important}
-.lang-btn.active,.model-btn.active{
-  background:#ecfdf5 !important;border:2px solid #22c55e !important;color:#14532d !important;
+.product{
+  background:linear-gradient(145deg,rgba(17,30,50,.88),rgba(10,22,38,.88));
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:15px;
+  margin-bottom:13px;
+  box-shadow:0 10px 28px rgba(0,0,0,.18);
+  transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease;
 }
-.model-btn-row{gap:9px}
-.selected-chip{background:#eff6ff;border-color:#bfdbfe;color:#1e3a8a}
-.change-model-btn{background:#fff;color:#475569;border-color:#cbd5e1}
-
-.ps2-gallery{gap:12px;margin:14px 0}
-.ps2-gallery>div{
-  text-align:center;font-weight:750;font-size:.82rem;color:#334155;
-  background:#f8fafc;border:1px solid var(--border);border-radius:15px;padding:9px;
+.product:hover{
+  transform:translateY(-3px);
+  border-color:rgba(34,211,238,.30);
+  box-shadow:0 18px 34px rgba(0,0,0,.25);
 }
-.ps2-gallery img,.step-img{
-  height:132px;background:#fff;border:0;border-radius:11px;box-shadow:none;
-}
-.step-img{display:inline-block;max-width:min(230px,100%);margin:6px 6px 10px 0;padding:5px;border:1px solid var(--border)}
-
-.grid{gap:18px}
-.card{padding:20px;overflow:visible}
-.card::before{display:none}
-.badge{
-  background:#eef2ff;color:#3730a3;border:1px solid #c7d2fe;
-  text-transform:none;letter-spacing:.02em;font-size:.73rem;padding:6px 10px;
-}
-.badge::before{background:#4f46e5;box-shadow:none}
-.title{font-size:1.22rem;color:#0f172a;margin-top:12px}
-.card-images img{
-  width:120px;height:110px;object-fit:contain;padding:7px;background:#fff;
-  border:1px solid var(--border);box-shadow:0 8px 22px rgba(15,23,42,.08);
-}
-
-.variants{gap:10px}
-.row{
-  grid-template-columns:minmax(0,1.4fr) minmax(145px,.8fr) minmax(145px,.8fr);
-  gap:9px;padding:11px;border:1px solid #e2e8f0;border-radius:14px;background:#fbfdff;
-}
-.name{font-size:.9rem;color:#1f2937}
-.pill{
-  color:#166534 !important;background:#dcfce7 !important;border:1px solid #bbf7d0 !important;
-  margin-top:4px;white-space:nowrap;
-}
-.pill::before{display:none}
-.cta{gap:7px}
-.btn{
-  min-height:42px;border-radius:12px;font-size:.82rem;padding:9px 10px;
-  box-shadow:none !important;
-}
-.btn.buy{background:#16a34a !important;color:#fff !important;border:1px solid #15803d !important}
-.btn.buy:hover{background:#15803d !important;transform:translateY(-1px)}
-.btn.alt{background:#fff7ed !important;color:#9a3412 !important;border:1px solid #fdba74 !important}
-.btn.alt:hover{background:#ffedd5 !important;transform:translateY(-1px)}
-.step-primary{background:#16a34a !important;color:#fff !important;border-color:#15803d !important;font-size:.95rem}
-
-.section{padding:18px 20px;margin-top:18px}
-.section h3{font-size:.95rem;color:#0f172a;margin:0 0 10px;text-transform:none;letter-spacing:.01em}
-.list{padding-left:20px;margin-top:4px}
-.list li{margin:7px 0}
-.foot{justify-content:center;text-align:center;margin-top:22px}
-
-.name-input{border:1px solid #94a3b8;box-shadow:0 0 0 3px rgba(37,99,235,.06)}
-.name-input:focus{outline:0;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.13)}
-
-#langStep.language-modal{
-  max-width:570px;border:1px solid #cbd5e1 !important;border-radius:24px !important;
-  box-shadow:0 30px 90px rgba(0,0,0,.35) !important;padding:22px !important;
-}
-#langStep.language-modal::before{background:rgba(2,6,23,.68);backdrop-filter:blur(5px)}
-#langNextBtn{margin-top:14px}
-
-#imagePopup{backdrop-filter:blur(5px)}
-#imagePopup img{background:#fff;padding:8px;border-radius:16px}
-#imagePopup .close{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center;right:14px;top:14px}
-
-/* Mobile bottom safety space and touch-friendly layout */
-@media(max-width:760px){
-  .wrap{padding:12px 10px 50px}
-  .brand{padding:16px;border-radius:19px}
-  .brand-left{align-items:flex-start}
-  .logo{width:46px;height:46px;border-radius:14px;flex:0 0 auto}
-  .brand-actions{width:100%}
-  .brand-actions>*{flex:1 1 100%;justify-content:center}
-  .controls{position:static;display:grid;grid-template-columns:1fr 1fr;padding:9px}
-  .controls>*:first-child{grid-column:1/-1}
-  .linkbtn{justify-content:center;text-align:center;padding:10px 8px}
-  .language-grid{grid-template-columns:1fr}
-  .model-selector,.card,.section{border-radius:17px !important}
-  .model-selector,.card{padding:15px}
-  .ps2-gallery{grid-template-columns:1fr 1fr 1fr;gap:7px}
-  .ps2-gallery>div{padding:6px;font-size:.68rem}
-  .ps2-gallery img{height:92px}
-  .row{grid-template-columns:1fr;padding:10px}
-  .row>.cta{width:100%}
-  .row>.cta .btn{width:100%}
-  .card-images img{width:100px;height:92px}
-  .btn{font-size:.85rem;min-height:44px}
-}
-
-@media(max-width:390px){
-  .ps2-gallery{grid-template-columns:1fr}
-  .ps2-gallery img{height:125px}
-  .controls{grid-template-columns:1fr}
-  .controls>*:first-child{grid-column:auto}
-}
-</style>
-
-
-<style id="premium-ui-overrides">
-:root{
-  --gpz-blue:#1d4ed8;
-  --gpz-blue-dark:#1e3a8a;
-  --gpz-cyan:#0ea5e9;
-  --gpz-green:#16a34a;
-  --gpz-yellow:#facc15;
-  --gpz-orange:#f97316;
-  --gpz-red:#dc2626;
-  --gpz-bg:#f6f8fc;
-  --gpz-card:#ffffff;
-  --gpz-border:#dbe3ef;
-  --gpz-text:#0f172a;
-  --gpz-muted:#64748b;
-  --gpz-shadow:0 18px 50px rgba(15,23,42,.10);
-  --gpz-shadow-soft:0 8px 24px rgba(15,23,42,.08);
-  --gpz-radius:22px;
-}
-
-html{scroll-behavior:smooth}
-body{
-  background:
-    radial-gradient(circle at top left,rgba(14,165,233,.10),transparent 32%),
-    radial-gradient(circle at top right,rgba(29,78,216,.10),transparent 34%),
-    linear-gradient(180deg,#f9fbff 0%,#f4f7fb 52%,#eef3f9 100%) !important;
-  color:var(--gpz-text) !important;
-  min-height:100vh;
-}
-
-.wrap{
-  max-width:1180px !important;
-  padding:24px 18px 70px !important;
-}
-
-.brand{
-  position:relative;
-  padding:22px;
-  border-radius:26px;
-  background:linear-gradient(135deg,#0f172a 0%,#172554 52%,#1e3a8a 100%);
+.product-title{
+  display:block;
+  margin:0 0 12px;
+  font-size:16px;
+  line-height:1.45;
+  font-weight:900;
   color:#fff;
-  box-shadow:0 24px 70px rgba(15,23,42,.24);
-  overflow:hidden;
-  margin-bottom:16px !important;
 }
-.brand::before{
-  content:"";
-  position:absolute;
-  width:240px;
-  height:240px;
-  right:-80px;
-  top:-120px;
+
+.product-specs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 14px;
+  margin:-4px 0 12px;
+  color:#cbd5e1;
+  font-size:13px;
+}
+.product-specs span{
+  padding:7px 10px;
+  border-radius:10px;
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.08);
+}
+
+.image-row{
+  display:flex;
+  gap:9px;
+  overflow-x:auto;
+  padding-bottom:4px;
+  scrollbar-width:thin;
+}
+.image-row img{
+  width:86px;height:86px;
+  object-fit:contain;
+  flex:0 0 auto;
+  border-radius:14px;
+  background:#fff;
+  border:1px solid rgba(255,255,255,.12);
+  cursor:pointer;
+  transition:transform .22s ease,box-shadow .22s ease;
+}
+.image-row img:hover{transform:scale(1.05);box-shadow:0 10px 22px rgba(0,0,0,.25)}
+.info{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:14px;
+  margin-top:13px;
+}
+.info>div:first-child{flex:1;min-width:0}
+.price{
+  display:inline-flex;
+  align-items:center;
+  min-height:34px;
+  background:linear-gradient(90deg,var(--violet),var(--blue),var(--cyan));
+  padding:7px 12px;
   border-radius:999px;
-  background:rgba(56,189,248,.18);
-}
-.brand::after{
-  content:"";
-  position:absolute;
-  width:170px;
-  height:170px;
-  left:35%;
-  bottom:-115px;
-  border-radius:999px;
-  background:rgba(250,204,21,.12);
-}
-.brand-left,.brand-actions{position:relative;z-index:1}
-.logo{
-  width:58px !important;
-  height:58px !important;
-  border-radius:18px !important;
-  background:linear-gradient(145deg,#facc15,#fb923c) !important;
-  color:#111827 !important;
-  border:2px solid rgba(255,255,255,.45);
-  box-shadow:0 12px 30px rgba(0,0,0,.28) !important;
-  font-size:1rem !important;
-}
-h1{
-  font-size:clamp(24px,3vw,38px) !important;
-  line-height:1.12;
+  font-weight:900;
   color:#fff;
-  letter-spacing:-.02em !important;
+  box-shadow:0 8px 18px rgba(59,130,246,.22);
 }
-h1 span{
-  color:#bfdbfe !important;
-  -webkit-text-fill-color:initial !important;
-  background:none !important;
+.product small{display:inline-block;color:var(--muted);margin-top:7px}
+.product-extra-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin:12px 0 2px}
+.game-action-btn{display:flex;align-items:center;justify-content:center;min-height:44px;padding:9px 11px;border-radius:12px;text-align:center;text-decoration:none;font-size:13px;font-weight:900;border:1px solid rgba(255,255,255,.12);transition:transform .18s ease,box-shadow .18s ease}
+.game-action-btn:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(0,0,0,.22)}
+.top-games-btn{background:linear-gradient(135deg,#dc2626,#f97316);color:#fff}
+.optional-games-btn{background:linear-gradient(135deg,#ca8a04,#eab308);color:#111827}
+#optionalGameModal{display:none;position:fixed;inset:0;z-index:1000000;background:rgba(0,0,0,.82);align-items:center;justify-content:center;padding:16px}
+#optionalGameModal.show{display:flex}
+.optional-modal-box{position:relative;width:min(520px,100%);background:#111827;color:#fff;border:2px solid #eab308;border-radius:20px;padding:26px 18px 18px;text-align:center;box-shadow:0 28px 90px rgba(0,0,0,.55)}
+.optional-modal-box h3{margin:4px 30px 10px;color:#fde047;font-size:22px}
+.optional-modal-box p{margin:0;color:#e2e8f0;line-height:1.6;font-weight:700}
+.optional-modal-actions{display:grid;grid-template-columns:1fr 1.35fr;gap:9px;margin-top:18px}
+.optional-modal-actions button{min-height:45px;border-radius:11px;font-weight:900;cursor:pointer;padding:9px}
+.optional-modal-close{background:#fff;color:#111827;border:0}
+.optional-modal-continue{background:linear-gradient(135deg,#ca8a04,#facc15);color:#111827;border:0}
+@media(max-width:520px){.optional-modal-actions{grid-template-columns:1fr}}
+.qty{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-shrink:0;
+  min-width:112px;
+  justify-content:flex-end;
 }
-.sub{
-  color:#cbd5e1 !important;
-  font-size:.92rem !important;
+.qty button{
+  width:40px;height:40px;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:12px;
+  background:linear-gradient(145deg,#6d28d9,#4f46e5);
+  color:#fff;
+  font-size:22px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 7px 18px rgba(79,70,229,.24);
+}
+.qty button:active{transform:scale(.95)}
+.qty span{
+  min-width:26px;
+  text-align:center;
+  font-weight:900;
+  color:#fff;
+}
+.preview{
+  max-width:1068px;
+  margin:8px auto 26px;
+  padding:0 16px;
+}
+.preview-card{
+  background:linear-gradient(145deg,rgba(17,30,50,.95),rgba(8,20,35,.95));
+  border:1px solid var(--border-strong);
+  border-radius:24px;
+  padding:18px;
+  box-shadow:var(--shadow);
+}
+.preview h3{margin:0 0 12px;font-size:22px}
+#orderList{
+  padding:14px;
+  border-radius:15px;
+  background:rgba(255,255,255,.035);
+  border:1px dashed rgba(255,255,255,.12);
+  color:#dbeafe;
   line-height:1.55;
 }
-.nav-pill{
-  background:rgba(255,255,255,.12) !important;
-  color:#e2e8f0 !important;
-  border:1px solid rgba(255,255,255,.18) !important;
-  backdrop-filter:blur(12px);
-  padding:9px 12px !important;
+.courier-box{
+  margin:14px 0;
+  padding:14px;
+  border-radius:15px;
+  background:rgba(34,211,238,.055);
+  border:1px solid rgba(34,211,238,.13);
 }
-.brand .linkbtn{
-  background:#fff !important;
-  color:#0f172a !important;
-  border:none !important;
-  box-shadow:0 10px 24px rgba(0,0,0,.20) !important;
-}
-
-.controls{
-  padding:12px;
-  border-radius:18px;
-  background:rgba(255,255,255,.76);
-  border:1px solid rgba(219,227,239,.9);
-  box-shadow:var(--gpz-shadow-soft);
-  backdrop-filter:blur(14px);
-}
-.controls .linkbtn{
-  background:#fff !important;
-  color:#0f172a !important;
-  border:1px solid var(--gpz-border) !important;
-  box-shadow:none !important;
-  min-height:42px;
-}
-
-.model-selector{
-  background:rgba(255,255,255,.96) !important;
-  border:1px solid var(--gpz-border) !important;
-  box-shadow:var(--gpz-shadow) !important;
-  border-radius:var(--gpz-radius) !important;
-  padding:20px !important;
-}
-.model-title{
-  color:var(--gpz-blue-dark);
-  font-size:1rem !important;
-  letter-spacing:.06em !important;
-}
-.model-sub,.muted,.lang-note,.voice-mini{
-  color:var(--gpz-muted) !important;
-  line-height:1.6;
-}
-.wizard-help{
-  background:linear-gradient(135deg,#eff6ff,#f8fbff) !important;
-  border:1px solid #bfdbfe !important;
-  color:#1e3a8a !important;
-  border-left:5px solid var(--gpz-blue) !important;
-  padding:13px 15px !important;
-}
-.language-grid{gap:12px !important}
-.lang-btn{
-  background:#fff !important;
-  border:1px solid var(--gpz-border) !important;
-  padding:14px 10px !important;
-  border-radius:16px !important;
-  box-shadow:0 6px 18px rgba(15,23,42,.06);
-  transition:.2s ease;
-}
-.lang-btn:hover{transform:translateY(-2px);border-color:#93c5fd !important}
-.lang-btn.active{
-  border:2px solid var(--gpz-blue) !important;
-  background:#eff6ff !important;
-  color:var(--gpz-blue-dark) !important;
-  box-shadow:0 10px 24px rgba(29,78,216,.15);
-}
-
-#langStep.language-modal{
-  border:0 !important;
-  border-radius:26px !important;
-  padding:24px !important;
-  max-width:600px !important;
-}
-#langStep.language-modal::before{background:rgba(2,6,23,.72) !important;backdrop-filter:blur(6px)}
-
-.name-input{
-  border:1px solid var(--gpz-border) !important;
-  box-shadow:0 6px 18px rgba(15,23,42,.05);
-}
-.name-input:focus{
+.courier-label{margin-bottom:8px;font-weight:900;color:#67e8f9}
+select{
+  width:100%;
+  padding:12px 13px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.12);
+  background:#0b1728;
+  color:#fff;
   outline:none;
-  border-color:#60a5fa !important;
-  box-shadow:0 0 0 4px rgba(59,130,246,.14);
 }
-
-.ps2-gallery{
-  gap:14px !important;
-  margin:16px 0 !important;
+.actions{
+  display:grid;
+  grid-template-columns:1.3fr 1fr auto;
+  gap:10px;
+  margin:14px 0;
 }
-.ps2-gallery > div{
-  background:#fff;
-  border:1px solid var(--gpz-border);
-  border-radius:18px;
-  padding:12px;
-  text-align:center;
-  font-weight:800;
-  color:#334155;
-  box-shadow:0 8px 22px rgba(15,23,42,.06);
-}
-  .ps2-gallery img,.step-img{
-  height:120px !important;
-  border:0 !important;
-  background:#f8fafc;
-  border-radius:14px !important;
-  padding:8px;
-}
-
-.model-btn{
-  background:#fff !important;
-  color:#0f172a !important;
-  border:1px solid var(--gpz-border) !important;
-  border-radius:16px !important;
-  min-height:52px;
-  box-shadow:0 7px 20px rgba(15,23,42,.06) !important;
-}
-.model-btn:hover{
-  transform:translateY(-2px);
-  border-color:#93c5fd !important;
-  box-shadow:0 12px 26px rgba(29,78,216,.12) !important;
-}
-.model-btn.active{
-  background:linear-gradient(135deg,#eff6ff,#dbeafe) !important;
-  color:var(--gpz-blue-dark) !important;
-  border:2px solid var(--gpz-blue) !important;
-}
-
-.grid{gap:22px !important}
-.card{
-  background:rgba(255,255,255,.98) !important;
-  border:1px solid var(--gpz-border) !important;
-  border-radius:var(--gpz-radius) !important;
-  box-shadow:var(--gpz-shadow) !important;
-  padding:22px !important;
-}
-.card::before{display:none !important}
-.badge{
-  background:#eff6ff !important;
-  color:var(--gpz-blue-dark) !important;
-  border:1px solid #bfdbfe !important;
-  border-radius:999px !important;
-  padding:7px 11px !important;
-  letter-spacing:.08em !important;
-}
-.badge::before{
-  background:var(--gpz-blue) !important;
-  box-shadow:0 0 0 4px rgba(29,78,216,.12) !important;
-}
-.title{
-  font-size:1.35rem !important;
-  color:#0f172a;
-  margin-top:14px !important;
-}
-.card-images img{
-  max-width:145px !important;
-  background:#f8fafc;
-  padding:8px;
-  border:1px solid var(--gpz-border) !important;
-  box-shadow:0 10px 28px rgba(15,23,42,.08) !important;
-}
-
-.variants{
-  gap:12px !important;
-}
-.row{
-  background:#fbfdff;
-  border:1px solid #e7edf5;
-  border-radius:16px;
-  padding:12px;
-}
-.name{
-  color:#1e293b;
-  line-height:1.45;
-}
-.pill{
-  background:#fff7ed !important;
-  color:#c2410c !important;
-  border:1px solid #fed7aa !important;
-  box-shadow:none !important;
-  margin-top:4px;
-}
-.pill::before{background:#f97316 !important}
-
-.btn{
+.whatsapp,.details,.reset{
   min-height:46px;
-  border-radius:13px !important;
-  transition:.2s ease !important;
+  padding:11px 14px;
+  border-radius:13px;
+  font-weight:900;
+  border:0;
+  cursor:pointer;
 }
-.btn.buy{
-  background:linear-gradient(135deg,#16a34a,#22c55e) !important;
-  color:#fff !important;
-  box-shadow:0 10px 22px rgba(22,163,74,.22) !important;
-}
-.btn.alt{
-  background:linear-gradient(135deg,#f59e0b,#f97316) !important;
-  color:#fff !important;
-  box-shadow:0 10px 22px rgba(249,115,22,.20) !important;
-}
-.btn:hover{transform:translateY(-2px) !important;filter:none !important}
-.step-primary{
-  background:linear-gradient(135deg,#2563eb,#1d4ed8) !important;
-  color:#fff !important;
-  border:0 !important;
-  box-shadow:0 12px 26px rgba(37,99,235,.24) !important;
-}
-
-.section{
-  background:#fff;
-  border:1px solid var(--gpz-border);
-  border-radius:20px;
-  padding:20px;
-  box-shadow:var(--gpz-shadow-soft);
-  margin-top:18px !important;
-}
-.section h3{
-  color:var(--gpz-blue-dark);
-  font-size:1rem !important;
-  margin-bottom:10px !important;
-}
-.list{
-  line-height:1.65;
-  color:#475569 !important;
-}
-.foot{
-  background:#0f172a;
-  color:#cbd5e1 !important;
-  padding:15px 18px;
+.whatsapp{background:linear-gradient(90deg,#16a34a,#22c55e);color:#04140a}
+.details{background:linear-gradient(90deg,#f59e0b,#facc15);color:#241600}
+.reset{background:linear-gradient(90deg,#b91c1c,#ef4444);color:#fff}
+.total-grid{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:center;
+  gap:14px;
+  padding:14px;
   border-radius:16px;
-  justify-content:center;
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--border);
 }
-
-#imagePopup{
-  backdrop-filter:blur(8px);
-}
-#imagePopup img{
-  border-radius:20px;
+.total-grid b{line-height:1.9}
+#upiQr{
+  width:104px;height:104px;
+  padding:6px;
+  border-radius:14px!important;
   background:#fff;
-  padding:10px;
-  box-shadow:0 24px 70px rgba(0,0,0,.4);
+  box-shadow:0 12px 26px rgba(0,0,0,.28);
 }
-
-@media(max-width:760px){
-  .wrap{padding:14px 12px 50px !important}
-  .brand{padding:18px !important;border-radius:22px}
-  .brand-left{align-items:flex-start}
-  .logo{width:50px !important;height:50px !important;flex:0 0 auto}
-  .brand-actions{width:100%}
-  .brand-actions>*{width:100%;justify-content:center}
-  .controls{display:grid !important;grid-template-columns:1fr}
-  .controls .linkbtn{width:100%;justify-content:center}
-  .model-selector,.card,.section{padding:16px !important;border-radius:18px !important}
-  .ps2-gallery{grid-template-columns:1fr !important}
-  .ps2-gallery img{height:120px !important;max-width:220px !important}
-  .row{
-    grid-template-columns:1fr !important;
-    gap:10px !important;
-  }
-  .row > .cta{width:100%}
-  .row .btn{width:100%}
-  .card-images img{max-width:125px !important}
-  .model-btn-row{display:grid !important;grid-template-columns:1fr}
-  #langStep.language-modal{padding:18px !important}
-}
-</style>
-
-
-<style id="all-wizard-popup-style">
-.wizard-modal{
-  position:fixed !important;
-  left:50% !important;
-  top:50% !important;
-  transform:translate(-50%,-50%) !important;
-  width:calc(100% - 28px) !important;
-  max-width:680px !important;
-  max-height:88vh !important;
-  overflow:auto !important;
-  z-index:10000 !important;
-  margin:0 !important;
-  background:#ffffff !important;
-  border:1px solid #dbe3ef !important;
-  border-radius:26px !important;
-  box-shadow:0 30px 100px rgba(2,6,23,.45) !important;
-}
-.wizard-modal::after{
-  content:"";
+.floatingSummary{
   position:fixed;
-  inset:-200vh;
-  background:rgba(2,6,23,.72);
-  backdrop-filter:blur(7px);
-  z-index:-2;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:12px;
+  width:min(1040px,calc(100% - 20px));
+  padding:13px 16px;
+  z-index:999;
+  background:rgba(8,20,35,.94);
+  border:1px solid rgba(34,211,238,.22);
+  border-radius:16px;
+  backdrop-filter:blur(16px);
+  box-shadow:0 18px 45px rgba(0,0,0,.40);
+  text-align:center;
+  font-weight:900;
+  color:#e0f2fe;
 }
-.wizard-modal > *{
-  position:relative;
-  z-index:1;
+#imgModal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.94);
+  z-index:99999;
+  justify-content:center;
+  align-items:center;
+  padding:18px;
 }
-body.wizard-popup-open{
-  overflow:hidden !important;
+#modalImg{
+  max-width:95vw;
+  max-height:90vh;
+  border-radius:18px;
+  object-fit:contain;
+  box-shadow:0 0 35px rgba(0,0,0,.68);
 }
-.wizard-modal .ps2-gallery{
-  max-height:330px;
+.close-btn{
+  position:fixed;
+  top:16px;right:18px;
+  width:48px;height:48px;
+  border-radius:50%;
+  background:linear-gradient(145deg,#b91c1c,#ef4444);
+  color:#fff;
+  font-size:30px;
+  font-weight:900;
+  line-height:46px;
+  text-align:center;
+  cursor:pointer;
+  z-index:100000;
+  box-shadow:0 10px 25px rgba(0,0,0,.35);
+}
+.footer-card{
+  max-width:1068px;
+  margin:26px auto;
+  padding:0 16px;
+}
+.footer-inner{
+  padding:22px;
+  border-radius:22px;
+  background:linear-gradient(145deg,rgba(17,30,50,.94),rgba(8,20,35,.94));
+  border:1px solid var(--border);
+  text-align:center;
+  box-shadow:var(--shadow);
+}
+.footer-inner a{color:#67e8f9}
+.policy-btn{
+  padding:13px 19px;
+  border:none;
+  border-radius:13px;
+  background:linear-gradient(90deg,#b91c1c,#ef4444);
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 10px 24px rgba(239,68,68,.18);
+}
+@media(max-width:680px){
+  body{padding-bottom:136px}
+  .header{padding-top:14px}
+  .hero{padding:22px 18px;border-radius:22px}
+  .header h1{letter-spacing:-1.2px}
+  .notice-inner{grid-template-columns:1fr;text-align:center}
+  .notice-icon{margin:auto}
+  .product{padding:13px}
+  .image-row img{width:78px;height:78px}
+  .info{align-items:flex-start}
+  .actions{grid-template-columns:1fr}
+  .reset{width:100%}
+  .total-grid{grid-template-columns:1fr auto}
+  .floatingSummary{
+    font-size:12px;
+    line-height:1.45;
+    padding:11px 10px;
+  }
+}
+
+/* Combined selected-products poster */
+.combined-poster-wrap{
+  max-width:1068px;
+  margin:10px auto 28px;
+  padding:0 16px;
+}
+.combined-poster-card{
+  background:linear-gradient(145deg,rgba(17,30,50,.95),rgba(8,20,35,.95));
+  border:1px solid var(--border-strong);
+  border-radius:24px;
+  padding:18px;
+  box-shadow:var(--shadow);
+}
+.combined-poster-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+.combined-poster-head h3{margin:0;font-size:22px}
+.combined-poster-actions{display:flex;gap:9px;flex-wrap:wrap}
+.poster-btn{
+  min-height:42px;
+  padding:10px 14px;
+  border:0;
+  border-radius:12px;
+  font-weight:900;
+  cursor:pointer;
+}
+.poster-download{background:linear-gradient(90deg,#2563eb,#22d3ee);color:#04131b}
+.poster-refresh{background:linear-gradient(90deg,#7c3aed,#a78bfa);color:#fff}
+.poster-stage{
+  width:100%;
   overflow:auto;
+  border-radius:18px;
+  background:#fff;
+  border:1px solid rgba(255,255,255,.14);
 }
-@media(max-width:760px){
-  .wizard-modal{
-    width:calc(100% - 18px) !important;
-    max-height:92vh !important;
-    border-radius:20px !important;
-    padding:16px !important;
+#combinedPoster{
+  display:block;
+  width:100%;
+  height:auto;
+  background:#fff;
+}
+
+.box-summary{
+  margin:0 0 12px;
+  padding:14px;
+  border-radius:15px;
+  background:rgba(34,211,238,.055);
+  border:1px solid rgba(34,211,238,.13);
+  color:#dbeafe;
+  line-height:1.7;
+}
+
+
+#boxPlannerCanvas{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:520px;
+  object-fit:contain;
+  background:#fff;
+}
+#boxPlannerSection .poster-stage{
+  overflow:hidden;
+}
+@media(max-width:680px){
+  #boxPlannerCanvas{
+    width:100%;
+    height:auto;
+    max-height:260px;
   }
-  .version-grid{grid-template-columns:1fr}
+  #boxPlannerSection .combined-poster-card{
+    padding:12px;
+  }
+  #boxPlannerSection .combined-poster-head h3{
+    font-size:18px;
+  }
+  #boxPlannerSection .box-summary{
+    font-size:12px;
+    line-height:1.55;
+    padding:10px;
+  }
+  #boxPlannerSection .poster-note{
+    font-size:11px;
+  }
 }
+
+.poster-note{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.55}
+@media(max-width:680px){
+  .combined-poster-head{align-items:flex-start;flex-direction:column}
+  .combined-poster-actions{width:100%}
+  .poster-btn{flex:1}
+}
+
+
+
+#combinedPosterSection{
+  margin-top:34px;
+}
+#boxPlannerSection{
+  margin-top:18px;
+  margin-bottom:130px;
+}
+
+
+/* Responsive desktop split view */
+.desktop-layout{
+  width:min(1880px,calc(100% - 24px));
+  margin:0 auto;
+}
+.desktop-left,.desktop-right{min-width:0}
+
+@media(min-width:900px){
+  .header,.notice{max-width:1880px}
+  .desktop-layout{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(430px,540px);
+    gap:18px;
+    align-items:start;
+  }
+  .desktop-left .container,
+  .desktop-left .preview,
+  .desktop-left .footer-card{
+    width:100%;
+    max-width:none;
+    margin-left:0;
+    margin-right:0;
+  }
+  .desktop-right{
+    position:sticky;
+    top:10px;
+    align-self:start;
+    max-height:calc(100vh - 20px);
+    overflow-y:auto;
+    padding-right:4px;
+    scrollbar-width:thin;
+  }
+  .desktop-right .combined-poster-wrap{
+    width:100%;
+    max-width:none;
+    margin:0 0 14px;
+    padding:0;
+  }
+  .desktop-right .combined-poster-card{
+    padding:12px;
+    border-radius:18px;
+  }
+  .desktop-right .combined-poster-head{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:8px;
+  }
+  .desktop-right .combined-poster-head h3{font-size:18px}
+  .desktop-right .combined-poster-actions{width:100%}
+  .desktop-right .poster-btn{
+    flex:1;
+    min-height:38px;
+    padding:8px 10px;
+    font-size:12px;
+  }
+  .desktop-right #combinedPoster,
+  .desktop-right #boxPlannerCanvas{
+    width:100%;
+    height:auto;
+    max-height:310px;
+    object-fit:contain;
+  }
+  .desktop-right .box-summary{
+    padding:10px;
+    font-size:12px;
+    line-height:1.55;
+  }
+  .desktop-right .poster-note{
+    font-size:11px;
+    line-height:1.45;
+  }
+  #combinedPosterSection,#boxPlannerSection{
+    margin-top:0;
+    margin-bottom:14px;
+  }
+}
+
+@media(max-width:899px){
+  .desktop-layout{display:block;width:100%}
+  .desktop-right{position:static;max-height:none;overflow:visible}
+  .desktop-right .combined-poster-wrap{
+    max-width:1068px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+}
+
+
+#packingGuideCanvas{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:560px;
+  object-fit:contain;
+  background:#fff;
+}
+@media(min-width:900px){
+  .desktop-right #packingGuideCanvas{
+    width:100%;
+    height:auto;
+    max-height:330px;
+    object-fit:contain;
+  }
+}
+@media(max-width:899px){
+  #packingGuideCanvas{
+    max-height:300px;
+  }
+}
+
+
+/* Improved 3D packing guide */
+#packingGuideCanvas{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:620px;
+  object-fit:contain;
+  background:#f8fafc;
+}
+@media(min-width:900px){
+  .desktop-right #packingGuideCanvas{
+    max-height:390px;
+  }
+}
+@media(max-width:899px){
+  #packingGuideCanvas{
+    max-height:340px;
+  }
+}
+
+
+/* Games Planet basic anti-copy protection */
+html,body{
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+}
+input,textarea,select{
+  -webkit-user-select:text;
+  user-select:text;
+}
+img,canvas{
+  -webkit-user-drag:none;
+  user-drag:none;
+}
+#securityOverlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:2147483647;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:rgba(2,6,23,.98);
+  color:#fff;
+  text-align:center;
+}
+#securityOverlay .security-box{
+  width:min(620px,100%);
+  padding:28px;
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:22px;
+  background:#0f172a;
+  box-shadow:0 25px 70px rgba(0,0,0,.55);
+}
+#securityOverlay button{
+  padding:11px 18px;
+  border:0;
+  border-radius:10px;
+  background:#22c55e;
+  color:#04140a;
+  font-weight:900;
+  cursor:pointer;
+}
+@media print{
+  body *{visibility:hidden!important}
+  body:before{
+    content:"Printing is disabled on this page.";
+    visibility:visible!important;
+    position:fixed;
+    inset:0;
+    display:grid;
+    place-items:center;
+    background:#fff;
+    color:#111;
+    font:700 28px Arial,sans-serif;
+  }
+}
+
+
+/* Interactive 3D packing canvas */
+#packingGuideCanvas{
+  touch-action:none;
+  cursor:grab;
+}
+#packingGuideCanvas.is-dragging{
+  cursor:grabbing;
+}
+.packing-3d-help{
+  margin-top:8px;
+  padding:9px 11px;
+  border-radius:10px;
+  background:rgba(59,130,246,.08);
+  border:1px solid rgba(59,130,246,.18);
+  color:#bfdbfe;
+  font-size:11px;
+  line-height:1.5;
+}
+
 </style>
 
+</head>
 
-<style id="game-selector-warning-style">
-.variant-buy-card{border:1px solid #dbe3ef;border-radius:18px;background:#f8fafc;padding:13px;margin-bottom:12px;box-shadow:0 7px 18px rgba(15,23,42,.06)}
-.variant-buy-name{font-weight:900;color:#0f172a;font-size:1rem;margin-bottom:10px;text-align:center}
-.variant-pack-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.variant-pack-option{display:flex;flex-direction:column;gap:8px;border-radius:14px;padding:10px;background:#fff;border:1px solid #e2e8f0}
-.variant-pack-option .btn{width:100%;min-height:68px;white-space:normal;line-height:1.35;padding:10px;font-size:.88rem}
-.variant-pack-option .pack-price{display:block;margin-top:4px;font-size:1rem;font-weight:950}
-.variant-pack-link{display:flex;align-items:center;justify-content:center;text-align:center;min-height:44px;border:1px solid #cbd5e1;border-radius:11px;background:#fff;color:#1d4ed8;text-decoration:none;font-size:.8rem;font-weight:850;padding:7px}
-.variant-pack-link:hover{border-color:#2563eb;background:#eff6ff}
-.purchase-btn{position:relative!important;padding-left:42px!important;overflow:visible!important}
-.purchase-btn::before{content:"👉";position:absolute;left:9px;top:50%;font-size:1.25rem;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.18));animation:purchasePointerMove .75s ease-in-out infinite;pointer-events:none}
-@keyframes purchasePointerMove{0%,100%{transform:translate(-5px,-50%)}50%{transform:translate(4px,-50%)}}
-@media(prefers-reduced-motion:reduce){.purchase-btn::before{animation:none;transform:translateY(-50%)}}
-.device-photo{display:flex;flex-direction:column;align-items:center;gap:5px;margin:0}
-.device-photo small{font-size:.72rem;font-weight:850;color:#475569;text-align:center}
-@media(max-width:620px){.variant-pack-grid{grid-template-columns:1fr}.variant-pack-option .btn{min-height:62px}}
-#gameSelectorWarning{display:none;position:fixed;inset:0;z-index:20000;align-items:center;justify-content:center;padding:16px;background:rgba(2,6,23,.76);backdrop-filter:blur(7px)}
-#gameSelectorWarning.show{display:flex}
-.game-selector-warning-box{position:relative;width:min(520px,100%);background:#fff;border-radius:22px;padding:28px 20px 20px;text-align:center;box-shadow:0 30px 100px rgba(0,0,0,.45);border:2px solid #f59e0b}
-.game-selector-warning-close{position:absolute;right:12px;top:10px;width:40px;height:40px;border:0;border-radius:50%;background:#f1f5f9;color:#0f172a;font-size:22px;font-weight:900;cursor:pointer}
-.game-selector-warning-icon{font-size:48px;line-height:1;margin-bottom:8px}
-.game-selector-warning-box h3{margin:0 0 10px;color:#b45309;font-size:1.35rem}
-.game-selector-warning-box p{margin:0;color:#334155;font-size:1rem;line-height:1.6;font-weight:700}
-.game-selector-warning-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
-.game-selector-warning-actions button{flex:1 1 180px;min-height:46px;border-radius:12px;font-weight:800;cursor:pointer;font-size:.92rem}
-.game-selector-cancel{background:#fff;border:1px solid #cbd5e1;color:#334155}
-.game-selector-continue{background:linear-gradient(135deg,#16a34a,#22c55e);border:0;color:#fff}
-@media(max-width:480px){.game-selector-warning-box{padding:26px 16px 16px}.game-selector-warning-actions{flex-direction:column}}
-</style>
-
-
-<style id="back-buy-confirm-style">
-.wizard-back-wrap{display:flex;justify-content:flex-start;margin-top:14px}
-.wizard-back-btn{border:1px solid #cbd5e1;background:#f8fafc;color:#0f172a;border-radius:12px;padding:10px 15px;font-weight:800;font-size:.9rem;cursor:pointer;min-height:44px}
-.wizard-back-btn:hover{background:#eef2ff;border-color:#93c5fd}
-#buyConfirmPopup{display:none;position:fixed;inset:0;z-index:12000;background:rgba(2,6,23,.76);backdrop-filter:blur(7px);align-items:center;justify-content:center;padding:14px}
-#buyConfirmPopup.open{display:flex}
-.buy-confirm-box{position:relative;width:min(520px,100%);background:#fff;border-radius:24px;padding:24px;border:1px solid #dbe3ef;box-shadow:0 30px 100px rgba(0,0,0,.42);text-align:center}
-.buy-confirm-close{position:absolute;right:12px;top:10px;width:40px;height:40px;border:0;border-radius:50%;background:#f1f5f9;font-size:20px;cursor:pointer}
-.buy-confirm-icon{font-size:42px;margin-bottom:6px}.buy-confirm-box h3{margin:4px 35px 10px;color:#0f172a;font-size:1.3rem}.buy-confirm-box p{color:#475569;line-height:1.6;margin:0 0 18px}
-.buy-confirm-actions{display:grid;grid-template-columns:1fr 1.35fr;gap:10px}.buy-confirm-actions button{min-height:46px;border-radius:13px;font-weight:800;cursor:pointer;padding:10px}
-.buy-confirm-cancel{background:#fff;border:1px solid #cbd5e1;color:#334155}.buy-confirm-agree{background:linear-gradient(135deg,#16a34a,#22c55e);border:0;color:#fff}
-@media(max-width:520px){.buy-confirm-actions{grid-template-columns:1fr}.buy-confirm-box{padding:22px 16px}}
-</style>
-<style id="gpz-ticker">.gpz-ticker{position:sticky;top:0;z-index:30000;background:#000;color:#fff;height:30px;overflow:hidden;display:flex;align-items:center}.gpz-ticker .track{white-space:nowrap;padding-left:100%;display:inline-block;animation:gpzmar 45s linear infinite;font-weight:700;font-size:13px}@keyframes gpzmar{from{transform:translateX(0)}to{transform:translateX(-100%)}}</style></head>
 <body>
-<div class="gpz-ticker"><div class="track">🎮 आपका Games Planet में स्वागत है। हमारे पास Classic Retro Gaming Consoles, Arcade Machines, Commercial & Non‑Commercial Game Boxes, Coin Machines, Parts, Spare Parts, Repair Services, New & Used PlayStation Consoles, Game Sticks, Controllers और Gaming Accessories उपलब्ध हैं। अधिक जानकारी के लिए हमारी WhatsApp Profile Catalog देखें या हमसे संपर्क करें।</div></div>
-<div class="wrap">
 
-  <!-- BRAND / HERO BAR -->
-  <header class="brand">
-    <div class="brand-left">
-      <div class="logo">GPZ</div>
-      <div>
-        <h1>PS2 Quick Buy <span>FMCB • USB • Combo</span></h1>
-        <div class="sub">Choose the correct PS2 setup with guided steps, voice help and one-tap WhatsApp order</div>
-        <div style="margin-top:8px;font-size:.78rem;color:#bbf7d0;font-weight:700">✓ Model-wise guidance &nbsp;•&nbsp; ✓ Transparent pricing &nbsp;•&nbsp; ✓ WhatsApp order</div>
-      </div>
-    </div>
-    <div class="brand-actions">
-      <div class="nav-pill">
-        <span class="nav-pill-dot"></span>
-        Plug &amp; Play • No Modchip
-      </div>
-      <a class="linkbtn" href="https://wa.me/917983624797?text=Hi%2C%20I%20want%20to%20buy%20FMCB%20USB%20Combo%20for%20PS2" target="_blank" rel="noopener">
-        🛒 WhatsApp Quick Order
-      </a>
-    </div>
-  </header>
-
-  <!-- Top navigation shortcuts -->
-  <div class="controls">
-    <a class="linkbtn optional-selector-link hidden" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
-    <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">▶️ Setup Video</a>
-    <button type="button" class="linkbtn hidden" onclick="toggleVoice()" id="voiceToggle">🔊 Voice ON</button>
+<div id="securityOverlay">
+  <div class="security-box">
+    <h2>🔒 Protected Games Planet Page</h2>
+    <p>This page is protected against unauthorized copying and source reuse.</p>
+    <button type="button" onclick="document.getElementById('securityOverlay').style.display='none'">Continue</button>
   </div>
-
-  <!-- VERSION SELECTOR -->
-  <section id="modeStep" class="model-selector wizard-modal">
-    <h2 class="model-title">Choose Page Version</h2>
-    <div class="wizard-help">अपनी जरूरत के हिसाब से Simple या Detail Version चुनें।</div>
-    <div class="version-grid">
-      <button type="button" class="version-btn" onclick="chooseSimpleVersion()">
-        <strong>⚡ Simple Version</strong>
-        <small>सीधे PS2 Model से शुरू होगा। कोई voice guidance नहीं चलेगी।</small>
-      </button>
-      <button type="button" class="version-btn" onclick="chooseDetailVersion()">
-        <strong>🔊 Detail Version</strong>
-        <small>Language, Name और पूरी step-by-step voice guidance के साथ शुरू होगा।</small>
-      </button>
-    </div>
-  </section>
-
-
-  <!-- LANGUAGE FIRST STEP -->
-  <section id="langStep" class="model-selector language-modal wizard-modal hidden">
-    <h2 class="model-title" data-i18n="languageTitle">Select Your Language</h2>
-    <div class="wizard-help" data-i18n="languageHelp">Choose your language. Voice and main page text will continue in the selected language. Technical words like PS2, FMCB, USB, OPL and Combo will stay in English.</div>
-    <div class="language-grid">
-      <button type="button" class="lang-btn" data-lang="en" onclick="selectLanguage('en')">🇬🇧 English</button>
-      <button type="button" class="lang-btn" data-lang="hi" onclick="selectLanguage('hi')">🇮🇳 हिन्दी</button>
-      <button type="button" class="lang-btn" data-lang="pa" onclick="selectLanguage('pa')">🇮🇳 ਪੰਜਾਬੀ</button>
-    </div>
-    <div class="lang-note" data-i18n="languageNote">Select your language, then press Next.</div>
-    <button type="button" id="langNextBtn" class="btn buy step-primary" onclick="confirmLanguage()" disabled>Next</button>
-  </section>
-
-  <!-- NAME FIRST STEP -->
-  <section id="step0" class="model-selector wizard-modal hidden">
-    <h2 class="model-title" data-i18n="nameTitle">Please type your name</h2>
-    <div class="wizard-help" data-i18n="nameHelp">Please type your name. This helps us make your order message correctly.</div>
-    <input id="customerName" class="name-input" type="text" placeholder="Type your name" autocomplete="name" oninput="updateNameNextButton()" onkeydown="if(event.key==='Enter') startWizard()">
-    <div class="voice-mini" data-i18n="voiceMini">Type your name. Page will automatically move to the next step.</div>
-    <button type="button" id="nameNextBtn" class="btn buy step-primary" onclick="startWizard()" disabled data-i18n="next">Next</button>
-  </section>
-
-  <!-- MODEL SELECTOR -->
-  <section id="step1" class="model-selector wizard-modal hidden">
-    <h2 class="model-title" data-i18n="modelTitle">Step 1 — Select Your PS2 Model</h2>
-    <div class="ps2-gallery">
-<div><img src="Ps2fat.jpg" onclick="openImg(this.src)"><br>PS2 FAT</div>
-<div><img src="Ps2slim7x.jpg" onclick="openImg(this.src)"><br>PS2 Slim 70000 Series</div>
-<div><img src="Ps2slim90.jpg" onclick="openImg(this.src)"><br>PS2 Slim 90000 Series</div>
-</div>
-<p class="model-sub" data-i18n="modelHelp">If you do not know your PS2 Model, check the pictures and select the matching model.</p>
-    <div class="model-btn-row">
-      <button type="button" class="model-btn" data-model="fat" onclick="selectModel('fat')">
-        <span>🔵</span> PS2 FAT
-      </button>
-      <button type="button" class="model-btn" data-model="slim7" onclick="selectModel('slim7')">
-        <span>🟣</span> PS2 Slim 70000 Series
-      </button>
-      <button type="button" class="model-btn" data-model="slim9" onclick="selectModel('slim9')">
-        <span>🟢</span> PS2 Slim 90000 Series
-      </button>
-    </div>
-    <div id="selectedModelWrap" class="selected-model hidden">
-      <div class="selected-chip">
-        <span data-i18n="selectedModel">Selected Model</span>: <strong id="selectedModelLabel"></strong>
-      </div>
-      <button type="button" class="change-model-btn" onclick="clearModel()"><span data-i18n="changeModel">Change Model</span></button>
-    </div>
-  </section>
-
-  
-<section id="step2" class="model-selector wizard-modal hidden">
-<h2 class="model-title" data-i18n="matrixTitle">Step 2 — Matrix Chip</h2>
-<div class="wizard-help" data-i18n="matrixHelp">Matrix is a boot chip. If Matrix appears on screen when PS2 starts, choose Matrix. If not, choose No. If you do not know, choose Don't Know.</div>
-<img class="step-img" src="Matrixps2.jpg" onclick="openImg(this.src)">
-<div class="model-btn-row">
-<button class="model-btn" onclick="selectMatrix('yes')">Matrix</button>
-<button class="model-btn" onclick="selectMatrix('no')">No</button>
-<button class="model-btn" onclick="selectMatrix('dontknow')">Don't Know</button>
-</div>
-</section>
-
-<section id="step3" class="model-selector wizard-modal hidden">
-<h2 class="model-title" data-i18n="fmcbTitle">Step 3 — FMCB Type</h2>
-<div class="wizard-help" data-i18n="fmcbHelp">Choose FMCB with OPL Only for USB gameplay. Choose Full FMCB + Apps if you also need extra apps. If FMCB/OPL already works and you only need a USB with games, choose Need Only USB with Games.</div>
-<img class="step-img" src="Fmcb.jpeg" onclick="openImg(this.src)"><img class="step-img" src="OPL10.png" onclick="openImg(this.src)">
-<div class="model-btn-row">
-<button class="model-btn" onclick="selectFmcbType('opl')">FMCB with OPL Only</button>
-<button class="model-btn" onclick="selectFmcbType('full')">Full FMCB + Apps</button>
-<button class="model-btn" onclick="selectFmcbType('usbOnly')">Need Only USB with Games</button>
-</div>
-</section>
-
-<section id="step4" class="model-selector wizard-modal hidden">
-<h2 class="model-title" data-i18n="productTitle">Step 4 — Product Type</h2>
-<div class="wizard-help" data-i18n="productHelp">Choose FMCB Card, USB Only, or Combo according to your setup.</div>
-<div class="model-btn-row">
-<button class="model-btn" onclick="showProducts('fmcb')">FMCB Card</button>
-<button class="model-btn" onclick="showProducts('usb')">USB Only</button>
-<button class="model-btn" onclick="showProducts('combo')">FMCB + USB Combo</button>
-</div>
-</section>
-
-<!-- Anchor to scroll after selection -->
-  <div id="cardsAnchor"></div>
-
-  <div class="grid">
-
-    <!-- 1) FMCB (hidden until model select) -->
-    <section class="card model-guard hidden" aria-labelledby="fmcb-title">
-      <span class="badge">FMCB / FunTuna Card</span>
-      <h2 class="title" id="fmcb-title">Memory Card for PS2 (Model-wise)</h2>
-
-      <div class="card-images">
-        <img src="Fmcb.png" alt="FMCB 8MB Memory Card">
-      </div>
-
-      <div class="muted">Boot PS2 games from USB using preconfigured FMCB / FunTuna + OPL.</div>
-
-      <div class="variants" id="fmcbCard">
-
-        <div class="row" data-model-group="fmcb-row" data-model="fat">
-          <div class="name">PS2 Fat (All Models) — <b>FMCB</b> <span class="pill">🟢 ₹699</span></div>
-          <div></div>
-          <div class="cta">
-            <button class="btn buy purchase-btn" onclick="goPrefill('Memory Card','PS2 Fat (All Models) — FMCB',699,'Card Only',false)">Buy</button>
-          </div>
-        </div>
-
-        <div class="row" data-model-group="fmcb-row" data-model="slim7">
-          <div class="name">PS2 Slim 7xxxx (All) — <b>FMCB</b> <span class="pill">🟢 ₹699</span></div>
-          <div></div>
-          <div class="cta">
-            <button class="btn buy purchase-btn" onclick="goPrefill('Memory Card','PS2 Slim 7xxxx (All) — FMCB',699,'Card Only',false)">Buy</button>
-          </div>
-        </div>
-
-        <div class="row" data-model-group="fmcb-row" data-model="slim9">
-          <div class="name">PS2 Slim 9xxxx (All) — <b>FunTuna</b> <span class="pill">🟢 ₹699</span></div>
-          <div></div>
-          <div class="cta">
-            <button class="btn buy purchase-btn" onclick="goPrefill('Memory Card','PS2 Slim 9xxxx (All) — FunTuna',699,'Card Only',false)">Buy</button>
-          </div>
-        </div>
-
-        <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px">
-          <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">▶️ Setup Video</a>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- 2) USB ONLY (same for all models, just hidden before select) -->
-    <section class="card model-guard hidden" aria-labelledby="usb-title">
-      <span class="badge">USB Only</span>
-      <h2 class="title" id="usb-title">USB for PlayStation 2 — Game-Loaded</h2>
-
-      <div class="card-images">
-        <figure class="device-photo"><img src="Usb.jpg" alt="SanDisk 64GB USB 2.0 Pendrive for PS2"><small>64GB USB 2.0</small></figure>
-        <figure class="device-photo"><img src="SanDisk_Ultra_USB3_128GB.jpg" alt="SanDisk Ultra 128GB USB 3.0 Pendrive for PS2"><small>SanDisk Ultra 128GB USB 3.0</small></figure>
-        <img src="Usbhdd.jpeg" alt="USB HDD for PS2">
-      </div>
-
-      <div class="muted">Requires FMCB card + latest OPL. Plug directly into PS2 (no hub/splitter).</div>
-
-      <div class="variants" id="usbList"></div>
-
-      <div class="links" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-        <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">🧩 Setup Guide</a>
-      </div>
-    </section>
-
-    <!-- 3) COMBO -->
-    <section class="card model-guard hidden" aria-labelledby="combo-title">
-      <span class="badge">Combo Best Value</span>
-      <h2 class="title" id="combo-title">FMCB + USB Combo for PS2</h2>
-
-      <div class="card-images">
-        <img src="Fmcb.png" alt="FMCB 8MB Memory Card">
-        <figure class="device-photo"><img src="Usb.jpg" alt="SanDisk 64GB USB 2.0 Pendrive"><small>64GB USB 2.0</small></figure>
-        <figure class="device-photo"><img src="SanDisk_Ultra_USB3_128GB.jpg" alt="SanDisk Ultra 128GB USB 3.0 Pendrive"><small>SanDisk Ultra 128GB USB 3.0</small></figure>
-        <img src="Usbhdd.jpeg" alt="USB HDD">
-      </div>
-
-      <div class="muted">Fully Plug & Play. Works on PS2 Fat, Slim 7xxxx (FMCB) & Slim 9xxxx (FunTuna).</div>
-
-      <div class="combo-block" data-model-group="combo-section" data-model="fat">
-        <h3 style="margin-top:12px;margin-bottom:6px;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;">PS2 Fat (FMCB)</h3>
-        <div class="variants" id="comboFatList"></div>
-      </div>
-
-      <div class="combo-block" data-model-group="combo-section" data-model="slim7">
-        <h3 style="margin-top:14px;margin-bottom:6px;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;">PS2 Slim 7xxxx (FMCB)</h3>
-        <div class="variants" id="comboSlim7List"></div>
-      </div>
-
-      <div class="combo-block" data-model-group="combo-section" data-model="slim9">
-        <h3 style="margin-top:14px;margin-bottom:6px;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;">PS2 Slim 9xxxx (FunTuna)</h3>
-        <div class="variants" id="comboSlim9List"></div>
-      </div>
-
-      <div class="links" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-        <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">📺 Setup Video</a>
-      </div>
-
-    </section>
-  </div>
-
-  <!-- Important Notes -->
-  <div class="section">
-    <h3>⚠️ Important Notes</h3>
-    <ul class="list">
-      <li>Do <b>not</b> delete FMCB / OPL / ELF / system (blue icon) files.</li>
-      <li>USB works with PS2 Fat & Slim (7xxxx / 9xxxx). Plug directly into PS2 (no hub/splitter).</li>
-      <li>For Slim 9xxxx, <b>FunTuna</b> is used automatically with the combo.</li>
-    </ul>
-  </div>
-
-  <!-- Chip Condition -->
-  <div class="section">
-    <h3>⚠️ Chip Condition (Read Before Order)</h3>
-    <ul class="list">
-      <li>🟢 FMCB & FunTuna both work without any modding chip.</li>
-      <li>🟢 If your PS2 has <b>Matrix</b> or <b>Sumo Lite</b> chip → usually OK.</li>
-      <li>🔴 If your PS2 has a <b>DVD Boot Chip</b> → 99% chances FMCB/FunTuna will not work.</li>
-      <li>👉 In that case, chip wires must be disconnected (requires opening PS2). Message us for the step-by-step guidance video.</li>
-    </ul>
-  </div>
-
-  <!-- Warranty -->
-  <div class="section">
-    <h3>💡 Warranty</h3>
-    <ul class="list">
-      <li>64GB / 128GB / 128GB SSD – 1 Year</li>
-      <li>256GB / 500GB SSD – 1 Year</li>
-      <li>500GB HDD – 6 Months</li>
-      <li>USB Enclosure – ❌ No Warranty</li>
-    </ul>
-  </div>
-
-  <!-- Policy -->
-  <div class="section">
-    <h3>📌 Policy</h3>
-    <ul class="list">
-      <li>❌ No Return • ❌ No Replacement</li>
-      <li>✔️ Confirm OPL compatibility before ordering</li>
-      <li>🛠️ 1 Month Free Software Reinstallation (Courier both sides by customer)</li>
-    </ul>
-  </div>
-
-  <p class="foot">
-    © Games Planet — WhatsApp: +91 79836 24797 • Prices in INR.
-  </p>
-
-<div class="section">
-  <h3>💰 Price Breakdown</h3>
-  <ul class="list">
-    <li><b>Product Price:</b> Includes storage device + setup</li>
-    <li><b>Games Cost:</b> Calculated based on number of games</li>
-    <li><b>Software Setup:</b> Pre-installed FMCB / OPL configuration</li>
-    <li><b>Courier Charges:</b> Included in final price</li>
-    <li>⚠️ <b>No warranty on games or software</b></li>
-    <li>✔️ Warranty applies only on <b>hardware / physical items</b></li>
-  </ul>
 </div>
 
 
 
-<div style="margin-top:20px;text-align:center;">
-  <button class="btn buy" onclick="window.location.href='price_breakdown.html'" style="max-width:340px;width:100%;">
-    📊 View Full Price Breakdown
-  </button>
+<div class="header">
+  <div class="hero">
+    <div class="brand-pill">🎮 Premium Gaming Accessories</div>
+    <h1>Games Planet</h1>
+    <p class="hero-sub">Arcade parts, console accessories, cables and repair tools — selected for gaming shops, technicians and arcade builders.</p>
+    <div class="trust-row">
+      <span class="trust-chip">✅ Checked Products</span>
+      <span class="trust-chip">📦 Secure Packing</span>
+      <span class="trust-chip">💳 Prepaid Orders</span>
+      <span class="trust-chip">💬 WhatsApp Support</span>
+    </div>
+  </div>
 </div>
 
+<div class="notice">
+  <div class="notice-inner">
+    <div class="notice-icon">🚫</div>
+    <div>
+      <div class="notice-title">Cash on Delivery is not available</div>
+      <div class="notice-text">Only 100% advance payment is accepted. Please select products, choose courier service and continue through WhatsApp or the details form.</div>
+    </div>
+  </div>
+</div>
+
+
+<div class="desktop-layout">
+<main class="desktop-left">
+<div class="container" id="products"></div>
+
+<div class="preview"><div class="preview-card">
+ <h3>Order Preview</h3>
+ <div id="orderList">No items selected</div>
+
+ <div class="courier-box">
+<div class="courier-label">
+🚚 Choose Your Preferred Courier Service
+</div>
+<select id="courier" onchange="render()" style="padding:8px;border-radius:8px">
+<option value="Trackon.in" selected>Trackon.in</option>
+<option value="Delhivery.com">Delhivery.com</option>
+<option value="BlueDart">BlueDart</option>
+<option value="Ecom Express">Ecom Express</option>
+<option value="Speed Post">Speed Post</option>
+<option value="Shreemaruti.com">Shreemaruti.com</option>
+<option value="Dtdc.in">Dtdc.in</option>
+</select>
+</div>
+<div class="actions">
+  <button class="whatsapp" onclick="orderWhatsApp()">Order on WhatsApp</button>
+  <button class="details" onclick="goDetails()">Fill Your Details</button>
+  <button class="reset" onclick="clearCart()">Reset Cart</button>
+ </div>
+
+ <div class="total-grid">
+<div>
+  <b>Total Amount: ₹<span id="total">0</span></b><br>
+  <b>Total Weight: <span id="totalWeight">0</span> g</b><br>
+  <b>Chargeable Courier Weight: <span id="courierWeightKg">0</span> kg</b><br>
+  <b>Courier Charges: ₹<span id="courierCharge">0</span></b><br>
+  <b>Total With Courier: ₹<span id="grandTotal">0</span></b>
+</div>
+<div>
+  <img id="upiQr" width="90" height="90" style="border-radius:8px;background:#fff">
+</div>
+</div>
+</div></div>
+
+<div id="imgModal">
+ <div class="close-btn" onclick="closeImg()">×</div>
+ <img id="modalImg">
+</div>
+
+
+<div class="floatingSummary" id="floatingSummary">
+Products: 0 | Amount: ₹0 | Weight: 0g | Courier: ₹0 | Total: ₹0
 </div>
 
 <script>
-// ===== Updated Product Data =====
 
-const usbVariants = [
-  { v:'64GB PD 2.0', top:1200, opt:1250, count:21 },
-  { v:'64GB PD 3.0', top:1600, opt:1650, count:21 },
-  { v:'128GB PD 3.0', top:2850, opt:2950, count:41 },
-  { v:'128GB SSD', top:3800, opt:3900, count:41 },
-  { v:'256GB SSD', top:5300, opt:5500, count:71 },
-  { v:'500GB HDD', top:7100, opt:7500, count:175 },
-  { v:'500GB SSD', top:11100, opt:11500, count:175 },
-];
+(function(){
+  "use strict";
 
-const comboVariants = [
-  { v:'64GB PD 2.0', top:1799, opt:1849, count:21 },
-  { v:'64GB PD 3.0', top:2199, opt:2249, count:21 },
-  { v:'128GB PD 3.0', top:3449, opt:3549, count:41 },
-  { v:'128GB SSD',   top:4399, opt:4499, count:41 },
-  { v:'256GB SSD',   top:5899, opt:6099, count:71 },
-  { v:'500GB HDD',   top:7699, opt:8099, count:175 },
-  { v:'500GB SSD',   top:11699, opt:12099, count:175 },
-];
+  const allowedHosts=[
+    "gamesplanet13.github.io",
+    "localhost",
+    "127.0.0.1",
+    ""
+  ];
 
-function fmt(n){return `₹${Number(n).toLocaleString('en-IN')}`;}
-const topGamesVideoUrl='https://youtu.be/xGR0vUM1-Jw';
-const optionalGamesSelectorUrl='https://gamesplanet13.github.io/ps2gameselector/';
-function usbDisplayName(v){ return String(v).replace(/^(\d+GB)\s+/, '$1 USB '); }
-function makeVariantBuyCard(label,top,opt,count,onTopBuy,onOptionalBuy){
-  const card=document.createElement('div');
-  card.className='variant-buy-card';
-  card.innerHTML=`
-    <div class="variant-buy-name">${label}</div>
-    <div class="variant-pack-grid">
-      <div class="variant-pack-option">
-        <button type="button" class="btn buy purchase-btn js-top-buy">
-          Buy ${label} with Top ${count} Games
-          <span class="pack-price">${fmt(top)}</span>
-        </button>
-        <a class="variant-pack-link" href="${topGamesVideoUrl}" target="_blank" rel="noopener">🎞️ Watch Top ${count} Games List Video</a>
-      </div>
-      <div class="variant-pack-option">
-        <button type="button" class="btn alt purchase-btn js-optional-buy">
-          Buy ${label} with Optional Games
-          <span class="pack-price">${fmt(opt)}</span>
-        </button>
-        <a class="variant-pack-link optional-selector-link hidden" href="${optionalGamesSelectorUrl}" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
-      </div>
-    </div>`;
-  card.querySelector('.js-top-buy').onclick=onTopBuy;
-  card.querySelector('.js-optional-buy').onclick=onOptionalBuy;
-  return card;
-}
-function link(prefill){
-  const q = new URLSearchParams(prefill).toString();
-  return `order-prefill.html?${q}`;
-}
-
-let pendingBuyUrl = '';
-function goPrefill(product, variant, base, pack, allowCod){
-  pendingBuyUrl = link({product,variant,base,pack,allowCod});
-  openBuyConfirmation();
-}
-
-function buyConfirmCopy(){
-  if(currentLang==='hi') return {
-    title:'क्या आप पुष्टि करते हैं?',
-    message:'अगले स्टेप पर जाने के लिए नीचे Agree करें। फिर अपनी डिटेल भरें, पेमेंट पूरा करें और अपना ऑर्डर बुक करें।',
-    close:'बंद करें', agree:'मैं सहमत हूँ — आगे जाएँ'
-  };
-  if(currentLang==='pa') return {
-    title:'ਕੀ ਤੁਸੀਂ ਪੁਸ਼ਟੀ ਕਰਦੇ ਹੋ ਜੀ?',
-    message:'ਅਗਲੇ Step ਉੱਤੇ ਜਾਣ ਲਈ ਹੇਠਾਂ Agree ਕਰੋ ਜੀ। ਫਿਰ ਆਪਣੀਆਂ Details ਭਰੋ, Payment ਪੂਰੀ ਕਰੋ ਅਤੇ ਆਪਣਾ Order Book ਕਰੋ ਜੀ।',
-    close:'ਬੰਦ ਕਰੋ', agree:'ਮੈਂ ਸਹਿਮਤ ਹਾਂ — ਅੱਗੇ ਜਾਓ'
-  };
-  return {
-    title:'Are you confirmed?',
-    message:'To go to the next step, please agree below. Then fill in your details, complete the payment, and book your order.',
-    close:'Close', agree:'I Agree — Continue'
-  };
-}
-function openBuyConfirmation(){
-  const c=buyConfirmCopy();
-  document.getElementById('buyConfirmTitle').textContent=c.title;
-  document.getElementById('buyConfirmMessage').textContent=c.message;
-  const pop=document.getElementById('buyConfirmPopup');
-  const buttons=pop.querySelectorAll('.buy-confirm-actions button');
-  buttons[0].textContent=c.close; buttons[1].textContent=c.agree;
-  pop.classList.add('open'); document.body.style.overflow='hidden';
-  speakText(c.title+' '+c.message, false);
-}
-function closeBuyConfirmation(){
-  const pop=document.getElementById('buyConfirmPopup'); if(pop) pop.classList.remove('open');
-  document.body.style.overflow=''; pendingBuyUrl=''; stopVoice();
-}
-function agreeAndContinueBuy(){
-  const url=pendingBuyUrl;
-  const pop=document.getElementById('buyConfirmPopup'); if(pop) pop.classList.remove('open');
-  document.body.style.overflow=''; stopVoice();
-  if(url) location.href=url;
-}
-
-
-// ===== USB renderer =====
-(function renderUSB(){
-  const box=document.getElementById('usbList'); 
-  box.innerHTML='';
-
-  usbVariants.forEach(({v,top,opt,count})=>{
-    const label=usbDisplayName(v);
-    box.appendChild(makeVariantBuyCard(
-      label,top,opt,count,
-      ()=>goPrefill('USB for PS2 (Game-Loaded)', v+' — Top '+count+' Games', top, 'Top '+count+' Games', true),
-      ()=>goPrefill('USB for PS2 (Game-Loaded)', v+' — Optional Games', opt, 'Optional Games', true)
-    ));
-  });
-})();
-
-// ===== COMBO Renderer =====
-(function renderComboModelWise(){
-  const fatBox = document.getElementById('comboFatList');
-  const slim7Box = document.getElementById('comboSlim7List');
-  const slim9Box = document.getElementById('comboSlim9List');
-  fatBox.innerHTML=''; slim7Box.innerHTML=''; slim9Box.innerHTML='';
-
-  comboVariants.forEach(({v,top,opt,count})=>{
-    const label='FMCB + '+usbDisplayName(v);
-    fatBox.appendChild(makeVariantBuyCard(
-      label,top,opt,count,
-      ()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Fat (FMCB) — Top '+count+' Games', top, 'Top '+count+' Games', true),
-      ()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Fat (FMCB) — Optional Games', opt, 'Optional Games', true)
-    ));
-    slim7Box.appendChild(makeVariantBuyCard(
-      label,top,opt,count,
-      ()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 7xxxx (FMCB) — Top '+count+' Games', top, 'Top '+count+' Games', true),
-      ()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 7xxxx (FMCB) — Optional Games', opt, 'Optional Games', true)
-    ));
-    slim9Box.appendChild(makeVariantBuyCard(
-      label,top,opt,count,
-      ()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 9xxxx (FunTuna) — Top '+count+' Games', top, 'Top '+count+' Games', true),
-      ()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 9xxxx (FunTuna) — Optional Games', opt, 'Optional Games', true)
-    ));
-
-  });
-})();
-
-// ===== MULTI-LANGUAGE GUIDED WIZARD + ORIGINAL PRODUCT LOGIC =====
-const modelLabels = {
-  fat: "PS2 Fat (All Models)",
-  slim7: "PS2 Slim 70000 Series",
-  slim9: "PS2 Slim 90000 Series"
-};
-
-let selectedModelKey = "";
-let customerNameValue = "";
-let voiceEnabled = true;
-let currentVoiceText = "";
-let repeatVoiceLoop = false;
-let nameAutoTimer = null;
-let currentLang = "en";
-let experienceMode = "";
-let languageSelectedForVoice = false;
-
-const langVoice = {
-  en:'en-IN',
-  hi:'hi-IN',
-  pa:'pa-IN'
-};
-
-const T = {
-  en:{
-    languageTitle:'Select Your Language', languageHelp:'Choose your language. Voice and main page text will continue in the selected language. Technical words like PS2, FMCB, USB, OPL and Combo will stay in English.', languageNote:'Select your language, then press Next.',
-    nameTitle:'Please type your name', nameHelp:'Please type your name. This helps us make your order message correctly.', next:'Next', listenAgain:'🔊 Listen Again', voiceMini:'Type your name, then press the Next button.',
-    modelTitle:'Step 1 — Select Your PS2 Model', modelHelp:'If you do not know your PS2 Model, check the pictures and select the matching model.', selectedModel:'Selected Model', changeModel:'Change Model',
-    matrixTitle:'Step 2 — Matrix Chip', matrixHelp:'Matrix is a boot chip. If Matrix appears on screen when PS2 starts, choose Matrix. If not, choose No. If you do not know, choose Don\'t Know.',
-    fmcbTitle:'Step 3 — FMCB Type', fmcbHelp:'Choose FMCB with OPL Only for USB gameplay. Choose Full FMCB + Apps if you also need extra apps. If FMCB/OPL already works and you only need a USB with games, choose Need Only USB with Games.',
-    productTitle:'Step 4 — Product Type', productHelp:'Choose FMCB Card, USB Only, or FMCB + USB Combo. Top Games are pre-loaded; Optional Games are loaded after you submit your selected game list.',
-    vName:'Welcome to Games Planet. First choose your language, then type your name. This page will guide you step by step to choose the correct PS2 product.',
-    vAskName:'Please type your name, then press the Next button.', vNeedName:'Please type your name first.',
-    vModel:'Now select your PlayStation 2 model. If you do not know your PS2 Model, look carefully at the pictures. Choose PS2 FAT, PS2 Slim 70000 Series, or PS2 Slim 90000 Series. Correct model helps us show the correct FMCB or FunTuna option.',
-    vMatrix:'Matrix is a boot chip. If Matrix appears on screen when your PS2 starts, choose Matrix. If Matrix does not appear, choose No. If you are not sure, choose Don\'t Know. Do not be confused; the next step will explain the benefit.',
-    vFmcb:'PlayStation 2 normally needs disc to play games. PS2 is discontinued, so discs are not easily available and working is not guaranteed. The best option is USB gameplay. Earlier PS2 had to be opened for Mod Chip, but now Soft Mod is available. FMCB Card can soft mod your PS2 without opening it. Choose FMCB with OPL Only if you only want USB gameplay. Choose Full FMCB + Apps if you need OPL, uLaunchELF, NES Emulator and extra Apps.',
-    vProduct:'Now choose Product Type. Top Games means your USB will already have our top demanding games loaded. To check which games are included in Top Games, use the Top Games List Video given below. Optional Games means we will load games according to your choice. For Optional Games, first book the order, fill your details, submit the order and complete payment. After that open Optional Games Selector, select your games, and submit the list on WhatsApp. If you already have OPL or FMCB in your PS2 and only need USB with games, choose USB Only. If you need FMCB Card plus USB games, choose FMCB + USB Combo. If you only need FMCB Card, choose FMCB Card.',
-    vFmcbProduct:'You selected FMCB Card. Choose this if you only need FMCB or FunTuna Memory Card for Soft Mod and OPL. After this, Buy will open the order page for your selected PS2 Model. If you also need USB with games, go back and choose Combo.', vUsbProduct:'You selected USB Only. Choose this only if OPL or FMCB already works on your PS2. In Top Games, our top demanding games are already loaded. To check which games are included, open the Top Games List Video given below. In Optional Games, games will be loaded according to your choice. For Optional Games, first book the order, fill your details, submit the order and complete payment. After payment, open Optional Games Selector, select your games, and submit the list on WhatsApp. Then those selected games will be loaded for you.', vComboProduct:'You selected FMCB + USB Combo. Choose this if you do not have FMCB Card, OPL setup, or USB games. Combo includes FMCB or FunTuna Card plus USB with games. In Top Games, our top demanding games are already loaded. To see the Top Games list, open the Top Games List Video below. If you want games of your own choice, choose Optional Games. First book the order, fill your details, submit the order and complete payment. After payment, open Optional Games Selector, select your games, and submit the list on WhatsApp. Then your selected games will be loaded.'
-  },
-  hi:{
-    languageTitle:'भाषा चुनें', languageHelp:'अपनी भाषा चुनें। Voice और main page text उसी भाषा में चलेगा। PS2, FMCB, USB, OPL और Combo जैसे English words English में ही रहेंगे।', languageNote:'Language select करके Next दबाएं।',
-    nameTitle:'अपना नाम टाइप करें', nameHelp:'कृपया अपना नाम टाइप करें। इससे order message सही बनेगा।', next:'Next', listenAgain:'🔊 फिर से सुनें', voiceMini:'अपना नाम type करें, फिर Next button दबाएं।',
-    modelTitle:'Step 1 — अपना PS2 Model चुनें', modelHelp:'अगर आपको PS2 Model नहीं पता, तो pictures देखकर सही model चुनें।', selectedModel:'Selected Model', changeModel:'Change Model',
-    matrixTitle:'Step 2 — Matrix Chip', matrixHelp:'Matrix एक boot chip है। PS2 start होते ही screen पर Matrix लिखा आए तो Matrix चुनें। नहीं आए तो No चुनें। पता नहीं हो तो Don\'t Know चुनें।',
-    fmcbTitle:'Step 3 — FMCB Type', fmcbHelp:'USB gameplay के लिए FMCB with OPL Only चुनें। Extra Apps भी चाहिए तो Full FMCB + Apps चुनें। अगर आपके PS2 में FMCB/OPL पहले से चलता है और सिर्फ games वाली USB चाहिए, तो Need Only USB with Games चुनें।',
-    productTitle:'Step 4 — Product Type', productHelp:'अपने setup के हिसाब से FMCB Card, USB Only या FMCB + USB Combo चुनें। Top Games pre-loaded हैं; Optional Games आपकी selected list के अनुसार load होंगे।',
-    vName:'Games Planet में आपका स्वागत है। सबसे पहले अपनी भाषा चुनें, फिर अपना नाम टाइप करें। यह page आपको step by step सही PS2 product चुनने में मदद करेगा।',
-    vAskName:'कृपया अपना नाम टाइप करें, फिर Next button दबाएं।', vNeedName:'कृपया पहले अपना नाम टाइप करें।',
-    vModel:'अब अपना PlayStation 2 model चुनें। अगर आपको PS2 Model नहीं पता, तो pictures ध्यान से देखें। PS2 FAT, PS2 Slim 70000 Series, या PS2 Slim 90000 Series में से सही button दबाएं। सही model से FMCB और FunTuna option सही दिखाई देगा।',
-    vMatrix:'Matrix एक boot chip है। अगर आपका PS2 start होते ही screen पर Matrix लिखा आता है, तो Matrix चुनें। अगर Matrix नहीं आता, तो No चुनें। अगर आपको पता नहीं है, तो Don\'t Know चुनें। Confuse न हों, अगले step में इसका फायदा समझ आ जाएगा।',
-    vFmcb:'PlayStation 2 में game खेलने के लिए पहले disc चाहिए होती थी। अब PlayStation 2 discontinued है, इसलिए disc आसानी से नहीं मिलती, और मिल भी जाए तो चलने की guarantee नहीं होती। इसलिए best option USB gameplay है। पहले PS2 को shop पर ले जाकर खुलवाना पड़ता था और Mod Chip लगवानी पड़ती थी। अब Soft Mod आ चुका है। FMCB Card से PS2 बिना खोले soft mod हो जाता है। सिर्फ USB gameplay चाहिए तो FMCB with OPL Only चुनें। OPL, uLaunchELF, NES Emulator और extra Apps चाहिए तो Full FMCB + Apps चुनें।',
-    vProduct:'अब Product Type चुनें। Top Games का मतलब है USB में हमारे top demanding games पहले से load होंगे। Top Games में कौन-कौन से games हैं, उसके लिए नीचे Top Games List Video दिया गया है। Optional Games का मतलब है आपकी पसंद के games load करके दिए जाएंगे। Optional Games के लिए पहले order book करें, अपनी details fill करें, submit करें और payment करें। उसके बाद Optional Games Selector पर जाकर games select करें और list WhatsApp पर submit करें। अगर आपके PS2 में पहले से OPL या FMCB चल रहा है और केवल USB with games चाहिए, तो USB Only चुनें। अगर FMCB Card plus USB games दोनों चाहिए, तो FMCB + USB Combo चुनें। अगर सिर्फ FMCB Card चाहिए, तो FMCB Card चुनें।',
-    vFmcbProduct:'आपने FMCB Card चुना है। यह option तब चुनें जब आपको केवल FMCB या FunTuna Memory Card चाहिए, जिससे PS2 में Soft Mod और OPL setup चले। Buy दबाने पर selected PS2 Model का order page खुलेगा। अगर आपको USB with games भी चाहिए, तो वापस जाकर Combo चुनें।', vUsbProduct:'आपने USB Only चुना है। यह option तभी सही है जब आपके PS2 में पहले से OPL या FMCB चल रहा हो। Top Games के अंदर हमारे top demanding games पहले से load हैं। Top Games में कौन-कौन से games हैं, उसके लिए नीचे Top Games List Video दिया गया है। Optional Games में आपकी पसंद के games load करके दिए जाएंगे। Optional Games के लिए पहले order book करें, अपनी details fill करें, submit करें और payment करें। Payment के बाद Optional Games Selector पर जाकर games select करें और list WhatsApp पर submit करें। फिर वही selected games आपके लिए load किए जाएंगे।', vComboProduct:'आपने FMCB + USB Combo चुना है। यह option तब सही है जब आपके पास FMCB Card, OPL setup या USB games कुछ भी नहीं है। Combo में FMCB या FunTuna Card plus USB with games दोनों मिलेंगे। Top Games के अंदर हमारे top demanding games पहले से load हैं। Top Games में कौन-कौन से games हैं, उसके लिए नीचे Top Games List Video दिया गया है। अगर आपको अपनी पसंद के games चाहिए, तो Optional Games चुनें। पहले order book करें, details fill करें, submit करें और payment करें। Payment के बाद Optional Games Selector पर जाकर games select करें और list WhatsApp पर submit करें। फिर आपकी selected games load की जाएंगी।'
+  function showSecurity(message){
+    const overlay=document.getElementById("securityOverlay");
+    if(!overlay) return;
+    const p=overlay.querySelector("p");
+    if(p) p.textContent=message;
+    overlay.style.display="flex";
   }
-};
 
-function copyLang(base, overrides){ return Object.assign({}, T[base], overrides || {}); }
-T.pa = copyLang('hi',{
-  languageTitle:'Language ਚੁਣੋ',
-  languageHelp:'ਆਪਣੀ language ਚੁਣੋ। Voice ਅਤੇ main page text ਉਸੇ language ਵਿੱਚ ਚੱਲੇਗਾ। PS2, FMCB, USB, OPL ਅਤੇ Combo ਵਰਗੇ English words English ਵਿੱਚ ਹੀ ਰਹਿਣਗੇ।',
-  languageNote:'Language select ਕਰਕੇ Next ਦਬਾਓ।',
-  nameTitle:'ਆਪਣਾ ਨਾਮ type ਕਰੋ',
-  nameHelp:'ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਨਾਮ type ਕਰੋ। ਇਸ ਨਾਲ order message ਠੀਕ ਬਣੇਗਾ।',
-  voiceMini:'ਆਪਣਾ ਨਾਮ type ਕਰੋ, ਫਿਰ Next button ਦਬਾਓ।',
-  modelTitle:'Step 1 — ਆਪਣਾ PS2 Model ਚੁਣੋ',
-  modelHelp:'ਜੇ ਤੁਹਾਨੂੰ PS2 Model ਨਹੀਂ ਪਤਾ, ਤਾਂ pictures ਵੇਖ ਕੇ matching model ਚੁਣੋ।',
-  selectedModel:'Selected Model',
-  changeModel:'Change Model',
-  matrixTitle:'Step 2 — Matrix Chip',
-  matrixHelp:'Matrix ਇੱਕ boot chip ਹੈ। ਜੇ PS2 start ਹੁੰਦੇ ਹੀ screen ਤੇ Matrix ਲਿਖਿਆ ਆਵੇ, ਤਾਂ Matrix ਚੁਣੋ। ਨਹੀਂ ਆਉਂਦਾ ਤਾਂ No ਚੁਣੋ। ਪਤਾ ਨਹੀਂ ਤਾਂ Don\'t Know ਚੁਣੋ।',
-  fmcbTitle:'Step 3 — FMCB Type',
-  fmcbHelp:'USB gameplay ਲਈ FMCB with OPL Only ਚੁਣੋ। Extra Apps ਵੀ ਚਾਹੀਦੇ ਹਨ ਤਾਂ Full FMCB + Apps ਚੁਣੋ। ਜੇ ਤੁਹਾਡੇ PS2 ਵਿੱਚ FMCB/OPL ਪਹਿਲਾਂ ਤੋਂ ਚੱਲਦਾ ਹੈ ਅਤੇ ਸਿਰਫ games ਵਾਲੀ USB ਚਾਹੀਦੀ ਹੈ, ਤਾਂ Need Only USB with Games ਚੁਣੋ।',
-  productTitle:'Step 4 — Product Type',
-  productHelp:'ਆਪਣੇ setup ਦੇ ਹਿਸਾਬ ਨਾਲ FMCB Card, USB Only ਜਾਂ FMCB + USB Combo ਚੁਣੋ। Top Games pre-loaded ਹਨ; Optional Games ਤੁਹਾਡੀ selected list ਦੇ ਅਨੁਸਾਰ load ਹੋਣਗੀਆਂ।',
-  vName:'Games Planet ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ। ਪਹਿਲਾਂ language ਚੁਣੋ, ਫਿਰ ਆਪਣਾ ਨਾਮ type ਕਰੋ। ਇਹ page ਤੁਹਾਨੂੰ step by step ਸਹੀ PS2 product ਚੁਣਨ ਵਿੱਚ ਮਦਦ ਕਰੇਗਾ।',
-  vAskName:'ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਨਾਮ type ਕਰੋ, ਫਿਰ Next button ਦਬਾਓ।',
-  vNeedName:'ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ ਆਪਣਾ ਨਾਮ type ਕਰੋ।',
-  vModel:'ਹੁਣ ਆਪਣਾ PlayStation 2 model ਚੁਣੋ। ਜੇ ਤੁਹਾਨੂੰ PS2 Model ਨਹੀਂ ਪਤਾ, ਤਾਂ pictures ਧਿਆਨ ਨਾਲ ਵੇਖੋ। PS2 FAT, PS2 Slim 70000 Series ਜਾਂ PS2 Slim 90000 Series ਵਿਚੋਂ ਸਹੀ button ਦਬਾਓ। ਸਹੀ model ਨਾਲ FMCB ਅਤੇ FunTuna option ਸਹੀ ਦਿਖੇਗਾ।',
-  vMatrix:'Matrix ਇੱਕ boot chip ਹੈ। ਜੇ ਤੁਹਾਡਾ PS2 start ਹੁੰਦੇ ਹੀ screen ਤੇ Matrix ਲਿਖਿਆ ਆਉਂਦਾ ਹੈ, ਤਾਂ Matrix ਚੁਣੋ। ਜੇ Matrix ਨਹੀਂ ਆਉਂਦਾ ਤਾਂ No ਚੁਣੋ। ਜੇ ਪਤਾ ਨਹੀਂ ਤਾਂ Don\'t Know ਚੁਣੋ। Confuse ਨਾ ਹੋਵੋ, ਅਗਲੇ step ਵਿੱਚ ਇਸਦਾ benefit ਸਮਝ ਆ ਜਾਵੇਗਾ।',
-  vFmcb:'PlayStation 2 ਵਿੱਚ game ਖੇਡਣ ਲਈ ਪਹਿਲਾਂ disc ਚਾਹੀਦੀ ਸੀ। ਹੁਣ PlayStation 2 discontinued ਹੈ, ਇਸ ਲਈ disc ਆਸਾਨੀ ਨਾਲ ਨਹੀਂ ਮਿਲਦੀ, ਅਤੇ ਮਿਲ ਵੀ ਜਾਵੇ ਤਾਂ ਚੱਲਣ ਦੀ guarantee ਨਹੀਂ ਹੁੰਦੀ। ਇਸ ਲਈ best option USB gameplay ਹੈ। ਪਹਿਲਾਂ PS2 ਨੂੰ shop ਤੇ ਲੈ ਜਾ ਕੇ ਖੁਲਵਾਉਣਾ ਪੈਂਦਾ ਸੀ ਅਤੇ Mod Chip ਲਗਵਾਉਣੀ ਪੈਂਦੀ ਸੀ। ਹੁਣ Soft Mod ਆ ਚੁੱਕਾ ਹੈ। FMCB Card ਨਾਲ PS2 ਬਿਨਾਂ ਖੋਲ੍ਹੇ soft mod ਹੋ ਜਾਂਦਾ ਹੈ। ਸਿਰਫ USB gameplay ਚਾਹੀਦਾ ਹੈ ਤਾਂ FMCB with OPL Only ਚੁਣੋ। OPL, uLaunchELF, NES Emulator ਅਤੇ extra Apps ਚਾਹੀਦੇ ਹਨ ਤਾਂ Full FMCB + Apps ਚੁਣੋ।',
-  vProduct:'ਹੁਣ Product Type ਚੁਣੋ। Top Games ਦਾ ਮਤਲਬ ਹੈ USB ਵਿੱਚ ਸਾਡੇ top demanding games ਪਹਿਲਾਂ ਤੋਂ load ਹੋਣਗੇ। Top Games ਵਿੱਚ ਕਿਹੜੀਆਂ games ਹਨ, ਉਸ ਲਈ ਹੇਠਾਂ Top Games List Video ਦਿੱਤਾ ਹੈ। Optional Games ਦਾ ਮਤਲਬ ਹੈ ਤੁਹਾਡੀ ਪਸੰਦ ਦੀਆਂ games load ਕਰਕੇ ਦਿੱਤੀਆਂ ਜਾਣਗੀਆਂ। Optional Games ਲਈ ਪਹਿਲਾਂ order book ਕਰੋ, ਆਪਣੀਆਂ details fill ਕਰੋ, submit ਕਰੋ ਅਤੇ payment ਕਰੋ। ਉਸ ਤੋਂ ਬਾਅਦ Optional Games Selector ਤੇ ਜਾ ਕੇ games select ਕਰੋ ਅਤੇ list WhatsApp ਤੇ submit ਕਰੋ। ਜੇ ਤੁਹਾਡੇ PS2 ਵਿੱਚ ਪਹਿਲਾਂ ਤੋਂ OPL ਜਾਂ FMCB ਚੱਲ ਰਿਹਾ ਹੈ ਅਤੇ ਸਿਰਫ USB with games ਚਾਹੀਦੀ ਹੈ, ਤਾਂ USB Only ਚੁਣੋ। ਜੇ FMCB Card plus USB games ਦੋਵੇਂ ਚਾਹੀਦੇ ਹਨ, ਤਾਂ FMCB + USB Combo ਚੁਣੋ। ਜੇ ਸਿਰਫ FMCB Card ਚਾਹੀਦਾ ਹੈ, ਤਾਂ FMCB Card ਚੁਣੋ।',
-  vFmcbProduct:'ਤੁਸੀਂ FMCB Card ਚੁਣਿਆ ਹੈ। ਇਹ option ਉਦੋਂ ਚੁਣੋ ਜਦੋਂ ਤੁਹਾਨੂੰ ਸਿਰਫ FMCB ਜਾਂ FunTuna Memory Card ਚਾਹੀਦਾ ਹੈ, ਜਿਸ ਨਾਲ PS2 ਵਿੱਚ Soft Mod ਅਤੇ OPL setup ਚੱਲੇਗਾ। Buy ਦਬਾਉਣ ਤੇ selected PS2 Model ਦਾ order page ਖੁਲੇਗਾ। ਜੇ ਤੁਹਾਨੂੰ USB with games ਵੀ ਚਾਹੀਦੀ ਹੈ, ਤਾਂ ਵਾਪਸ ਜਾ ਕੇ Combo ਚੁਣੋ.',
-  vUsbProduct:'ਤੁਸੀਂ USB Only ਚੁਣਿਆ ਹੈ। Top Games ਵਿੱਚ ਸਾਡੇ top demanding games ਪਹਿਲਾਂ ਤੋਂ load ਹਨ। ਕਿਹੜੀਆਂ games ਹਨ, ਇਹ ਹੇਠਾਂ Top Games List Video ਵਿੱਚ ਵੇਖੋ। Optional Games ਲਈ ਪਹਿਲਾਂ order ਅਤੇ payment complete ਕਰੋ, ਫਿਰ Optional Games Selector ਤੋਂ games ਚੁਣ ਕੇ WhatsApp ਤੇ list submit ਕਰੋ।',
-  vComboProduct:'ਤੁਸੀਂ FMCB + USB Combo ਚੁਣਿਆ ਹੈ। ਇਹ option ਉਦੋਂ ਸਹੀ ਹੈ ਜਦੋਂ ਤੁਹਾਡੇ ਕੋਲ FMCB Card, OPL setup ਜਾਂ USB games ਕੁਝ ਵੀ ਨਹੀਂ ਹੈ। Combo ਵਿੱਚ FMCB ਜਾਂ FunTuna Card plus USB with games ਦੋਵੇਂ ਮਿਲਣਗੇ। Top Games ਵਿੱਚ ਸਾਡੇ top demanding games ਪਹਿਲਾਂ ਤੋਂ load ਹਨ। Top Games ਵਿੱਚ ਕਿਹੜੀਆਂ games ਹਨ, ਉਸ ਲਈ ਹੇਠਾਂ Top Games List Video ਦਿੱਤਾ ਹੈ। ਜੇ ਤੁਹਾਨੂੰ ਆਪਣੀ choice ਦੀਆਂ games ਚਾਹੀਦੀਆਂ ਹਨ, ਤਾਂ Optional Games ਚੁਣੋ। ਪਹਿਲਾਂ order book ਕਰੋ, details fill ਕਰੋ, submit ਕਰੋ ਅਤੇ payment ਕਰੋ। Payment ਤੋਂ ਬਾਅਦ Optional Games Selector ਤੇ ਜਾ ਕੇ games select ਕਰੋ ਅਤੇ list WhatsApp ਤੇ submit ਕਰੋ। ਫਿਰ ਤੁਹਾਡੀਆਂ selected games load ਕੀਤੀਆਂ ਜਾਣਗੀਆਂ।'
+  if(!allowedHosts.includes(location.hostname)){
+    document.addEventListener("DOMContentLoaded",function(){
+      document.body.innerHTML=
+        '<div style="position:fixed;inset:0;display:grid;place-items:center;background:#020617;color:#fff;font:700 22px Arial;text-align:center;padding:30px">'+
+        '🔒 Unauthorized copy detected.<br><br>This page can only run on the official Games Planet domain.'+
+        '</div>';
+    });
+    throw new Error("Unauthorized host");
+  }
+
+  document.addEventListener("contextmenu",function(e){
+    e.preventDefault();
+  },true);
+
+  document.addEventListener("copy",function(e){
+    e.preventDefault();
+    showSecurity("Copying content from this page is disabled.");
+  },true);
+
+  document.addEventListener("cut",function(e){
+    e.preventDefault();
+  },true);
+
+  document.addEventListener("dragstart",function(e){
+    e.preventDefault();
+  },true);
+
+  document.addEventListener("selectstart",function(e){
+    const tag=(e.target && e.target.tagName || "").toLowerCase();
+    if(!["input","textarea","select"].includes(tag)){
+      e.preventDefault();
+    }
+  },true);
+
+  document.addEventListener("keydown",function(e){
+    const key=(e.key||"").toLowerCase();
+    const blocked=
+      key==="f12" ||
+      (e.ctrlKey && ["u","s","p","c","a"].includes(key)) ||
+      (e.ctrlKey && e.shiftKey && ["i","j","c"].includes(key));
+
+    if(blocked){
+      e.preventDefault();
+      e.stopPropagation();
+      showSecurity("This shortcut is disabled on the protected Games Planet page.");
+      return false;
+    }
+  },true);
+
+  let devtoolsOpen=false;
+  setInterval(function(){
+    const widthGap=Math.abs(window.outerWidth-window.innerWidth);
+    const heightGap=Math.abs(window.outerHeight-window.innerHeight);
+    const detected=widthGap>220 || heightGap>220;
+
+    if(detected && !devtoolsOpen){
+      devtoolsOpen=true;
+      showSecurity("Developer tools access is restricted on this page.");
+    }else if(!detected){
+      devtoolsOpen=false;
+    }
+  },1200);
+
+  setInterval(function(){
+    try{console.clear();}catch(_){}
+  },2500);
+})();
+
+const PS2_STICKER_IMG="data:image/svg+xml;charset=UTF-8,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="700" height="500" viewBox="0 0 700 500"><defs><linearGradient id="skin" x1="0" x2="1"><stop stop-color="#111827"/><stop offset=".5" stop-color="#2563eb"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs><rect width="700" height="500" fill="#f8fafc"/><rect x="80" y="75" width="540" height="350" rx="32" fill="url(#skin)" stroke="#0f172a" stroke-width="10"/><path d="M125 120h450v260H125z" fill="none" stroke="#67e8f9" stroke-width="5" stroke-dasharray="14 10"/><text x="350" y="230" text-anchor="middle" font-family="Arial" font-size="58" font-weight="900" fill="white">PS2 SLIM</text><text x="350" y="300" text-anchor="middle" font-family="Arial" font-size="42" font-weight="800" fill="#fde047">STICKER / SKIN</text><text x="350" y="355" text-anchor="middle" font-family="Arial" font-size="24" fill="#e0f2fe">Games Planet</text></svg>`);
+
+const products=[
+
+{
+name:"Push Button",
+dimensions:[4,4,4],
+category:"Arcade Box Accessories",
+price:32,
+weight:12,
+variants:["Red","Yellow"],
+variantImages:{
+  "Red":"Pushbutton red.png",
+  "Yellow":"Pushbutton yellow.png"
+},
+images:[
+  "Pushbutton red.png",
+  "Pushbutton yellow.png"
+]
+},
+
+{
+name:"Push Button (Imported)",
+dimensions:[5,4,4],
+category:"Arcade Box Accessories",
+price:46,
+weight:12,
+variants:["Ice Blue","Pink","Green","Yellow","Black"],
+variantImages:{
+  "Ice Blue":"Imported blue.png",
+  "Pink":"Imported pink.png",
+  "Green":"Imported green.png",
+  "Yellow":"Imported yellow.png",
+  "Black":"Imported black.png"
+},
+images:[
+  "Imported blue.png",
+  "Imported pink.png",
+  "Imported green.png",
+  "Imported yellow.png",
+  "Imported black.png"
+]
+},
+
+{name:"Old Rasila Push Button",category:"Arcade Box Accessories",price:13,weight:12,dimensions:[6,4,4],images:[
+"Old raisla pursh button.png"
+]},
+
+{name:"MD Switch Button",category:"Arcade Box Accessories",price:50,weight:5,dimensions:[5,3,1],images:[
+"Mdswitch.png"
+]},
+
+{name:"Black Switch Button",category:"Arcade Box Accessories",price:15,weight:5,dimensions:[5,3,1],images:[
+"Normal switch button.png"
+]},
+
+{name:"Coin Drop Switch Button",category:"Arcade Box Accessories",price:45,weight:12,dimensions:[11,4,2],images:[
+"Coindropswitch.png"
+]},
+
+{name:"Rasila Handle (Without Switch)",category:"Arcade Box Accessories",price:200,weight:280,dimensions:[14,11,8],images:[
+"Rasila handle.png"
+]},
+
+{name:"Rasila Handle (With Switch)",category:"Arcade Box Accessories",price:260,weight:300,dimensions:[14,11,8],images:[
+"Rasila handle.png",
+"Normal switch button.png"
+]},
+
+{
+name:"MD Handle (With Switch)",
+category:"Arcade Box Accessories",
+price:585,
+weight:280,
+dimensions:[12,11,11],
+variants:["Black","Red"],
+variantImages:{
+  "Black":"Madhandle.png",
+  "Red":"Md handle red 1.png"
+},
+images:[
+"Md handle red 1.png",
+"Madhandle.png",
+"Md handle black.png",
+"Md handle red.png",
+"Md handle bottom.png",
+"Md handle pamphlets .png",
+"Md handle with md switch.jpg",
+"Md handle with switch.jpg",
+"Mx handle with md switch.jpg"
+]
+},
+
+{name:"Coin Packet",category:"Arcade Box Accessories",price:210,weight:620,dimensions:[12,12,3],images:[
+"Coinpacket.png"
+]},
+
+{name:"Coin Acrylic Machine",category:"Arcade Box Accessories",price:195,weight:120,dimensions:[13,15,8],images:[
+"Ecrylic coin machine.png"
+]},
+
+{name:"Coin Acrylic Machine with Switch",category:"Arcade Box Accessories",price:240,weight:135,dimensions:[13,15,8],images:[
+"Ecrylic coin machine.png",
+"Coindropswitch.png"
+]},
+
+{name:"Remote Plate",category:"Arcade Box Accessories",price:300,weight:15,dimensions:[10,10,2],images:[
+"Ps2plate.png"
+]},
+
+
+{name:"Remote Lead",category:"Arcade Box Accessories",price:100,weight:80,dimensions:[10,5,2],images:[
+"Remote lead.png"
+]},
+
+{name:"12 Core Wire (Per Meter)",category:"Arcade Box Accessories",price:60,weight:70,dimensions:[10,5,3],images:[
+"12 core wire .png"
+]},
+
+{
+name:"PS2 Slim Power Adapter with Power Cable",
+category:"PS2",
+price:599,
+weight:340,
+dimensions:[20,15,7],
+compatibility:"Compatible with All PS2 Slim Models",
+description:[
+"Compatible with All PS2 Slim Models",
+"SCPH-70000 Series",
+"SCPH-75000 Series",
+"SCPH-77000 Series",
+"SCPH-79000 Series",
+"SCPH-90000 Series",
+"Output: 8.5V ⎓ 5.65A",
+"Input: 100-265V AC, 50-60Hz",
+"Includes Power Adapter + Power Cable"
+],
+images:[
+"Ps2 slim adapter .jpg"
+]},
+
+{name:"USB to PS2/PS3/PC Converter",category:"PS2",price:360,weight:100,dimensions:[15,6,2],images:[
+"usbtops2.jpg"
+]},
+
+{name:"PS2 8MB FMCB Memory Card — PS2 Fat",category:"PS2",price:600,weight:25,dimensions:[12,13,2],priceNote:"Product-only price; courier calculated separately",images:["Fmcb.png"]},
+{name:"PS2 8MB FMCB Memory Card — PS2 Slim 70000 Series",category:"PS2",price:600,weight:25,dimensions:[12,13,2],priceNote:"Product-only price; courier calculated separately",images:["Fmcb.png"]},
+{name:"PS2 8MB FunTuna Memory Card — PS2 Slim 90000 Series",category:"PS2",price:600,weight:25,dimensions:[12,13,2],priceNote:"Product-only price; courier calculated separately",images:["Fmcb.png"]},
+
+{name:"PS2 8MB Memory Card Blank",category:"PS2",price:369,weight:25,dimensions:[12,13,2],images:[
+"ps28mb.jpeg"
+]},
+
+{name:"32GB USB for PS2 with Arcade Games",category:"PS2",price:549,weight:5,dimensions:[5,3,2],images:[
+"32gbusb.jpeg"
+]},
+
+{name:"PS2 Slim Sticker/Skin",category:"PS2",price:60,weight:0,dimensions:[0,0,0],compatibility:"For PS2 Slim Console",priceNote:"Zero courier weight",images:[PS2_STICKER_IMG]},
+
+{name:"Power Cable for PS2 / PS3 / PS4 / PS5",category:"Cables",price:129,weight:130,dimensions:[15,5,5],images:[
+"ps2pcable.jpeg"
+]},
+
+{name:"HDMI Cable",category:"Cables",price:99,weight:99,dimensions:[10,10,3],images:[
+"hdmicable.jpeg"
+]},
+
+{name:"HDMI Converter for PS2",category:"PS2",price:319,weight:80,dimensions:[14,9,3],images:[
+"ps2hdmi.jpeg"
+]},
+
+{name:"AV Cable for PS2",category:"PS2",price:99,weight:70,dimensions:[15,4,3],images:[
+"ps2av.jpeg"
+]},
+
+{name:"PS2 Wired Controller (Replica)",category:"PS2",price:375,weight:250,dimensions:[17,12,8],images:[
+"ps2wire.jpeg"
+]},
+
+{name:"PS2 Wireless Controller",category:"PS2",price:499,weight:250,dimensions:[8,13,17],images:[
+"ps2wireless.jpeg"
+]},
+
+{name:"PS3 Controller (Replica)",category:"PS3",price:600,weight:250,dimensions:[22,15,9],images:[
+"ps3gamepad.jpeg"
+]},
+
+{name:"PS4 Controller Black (Replica)",category:"PS4",price:999,weight:450,dimensions:[15,20,8],images:[
+"ps4gamepad.jpeg"
+]},
+
+{name:"PS3 Controller Charging Cable",category:"PS3",price:119,weight:65,dimensions:[15,5,5],images:[
+"ps3usb.jpeg"
+]},
+
+{name:"PS4 Controller Charging Cable",category:"PS4",price:139,weight:65,dimensions:[15,5,5],images:[
+"ps4usb.jpeg"
+]},
+
+{name:"PS5 Controller Charging Cable (USB to C)",category:"PS5",price:149,weight:65,dimensions:[15,5,5],images:[
+"ps5usb.jpeg"
+]}
+,
+
+{name:"Soldering Paste (Wel Fix)",category:"Electrical Items",price:10,weight:15,dimensions:[7,7,2],images:[
+"Paste.png",
+"20260409_213949.jpg"
+]},
+
+{name:"Solder Wire Small Pack",category:"Electrical Items",price:20,weight:5,dimensions:[7,7,1],images:[
+"solder.jpg"
+]},
+
+{name:"Solder Wire (Roll)",category:"Electrical Items",price:80,weight:22,dimensions:[5,5,5],images:[
+"Solder .png",
+"20260409_213939.jpg"
+]},
+
+{name:"Solder Wire (Boom)",category:"Electrical Items",price:180,weight:58,dimensions:[9,5,5],images:[
+"Solder 2.png",
+"20260409_214046.jpg"
+]},
+
+{name:"15W Soldering Iron (LED)",category:"Electrical Items",price:89,weight:60,dimensions:[21,4,4],images:[
+"Iron 15wt.png",
+"20260409_214435.jpg"
+]},
+
+{name:"25W Soldering Iron (Madhur)",category:"Electrical Items",price:290,weight:162,dimensions:[27,6,5],images:[
+"Iron 30wt.png",
+"20260409_214249.jpg",
+"20260409_214254.jpg"
+]},
+
+{name:"25W Soldering Iron (Starmaxx)",category:"Electrical Items",price:140,weight:120,dimensions:[30,12,4],images:[
+"Iron 25wt.png",
+"20260409_214311.jpg",
+"20260409_214344.jpg"
+]},
+
+{name:"Laptop Power Cable",category:"Cables",price:110,weight:185,dimensions:[23,7,5],images:[
+"laptopcable.png"
+]},
+
+{name:"CPU Power Cable / PS4 Pro Power Cable",category:"Cables",price:110,weight:130,dimensions:[23,7,5],images:[
+"cpucable.png"
+]},
+
+{name:"Blow Torch Flame Lighter",category:"Electrical Items",price:250,weight:90,dimensions:[18,12,4],images:[
+"blowtorch.jpg"
+]},
+
+{name:"Precision Screwdriver Kit",category:"Electrical Items",price:250,weight:170,dimensions:[13,8,4],images:[
+"Screw driver kit.png"
+]}
+
+,
+
+{name:"Matrix Modbo 5.0 Modchip",category:"PS2",price:549,weight:5,dimensions:[3,3,1],images:[
+"Matrix5.png"
+]}
+,
+{name:"AA/AAA 4-Slot Battery Charger",category:"Batteries and Charger",price:0,priceLabel:"Ask Price",weight:140,dimensions:[13,7,7],images:[
+"Cell charger.png"
+]},
+{name:"Simpex AA Rechargeable Cells (4 Pack)",category:"Batteries and Charger",price:0,priceLabel:"Ask Price",weight:75,dimensions:[11,9,2],images:[
+"AA  simpex4cell.png"
+]},
+{name:"Panasonic AAA Rechargeable Cells (2 Pack)",category:"Batteries and Charger",price:0,priceLabel:"Ask Price",weight:25,dimensions:[12,10,2],images:[
+"AAAPanasonic2cell.png"
+]},
+{name:"Panasonic AAA Rechargeable Cells (4 Pack)",category:"Batteries and Charger",price:0,priceLabel:"Ask Price",weight:50,dimensions:[12,10,2],images:[
+"AAAPenasonic4cell.png"
+]}
+
+,
+{name:"6 Socket Extension Board",category:"Electrical",price:399,weight:650,dimensions:[30,12,7],images:[
+"Extension.png"
+]}
+
+];
+
+// PS2 FMCB-page prices below are product-only prices.
+// ₹99 prepaid courier included on the FMCB page has been removed here,
+// because this catalog calculates courier separately from selected weight.
+const PS2_TOP_GAMES_VIDEO="https://youtu.be/xGR0vUM1-Jw";
+const PS2_OPTIONAL_SELECTOR="https://gamesplanet13.github.io/ps2gameselector/";
+const ps2GameDrivePrices=[
+  {storage:"64GB PD 2.0",count:21,usbTop:1101,usbOptional:1151},
+  {storage:"64GB PD 3.0",count:21,usbTop:1501,usbOptional:1551},
+  {storage:"128GB PD 3.0",count:41,usbTop:2751,usbOptional:2851},
+  {storage:"128GB SSD",count:41,usbTop:3701,usbOptional:3801},
+  {storage:"256GB SSD",count:71,usbTop:5201,usbOptional:5401},
+  {storage:"500GB HDD",count:175,usbTop:7001,usbOptional:7401},
+  {storage:"500GB SSD",count:175,usbTop:11001,usbOptional:11401}
+];
+
+function ps2DriveImage(storage){
+  if(storage.includes("PD 3.0")) return "Sandiscultra.png";
+  if(storage.includes("PD 2.0")) return "Usb.jpg";
+  return "Usbhdd.jpeg";
+}
+function ps2DriveWeight(storage){
+  if(storage.includes("PD")) return 10;
+  if(storage.includes("HDD")) return 250;
+  if(storage.startsWith("500GB")) return 100;
+  return 80;
+}
+function ps2DriveDimensions(storage){
+  if(storage.includes("PD")) return [5,3,2];
+  if(storage.includes("HDD")) return [13,9,3];
+  return [13,9,2];
+}
+
+ps2GameDrivePrices.forEach(d=>{
+  const image=ps2DriveImage(d.storage);
+  const weight=ps2DriveWeight(d.storage);
+  const dimensions=ps2DriveDimensions(d.storage);
+  const priceNote="Product-only price; courier calculated separately by weight";
+
+  products.push({
+    name:`${d.storage} USB for PS2 — Top ${d.count} Games`,
+    category:"PS2 Game Drives — USB Only",price:d.usbTop,weight,dimensions,
+    packLabel:`Top ${d.count} Games`,priceNote,gameCount:d.count,
+    topGamesVideo:PS2_TOP_GAMES_VIDEO,images:[image]
+  });
+  products.push({
+    name:`${d.storage} USB for PS2 — Optional Games`,
+    category:"PS2 Game Drives — USB Only",price:d.usbOptional,weight,dimensions,
+    packLabel:"Optional Games",priceNote,
+    optionalSelector:PS2_OPTIONAL_SELECTOR,images:[image]
+  });
 });
 
-function tr(key){ return (T[currentLang] && T[currentLang][key]) || T.en[key] || key; }
+const colorDots={
+"Red":"#FF0000","Yellow":"#FFD700","Ice Blue":"#00CFFF",
+"Pink":"#FF69B4","Green":"#00CC44","Black":"#000000",
+"White":"#FFFFFF","Blue":"#0066FF","Orange":"#FF7A00","Purple":"#8A2BE2"
+};
+const state = JSON.parse(localStorage.getItem("gp_cart") || "{}");
+const container=document.getElementById("products");
 
-function applyLanguage(){
-  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = tr(el.dataset.i18n); });
-  const nameInput = document.getElementById('customerName');
-  if(nameInput) nameInput.placeholder = currentLang === 'en' ? 'Type your name' : tr('nameTitle');
-  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active', b.dataset.lang===currentLang));
-  refreshBackButtonText();
+function productActionLinks(p){
+ const actions=[];
+ if(p.topGamesVideo){
+   actions.push(`<a class="game-action-btn top-games-btn" href="${p.topGamesVideo}" target="_blank" rel="noopener">🎮 Top ${p.gameCount} Games List Video</a>`);
+ }
+ if(p.optionalSelector){
+   actions.push(`<a class="game-action-btn optional-games-btn" href="${p.optionalSelector}" onclick="openOptionalGameSelector(event,this.href)">🟨 Optional Games Selector</a>`);
+ }
+ return actions.length?`<div class="product-extra-actions">${actions.join("")}</div>`:"";
 }
 
-let speechRunId = 0;
+const categoryOrder=[
+"Arcade Box Accessories",
+"PS2",
+"PS2 Game Drives — USB Only",
+"PS3",
+"PS4",
+"PS5",
+"Cables",
+"Electrical Items",
+"Batteries and Charger",
+"Electrical"
+];
 
-function getBestVoice(langCode){
-  const voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
-  const base = (langCode || 'en-IN').toLowerCase().split('-')[0];
-  const bad = /espeak|robot|compact/i;
-  const good = /google|microsoft|natural|premium|enhanced|siri/i;
-  const matches = voices.filter(v => {
-    const l=(v.lang||'').toLowerCase();
-    return l === (langCode||'').toLowerCase() || l.startsWith(base+'-') || l===base;
-  });
-  matches.sort((a,b) => {
-    const score = v => (good.test(v.name)?4:0) + (!bad.test(v.name)?2:0) + ((v.lang||'').toLowerCase()===(langCode||'').toLowerCase()?2:0) + (v.localService?1:0);
-    return score(b)-score(a);
-  });
-  return matches[0] || null;
+categoryOrder.forEach(cat=>{
+ const catProducts=products.filter(p=>p.category===cat);
+ if(!catProducts.length) return;
+
+ container.innerHTML += `<h2 style="color:#00f7ff;margin:15px 5px 10px">${cat}</h2>`;
+
+ catProducts.forEach((p)=>{
+ const i=products.indexOf(p);
+ if(state[i]===undefined) state[i]=0;
+
+ const imgs=p.images.map(img=>`<img src="${img}" onclick="openImg('${img}')">`).join("");
+ container.innerHTML+=`
+ <div class="product">
+  <b class="product-title">${p.name}</b>
+  <div class="product-specs">
+    <span>📏 Size: <b>${p.dimensions ? p.dimensions.join(" × ")+" cm" : "Not set"}</b></span>
+    <span>⚖️ Weight: <b>${p.weight} g</b></span>
+    ${p.packLabel?`<span>🎮 <b>${p.packLabel}</b></span>`:""}
+    ${p.priceNote?`<span>🚚 <b>${p.priceNote}</b></span>`:""}
+  </div>
+  <div class="image-row">${imgs}</div>
+  ${productActionLinks(p)}
+  <div class="info">
+   <div>
+    <div class="price">${p.priceLabel || ("₹"+p.price)}</div>
+    <small>${p.weight} g / piece${p.compatibility?'<br><b>Compatibility:</b> '+p.compatibility:''}</small>
+   </div>
+   ${p.variants?`<div style="min-width:220px">${p.variants.map(v=>`<div style="display:flex;justify-content:space-between;align-items:center;margin:3px 0"><small><span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:${colorDots[v]||'#ccc'};border:2px solid #999;margin-right:6px;vertical-align:middle"></span>${v}</small><div class="qty"><button onclick="updateVariantQty(${i},'${v}',-1)">−</button><span id="vq${i}_${v.replace(/\s+/g,'_')}">${state['v_'+i+'_'+v]||0}</span><button onclick="updateVariantQty(${i},'${v}',1)">+</button></div></div>`).join('')}</div>`:`<div class="qty">
+    <button onclick="updateQty(${i},-1)">−</button>
+    <span id="q${i}">${state[i]}</span>
+    <button onclick="updateQty(${i},1)">+</button>
+   </div>`}
+  </div>
+ </div>`;
+});
+});
+
+
+function clearCart(){
+ if(!confirm("Reset all selected products?")) return;
+
+ localStorage.removeItem("gp_cart");
+ Object.keys(state).forEach(k=>state[k]=0);
+
+ products.forEach((p,i)=>{
+   const el=document.getElementById("q"+i);
+   if(el) el.innerText="0";
+
+   if(p.variants){
+      p.variants.forEach(v=>{
+         state['v_'+i+'_'+v]=0;
+         const vel=document.getElementById('vq'+i+'_'+v.replace(/\s+/g,'_'));
+         if(vel) vel.innerText='0';
+      });
+   }
+ });
+
+ render();
 }
 
-function makeSpeechSegments(text){
-  const fullText=String(text||'');
-  // Hindi/Punjabi mixed-language sentences use one continuous native utterance.
-  // This removes the noticeable pause caused by switching voices at every English word.
-  if((currentLang==='hi' || currentLang==='pa') && languageSelectedForVoice){
-    return [{text:fullText,mode:'native'}];
-  }
-  const parts=[];
-  let buf='', mode='';
-  const flush=()=>{ if(buf.trim()) parts.push({text:buf, mode}); buf=''; };
-  for(const ch of String(text||'')){
-    let nextMode;
-    if(/[A-Za-z0-9+]/.test(ch)) nextMode='en';
-    else if(/[\u0900-\u097F\u0A00-\u0A7F]/.test(ch)) nextMode='native';
-    else nextMode=mode || 'native';
-    if(mode && nextMode!==mode && buf.trim()) flush();
-    mode=nextMode;
-    buf+=ch;
-  }
-  flush();
-  return parts.length ? parts : [{text:String(text||''),mode:'native'}];
+function openImg(src){
+ const modal=document.getElementById("imgModal");
+ document.getElementById("modalImg").src=src;
+ modal.style.display="flex";
+ document.body.style.overflow="hidden";
+ history.pushState({imgOpen:true},"");
+}
+function closeImg(){
+ document.getElementById("imgModal").style.display="none";
+ document.body.style.overflow="";
+}
+document.getElementById("imgModal").addEventListener("click",function(e){
+ if(e.target===this){ history.back(); }
+});
+
+window.addEventListener("popstate",function(){
+ const modal=document.getElementById("imgModal");
+ if(modal.style.display==="flex"){
+   closeImg();
+ }
+});
+
+function updateQty(i,v){
+ state[i]=Math.max(0,(state[i]||0)+v);
+ localStorage.setItem("gp_cart", JSON.stringify(state));
+ document.getElementById("q"+i).innerText=state[i];
+ render();
 }
 
-function speakText(text, repeat=false){
-  currentVoiceText = text || currentVoiceText;
-  repeatVoiceLoop = !!repeat;
-  if(!voiceEnabled || !('speechSynthesis' in window) || !currentVoiceText) return;
 
-  const myRun = ++speechRunId;
-  window.speechSynthesis.cancel();
-  const segments = makeSpeechSegments(currentVoiceText);
-  let queueStarted=false;
+function updateVariantQty(i,v,val){
+ const k='v_'+i+'_'+v;
+ state[k]=Math.max(0,(state[k]||0)+val);
+ localStorage.setItem("gp_cart", JSON.stringify(state));
+ const el=document.getElementById('vq'+i+'_'+v.replace(/\s+/g,'_'));
+ if(el) el.innerText=state[k];
+ render();
+}
 
-  function startSpeechQueue(){
-    if(queueStarted || myRun!==speechRunId || !voiceEnabled) return;
-    queueStarted=true;
+function render(){
+ let html="", total=0, totalWeight=0;
 
-    segments.forEach((seg,segmentIndex)=>{
-      const u=new SpeechSynthesisUtterance(seg.text);
-      const isEnglish = seg.mode==='en';
-      const nativeLang = currentLang==='pa' ? 'pa-IN' : (currentLang==='hi' ? 'hi-IN' : 'en-IN');
-      const wantedLang = isEnglish ? 'en-IN' : nativeLang;
-      let voice=getBestVoice(wantedLang);
-
-      // Punjabi voice न मिले तो Hindi voice की जगह browser default Punjabi pronunciation try करें.
-      if(!voice && currentLang==='pa' && !isEnglish) voice=getBestVoice('pa');
-      if(!voice && !isEnglish && currentLang==='hi') voice=getBestVoice('hi-IN');
-      if(!voice && isEnglish) voice=getBestVoice('en-US') || getBestVoice('en-GB');
-
-      u.lang = voice ? (voice.lang || wantedLang) : wantedLang;
-      if(voice) u.voice=voice;
-      u.rate = isEnglish ? 1.15 : 1.20;
-      u.pitch = isEnglish ? 1.02 : 1.0;
-      u.volume = 1;
-
-      if(segmentIndex===segments.length-1){
-        const finishSpeech=()=>{
-          if(repeatVoiceLoop && currentVoiceText && myRun===speechRunId){
-            setTimeout(()=>{ if(myRun===speechRunId) speakText(currentVoiceText,true); },1200);
-          }
-        };
-        u.onend=finishSpeech;
-        u.onerror=finishSpeech;
+ products.forEach((p,i)=>{
+  if(p.variants){
+    p.variants.forEach(v=>{
+      const q=state['v_'+i+'_'+v]||0;
+      if(q>0){
+        const sp=p.price*q, sw=p.weight*q;
+        total+=sp; totalWeight+=sw;
+        html+=`<div style="border-bottom:1px dashed #444;margin-bottom:8px"><b>${p.name} - ${v}</b><br>₹${p.price} × ${q} = ₹${sp}<br>${p.weight}g × ${q} = ${sw}g</div>`;
       }
-      window.speechSynthesis.speak(u);
     });
   }
+  if(state[i]>0){
+   const qty=state[i];
+   const sp=p.price*qty;
+   const sw=p.weight*qty;
+   total+=sp; totalWeight+=sw;
+   html+=`
+   <div style="border-bottom:1px dashed #444;margin-bottom:8px">
+    <b>${p.name}</b><br>
+    ₹${p.price} × ${qty} = ₹${sp}<br>
+    ${p.weight}g × ${qty} = ${sw}g
+   </div>`;
+  }
+ });
 
-  const voicesNow=window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
-  if(voicesNow.length) startSpeechQueue();
-  else{
-    const old=window.speechSynthesis.onvoiceschanged;
-    window.speechSynthesis.onvoiceschanged=function(){
-      if(typeof old==='function') old();
-      startSpeechQueue();
-      window.speechSynthesis.onvoiceschanged=null;
+ document.getElementById("orderList").innerHTML=html||"No items selected";
+ 
+ document.getElementById("total").innerText=total;
+ document.getElementById("totalWeight").innerText=totalWeight;
+
+ let itemCount=0;
+
+ products.forEach((p,i)=>{
+   if(p.variants){
+      p.variants.forEach(v=>{
+         itemCount += state['v_'+i+'_'+v] || 0;
+      });
+   }
+   itemCount += state[i] || 0;
+ });
+
+ const packedWeight = totalWeight + (itemCount>0 ? Math.ceil(totalWeight/1000)*100 : 0);
+ const chargeableKg = itemCount>0 ? Math.ceil(packedWeight/1000) : 0;
+ let courierCharge = chargeableKg * 100;
+ const courier=document.getElementById("courier")?.value || "Trackon.in";
+ if(courier==="Delhivery.com" || courier==="BlueDart" || courier==="Ecom Express") courierCharge=chargeableKg*300;
+ else if(courier==="Speed Post") courierCharge=chargeableKg*150;
+ const grandTotal = total + courierCharge;
+ document.getElementById("courierCharge").innerText=courierCharge;
+ document.getElementById("grandTotal").innerText=grandTotal;
+ const courierKgEl=document.getElementById("courierWeightKg");
+ if(courierKgEl) courierKgEl.innerText=chargeableKg;
+
+ document.getElementById("floatingSummary").innerHTML =
+ `Products: ${itemCount} | Amount: ₹${total} | Courier Weight: ${chargeableKg}kg | Courier: ₹${courierCharge} | Total: ₹${grandTotal}`;
+
+ const upi='upi://pay?pa=paytmqr68kzsc@ptys&pn=Surender%20Kaur&am='+grandTotal+'&cu=INR';
+ const qr=document.getElementById('upiQr');
+ if(qr){
+   qr.src='https://api.qrserver.com/v1/create-qr-code/?size=90x90&data='+encodeURIComponent(upi);
+ }
+
+ generateCombinedPoster();
+ generateBoxPlanner();
+ generatePackingGuide();
+}
+
+
+
+function getProductImageForVariant(product, variant){
+  if(product && product.variantImages && variant && product.variantImages[variant]){
+    return product.variantImages[variant];
+  }
+  return (product && product.images && product.images[0]) || "";
+}
+
+let combinedPosterRenderToken=0;
+
+function getSelectedPosterItems(){
+  const selected=[];
+
+  products.forEach((p,i)=>{
+    if(p.variants){
+      p.variants.forEach(v=>{
+        const qty=state['v_'+i+'_'+v]||0;
+        if(qty>0){
+          selected.push({
+            name:p.name,
+            variant:v,
+            qty,
+            image:getProductImageForVariant(p,v),
+            fallbackImage:(p.images&&p.images[0])||"",
+            isWire:/12\s*Core\s*Wire/i.test(p.name),
+            repeatImage:false
+          });
+        }
+      });
+    }
+
+    const qty=state[i]||0;
+    if(qty>0){
+      selected.push({
+        name:p.name,
+        variant:"",
+        qty,
+        image:getProductImageForVariant(p,""),
+        fallbackImage:(p.images&&p.images[0])||"",
+        isWire:/12\s*Core\s*Wire/i.test(p.name),
+        repeatImage:false
+      });
+    }
+  });
+
+  return selected;
+}
+function loadPosterImage(src,fallbackSrc=""){
+  return new Promise(resolve=>{
+    if(!src){ resolve(null); return; }
+    const img=new Image();
+    img.onload=()=>resolve(img);
+    img.onerror=()=>{
+      if(fallbackSrc && fallbackSrc!==src){
+        const fallback=new Image();
+        fallback.onload=()=>resolve(fallback);
+        fallback.onerror=()=>resolve(null);
+        fallback.src=fallbackSrc;
+      }else{
+        resolve(null);
+      }
     };
-    setTimeout(startSpeechQueue,600);
+    img.src=src;
+  });
+}
+
+function roundedRect(ctx,x,y,w,h,r,fill,stroke){
+  const rr=Math.min(r,w/2,h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+rr,y);
+  ctx.arcTo(x+w,y,x+w,y+h,rr);
+  ctx.arcTo(x+w,y+h,x,y+h,rr);
+  ctx.arcTo(x,y+h,x,y,rr);
+  ctx.arcTo(x,y,x+w,y,rr);
+  ctx.closePath();
+  if(fill){ctx.fillStyle=fill;ctx.fill();}
+  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke();}
+}
+
+function fitText(ctx,text,maxWidth,startSize,minSize=24,weight=900){
+  let size=startSize;
+  while(size>minSize){
+    ctx.font=`${weight} ${size}px Arial, sans-serif`;
+    if(ctx.measureText(text).width<=maxWidth) break;
+    size-=2;
   }
+  return size;
 }
 
-function stopVoice(){
-  repeatVoiceLoop = false;
-  speechRunId++;
-  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+function drawContain(ctx,img,x,y,w,h){
+  if(!img) return;
+  const scale=Math.min(w/img.width,h/img.height);
+  const dw=img.width*scale, dh=img.height*scale;
+  ctx.drawImage(img,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
 }
 
-function selectLanguage(lang){
-  currentLang = lang;
-  languageSelectedForVoice = true;
-  applyLanguage();
-  const nextBtn = document.getElementById('langNextBtn');
-  if(nextBtn) nextBtn.disabled = false;
-  stopVoice();
-  currentVoiceText = currentLang === 'en'
-    ? 'Language selected. Press Next to continue.'
-    : (currentLang === 'pa' ? 'Language select ਹੋ ਗਈ ਹੈ। Continue ਕਰਨ ਲਈ Next ਦਬਾਓ।' : 'Language select हो गई है। आगे बढ़ने के लिए Next दबाएं।');
-  speakText(currentVoiceText, true);
+async function generateCombinedPoster(){
+  const canvas=document.getElementById("combinedPoster");
+  if(!canvas) return;
+
+  const ctx=canvas.getContext("2d");
+  const selected=getSelectedPosterItems();
+  const token=++combinedPosterRenderToken;
+
+  if(!selected.length){
+    canvas.width=1400;
+    canvas.height=680;
+    ctx.fillStyle="#fff";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    roundedRect(ctx,120,55,1160,105,24,"#d90000");
+    ctx.fillStyle="#fff";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    ctx.font="900 54px Arial, sans-serif";
+    ctx.fillText("SELECT PRODUCTS TO CREATE KIT PICTURE",700,108);
+
+    ctx.fillStyle="#222";
+    ctx.font="700 30px Arial, sans-serif";
+    ctx.fillText("Selected products will appear here automatically.",700,300);
+
+    roundedRect(ctx,170,385,1060,145,22,"#f4f4f4","#d1d1d1");
+    ctx.fillStyle="#666";
+    ctx.font="700 27px Arial, sans-serif";
+    ctx.fillText("GAMES PLANET ZONE • WhatsApp 7983624797",700,458);
+    return;
+  }
+
+  // Imported buttons are repeated visually according to exact selected quantity.
+  const visuals=selected.map(item=>({...item,isRepeatedButton:false}));
+
+  const count=visuals.length;
+  const cols=count<=1?1:count<=4?2:count<=9?3:count<=16?4:5;
+  const width=1600;
+  const side=50;
+  const gap=22;
+  const headerH=135;
+  const footerH=205;
+  const cardW=Math.floor((width-side*2-gap*(cols-1))/cols);
+  const cardH=cols===1?640:cols===2?500:cols===3?410:cols===4?340:285;
+  const rows=Math.ceil(count/cols);
+  const height=headerH+35+rows*cardH+(rows-1)*gap+footerH+55;
+
+  canvas.width=width;
+  canvas.height=height;
+  ctx.fillStyle="#fff";
+  ctx.fillRect(0,0,width,height);
+
+  roundedRect(ctx,210,17,1180,98,22,"#d80000","#b00000");
+  ctx.fillStyle="#fff";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.font=`900 ${fitText(ctx,"CUSTOM ARCADE ACCESSORIES KIT",1060,60,38)}px Arial, sans-serif`;
+  ctx.fillText("CUSTOM ARCADE ACCESSORIES KIT",800,66);
+
+  const imgs=await Promise.all(visuals.map(v=>loadPosterImage(v.image,v.fallbackImage)));
+  if(token!==combinedPosterRenderToken) return;
+
+  visuals.forEach((item,index)=>{
+    const row=Math.floor(index/cols);
+    const col=index%cols;
+    const inThisRow=Math.min(cols,count-row*cols);
+    const rowWidth=inThisRow*cardW+(inThisRow-1)*gap;
+    const startX=(width-rowWidth)/2;
+    const x=startX+col*(cardW+gap);
+    const y=headerH+28+row*(cardH+gap);
+
+    roundedRect(ctx,x,y,cardW,cardH,20,"#fff","#c9c9c9");
+
+    const title=item.variant?`${item.name} - ${item.variant}`:item.name;
+    ctx.fillStyle="#111";
+    ctx.textAlign="center";
+    ctx.textBaseline="top";
+    ctx.font=`900 ${fitText(ctx,title,cardW-28,cols<=2?38:30,19)}px Arial, sans-serif`;
+    ctx.fillText(title,x+cardW/2,y+14);
+
+    const titleH=cols<=2?70:55;
+    const badgeH=46;
+    const imageTop=y+titleH;
+    const imageH=cardH-titleH-badgeH-26;
+    drawContain(ctx,imgs[index],x+14,imageTop,cardW-28,imageH);
+
+    let label;
+    if(item.isWire){
+      label=`TOTAL LENGTH: ${item.qty} METER${item.qty===1?"":"S"}`;
+    }else{
+      label=`QTY: ${item.qty}`;
+    }
+
+    ctx.font="900 24px Arial, sans-serif";
+    const badgeW=Math.min(cardW-20,Math.max(125,ctx.measureText(label).width+42));
+    const badgeY=y+cardH-badgeH-10;
+    roundedRect(ctx,x+(cardW-badgeW)/2,badgeY,badgeW,badgeH,12,"#e00000","#b50000");
+    ctx.fillStyle="#fff";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    ctx.font=`900 ${fitText(ctx,label,badgeW-20,24,17)}px Arial, sans-serif`;
+    ctx.fillText(label,x+cardW/2,badgeY+badgeH/2);
+  });
+
+  const footerY=height-footerH-24;
+  roundedRect(ctx,140,footerY,1320,footerH,22,"#fff","#222");
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+
+  ctx.font="900 56px Arial, sans-serif";
+  ctx.fillStyle="#e00000";
+  ctx.fillText("GAMES",420,footerY+57);
+  ctx.fillStyle="#1438d0";
+  ctx.fillText("PLANET",720,footerY+57);
+  ctx.fillStyle="#111";
+  ctx.fillText("ZONE",1045,footerY+57);
+
+  ctx.font="700 24px Arial, sans-serif";
+  ctx.fillStyle="#111";
+  ctx.fillText("Laptops • Gaming Consoles • Accessories • Sales • Service • Repair",800,footerY+102);
+
+  ctx.font="900 30px Arial, sans-serif";
+  ctx.fillText("YOUTUBE.COM/@GAMESPLANET13",800,footerY+143);
+
+  ctx.font="900 35px Arial, sans-serif";
+  ctx.fillText("WhatsApp: 7983624797",800,footerY+178);
 }
-function confirmLanguage(){
-  document.body.classList.remove('lang-modal-open');
-  showStep('step0', tr('vAskName'));
+function downloadCombinedPoster(){
+  const items=getSelectedPosterItems();
+  if(!items.length){alert('Please select products first');return;}
+  generateCombinedPoster().then(()=>{
+    const canvas=document.getElementById('combinedPoster');
+    const a=document.createElement('a');
+    a.download='Games_Planet_Selected_Products_Kit.png';
+    a.href=canvas.toDataURL('image/png',1.0);
+    a.click();
+  });
 }
 
-function toggleVoice(){
-  voiceEnabled = !voiceEnabled;
-  const btn = document.getElementById('voiceToggle');
-  if(btn) btn.textContent = voiceEnabled ? '🔊 Voice ON' : '🔇 Voice OFF';
-  if(!voiceEnabled){
-    stopVoice();
+
+function orderWhatsApp(){
+ let lines=[],total=0,totalWeight=0,n=1;
+
+ products.forEach((p,i)=>{
+  if(p.variants){
+    p.variants.forEach(v=>{
+      const q=state['v_'+i+'_'+v]||0;
+      if(q>0){
+        const sp=p.price*q, sw=p.weight*q;
+        total+=sp;
+        totalWeight+=sw;
+        lines.push(`${n}) ${p.name} - ${v} x${q} = ₹${sp} (${sw}g)`);
+        n++;
+      }
+    });
+  }
+  if(state[i]>0){
+   const qty=state[i];
+   const price=p.price*qty;
+   const weight=p.weight*qty;
+   total+=price;
+   totalWeight+=weight;
+   lines.push(`${n}) ${p.name} x${qty} = ₹${price} (${weight}g)`);
+   n++;
+  }
+ });
+
+ if(!lines.length){alert("Please select products first");return;}
+
+ const packedWeight = totalWeight + (totalWeight>0 ? Math.ceil(totalWeight/1000)*100 : 0);
+ const chargeableKg = packedWeight>0 ? Math.ceil(packedWeight/1000) : 0;
+ let courierCharge = chargeableKg*100;
+ const courier=document.getElementById("courier")?.value || "Trackon.in";
+ if(courier==="Delhivery.com" || courier==="BlueDart" || courier==="Ecom Express") courierCharge=chargeableKg*300;
+ else if(courier==="Speed Post") courierCharge=chargeableKg*150;
+ const grandTotal = total + courierCharge;
+ const fillLink = window.location.origin + window.location.pathname.replace("index","order-prefill") + `?grandTotal=${grandTotal}`;
+
+ let msg=`🟢 Prepaid Order
+
+📦 Product Summary
+
+${lines.join('\n')}
+
+🚚 Courier: ${courier}
+
+⚖️ Chargeable Courier Weight: ${chargeableKg} kg
+
+🚚 Courier Charges: ₹${courierCharge}
+
+🧾 Grand Total: ₹${grandTotal}
+
+━━━━━━━━━━━━━━
+
+📝 Fill Your Details
+
+https://gamesplanet13.github.io/arcade-accessories-/order-prefill.html?grandTotal=${grandTotal}`;
+
+ window.open("https://wa.me/917983624797?text="+encodeURIComponent(msg));
+}
+
+/* 🔹 FULL SYNC TO ORDER PREFILL PAGE */
+
+function goDetails(){
+ let total=0,totalWeight=0;
+
+ products.forEach((p,i)=>{
+  if(p.variants){
+    p.variants.forEach(v=>{
+      const q=state['v_'+i+'_'+v]||0;
+      if(q>0){
+        total+=p.price*q;
+        totalWeight+=p.weight*q;
+      }
+    });
+  }
+  if(state[i]>0){
+    total+=p.price*state[i];
+    totalWeight+=p.weight*state[i];
+  }
+ });
+
+ if(total<=0){alert("Please select products first");return;}
+
+ const packedWeight = totalWeight + (totalWeight>0 ? Math.ceil(totalWeight/1000)*100 : 0);
+
+ const chargeableKg = packedWeight>0 ? Math.ceil(packedWeight/1000) : 0;
+ let courierCharge = chargeableKg*100;
+
+ const courier=document.getElementById("courier")?.value || "Trackon.in";
+
+ if(courier==="Delhivery.com" || courier==="BlueDart" || courier==="Ecom Express") courierCharge=chargeableKg*300;
+ else if(courier==="Speed Post") courierCharge=chargeableKg*150;
+
+ const grandTotal = total + courierCharge;
+
+ window.location.href=`order-prefill.html?grandTotal=${grandTotal}`;
+}
+
+
+
+const STANDARD_BOXES = [
+  [10,10,10],[13,13,13],[15,12,10],[15,15,15],[20,15,10],[20,15,15],
+  [20,20,15],[20,20,20],[25,15,15],[25,20,15],[25,20,20],[25,25,20],
+  [30,20,15],[30,20,20],[30,25,20],[30,25,25],[30,30,20],[30,30,30],
+  [35,25,20],[35,30,25],[35,30,30],[40,30,20],[40,30,25],[40,30,30],
+  [40,35,30],[45,35,30],[45,40,35],[50,40,30],[50,40,40],[50,50,40],
+  [60,40,40],[60,50,40],[60,50,50],[70,50,50],[70,60,50],[80,60,60]
+];
+
+function permutations3(d){
+  const [a,b,c]=d;
+  return [[a,b,c],[a,c,b],[b,a,c],[b,c,a],[c,a,b],[c,b,a]];
+}
+function canFitItemInBox(itemDims, boxDims){
+  return permutations3(itemDims).some(p=>p[0]<=boxDims[0] && p[1]<=boxDims[1] && p[2]<=boxDims[2]);
+}
+function getSelectedPhysicalItems(){
+  const items=[];
+  products.forEach((p,i)=>{
+    let qty=state[i]||0;
+    if(p.variants){
+      qty=0;
+      p.variants.forEach(v=>qty += state['v_'+i+'_'+v]||0);
+    }
+    if(qty>0 && p.dimensions){
+      for(let n=0;n<qty;n++){
+        items.push({name:p.name,dims:[...p.dimensions],weight:p.weight});
+      }
+    }
+  });
+  return items;
+}
+function packagingWeightForBox(box){
+  const volume=box[0]*box[1]*box[2];
+  if(volume<=2200) return 100;
+  if(volume<=6000) return 150;
+  if(volume<=15000) return 250;
+  if(volume<=30000) return 400;
+  if(volume<=60000) return 600;
+  return 900;
+}
+
+function paddedItemDims(item){
+  const longest=Math.max(...item.dims);
+  const pad=longest<=6 ? 0.8 : longest<=15 ? 1.2 : 1.8;
+  return item.dims.map(v=>v+pad);
+}
+
+function packItemsInBox(items, outerBox){
+  // Keep 1 cm safety space on every wall (2 cm total per side).
+  const inner=outerBox.map(v=>Math.max(0,v-2));
+  const sorted=items
+    .map(it=>({name:it.name,dims:paddedItemDims(it),weight:it.weight}))
+    .sort((a,b)=>(b.dims[0]*b.dims[1]*b.dims[2])-(a.dims[0]*a.dims[1]*a.dims[2]));
+
+  let spaces=[{x:0,y:0,z:0,w:inner[0],h:inner[2],d:inner[1]}];
+
+  for(const item of sorted){
+    let best=null;
+
+    spaces.forEach((space,si)=>{
+      permutations3(item.dims).forEach(o=>{
+        const [w,d,h]=o;
+        if(w<=space.w && d<=space.d && h<=space.h){
+          const waste=(space.w*space.d*space.h)-(w*d*h);
+          const score=waste + (space.w-w)*2 + (space.d-d)*2 + (space.h-h);
+          if(!best || score<best.score){
+            best={si,w,d,h,score};
+          }
+        }
+      });
+    });
+
+    if(!best) return false;
+
+    const s=spaces.splice(best.si,1)[0];
+    const {w,d,h}=best;
+
+    // Three non-overlapping free spaces after placement.
+    const right={x:s.x+w,y:s.y,z:s.z,w:s.w-w,h:s.h,d:s.d};
+    const front={x:s.x,y:s.y,z:s.z+d,w:w,h:s.h,d:s.d-d};
+    const top={x:s.x,y:s.y+h,z:s.z,w:w,h:s.h-h,d:d};
+
+    [right,front,top].forEach(sp=>{
+      if(sp.w>0.5 && sp.d>0.5 && sp.h>0.5) spaces.push(sp);
+    });
+
+    // Prefer tighter spaces first for the next item.
+    spaces.sort((a,b)=>(a.w*a.d*a.h)-(b.w*b.d*b.h));
+  }
+  return true;
+}
+
+function calculateRecommendedBox(){
+  const items=getSelectedPhysicalItems();
+  if(!items.length) return null;
+
+  const totalItemVolume=items.reduce((s,it)=>s+it.dims[0]*it.dims[1]*it.dims[2],0);
+  const totalWeight=items.reduce((s,it)=>s+it.weight,0);
+
+  // Conservative usable-space target. This intentionally leaves room
+  // for bubble wrap, thermocol, irregular shapes and handling.
+  const fillRatio = items.length<=2 ? 0.38 : items.length<=8 ? 0.44 : 0.50;
+  const requiredOuterVolume = totalItemVolume/fillRatio;
+
+  let selectedBox=null;
+  const sortedBoxes=[...STANDARD_BOXES].sort((a,b)=>(a[0]*a[1]*a[2])-(b[0]*b[1]*b[2]));
+
+  for(const box of sortedBoxes){
+    const volume=box[0]*box[1]*box[2];
+    if(volume<requiredOuterVolume) continue;
+
+    const orientations=permutations3(box);
+    const fits=orientations.some(oriented=>packItemsInBox(items,oriented));
+    if(fits){
+      selectedBox=[...box].sort((a,b)=>b-a);
+      break;
+    }
+  }
+
+  if(!selectedBox){
+    const maxItem=[0,0,0];
+    items.forEach(it=>{
+      const s=[...paddedItemDims(it)].sort((a,b)=>b-a);
+      maxItem[0]=Math.max(maxItem[0],s[0]);
+      maxItem[1]=Math.max(maxItem[1],s[1]);
+      maxItem[2]=Math.max(maxItem[2],s[2]);
+    });
+
+    const cube=Math.cbrt(requiredOuterVolume);
+    selectedBox=[
+      Math.ceil(Math.max(maxItem[0]+4,cube*1.25)/5)*5,
+      Math.ceil(Math.max(maxItem[1]+4,cube)/5)*5,
+      Math.ceil(Math.max(maxItem[2]+4,cube*0.9)/5)*5
+    ].sort((a,b)=>b-a);
+  }
+
+  const packWeight=packagingWeightForBox(selectedBox);
+  const packedWeight=totalWeight+packWeight;
+  const volumetricKg=(selectedBox[0]*selectedBox[1]*selectedBox[2])/5000;
+  const actualKg=packedWeight/1000;
+  const chargeableKg=Math.ceil(Math.max(actualKg,volumetricKg));
+
+  return {
+    items,totalItemVolume,totalWeight,selectedBox,
+    packWeight,packedWeight,volumetricKg,actualKg,chargeableKg
+  };
+}
+
+
+
+function findPlacementWithFallback(items, preferredBox){
+  const candidates=[];
+
+  function addBox(box){
+    const key=box.join("x");
+    if(!candidates.some(b=>b.join("x")===key)) candidates.push([...box]);
+  }
+
+  if(preferredBox) addBox(preferredBox);
+
+  [...STANDARD_BOXES]
+    .sort((a,b)=>(a[0]*a[1]*a[2])-(b[0]*b[1]*b[2]))
+    .forEach(box=>{
+      if(!preferredBox || (box[0]*box[1]*box[2]) >= (preferredBox[0]*preferredBox[1]*preferredBox[2])){
+        addBox(box);
+      }
+    });
+
+  for(const box of candidates){
+    for(const oriented of permutations3(box)){
+      const placement=getPackingPlacements(items,oriented);
+      if(placement){
+        return {
+          selectedBox:[...oriented],
+          placement
+        };
+      }
+    }
+  }
+
+  // Custom box fallback: enlarge gradually until the placement succeeds.
+  const totalVolume=items.reduce((sum,it)=>sum+it.dims[0]*it.dims[1]*it.dims[2],0);
+  const longest=Math.max(...items.flatMap(it=>it.dims));
+  let base=Math.ceil(Math.max(longest+8,Math.cbrt(totalVolume/0.42))/5)*5;
+
+  for(let step=0;step<20;step++){
+    const custom=[
+      base+step*5,
+      Math.ceil((base*0.9+step*4)/5)*5,
+      Math.ceil((base*0.75+step*3)/5)*5
+    ];
+
+    for(const oriented of permutations3(custom)){
+      const placement=getPackingPlacements(items,oriented);
+      if(placement){
+        return {
+          selectedBox:[...oriented],
+          placement
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
+function getFinalPackingSolution(){
+  const base=calculateRecommendedBox();
+  if(!base) return null;
+
+  const solved=findPlacementWithFallback(base.items,base.selectedBox);
+  if(!solved) return {...base,placement:null};
+
+  const selectedBox=solved.selectedBox;
+  const packWeight=packagingWeightForBox(selectedBox);
+  const packedWeight=base.totalWeight+packWeight;
+  const volumetricKg=(selectedBox[0]*selectedBox[1]*selectedBox[2])/5000;
+  const actualKg=packedWeight/1000;
+  const chargeableKg=Math.ceil(Math.max(actualKg,volumetricKg));
+
+  return {
+    ...base,
+    selectedBox,
+    packWeight,
+    packedWeight,
+    volumetricKg,
+    actualKg,
+    chargeableKg,
+    placement:solved.placement
+  };
+}
+
+function drawArrow(ctx,x1,y1,x2,y2,label){
+  ctx.strokeStyle="#111";
+  ctx.fillStyle="#111";
+  ctx.lineWidth=4;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  const ang=Math.atan2(y2-y1,x2-x1);
+  const ah=16;
+  [[x1,y1,ang+Math.PI],[x2,y2,ang]].forEach(([x,y,a])=>{
+    ctx.beginPath();
+    ctx.moveTo(x,y);
+    ctx.lineTo(x-ah*Math.cos(a-Math.PI/6),y-ah*Math.sin(a-Math.PI/6));
+    ctx.lineTo(x-ah*Math.cos(a+Math.PI/6),y-ah*Math.sin(a+Math.PI/6));
+    ctx.closePath();ctx.fill();
+  });
+  ctx.font="900 30px Arial";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  const mx=(x1+x2)/2,my=(y1+y2)/2;
+  ctx.fillStyle="#fff";
+  ctx.fillRect(mx-85,my-22,170,44);
+  ctx.fillStyle="#111";
+  ctx.fillText(label,mx,my);
+}
+
+function generateBoxPlanner(){
+  const canvas=document.getElementById("boxPlannerCanvas");
+  const summary=document.getElementById("boxPlannerSummary");
+  if(!canvas||!summary) return;
+  const ctx=canvas.getContext("2d");
+  canvas.width=1600;canvas.height=900;
+  ctx.fillStyle="#fff";ctx.fillRect(0,0,1600,900);
+  const data=getFinalPackingSolution();
+
+  if(!data){
+    summary.innerHTML="Select products to calculate the recommended box.";
+    ctx.fillStyle="#d80000";
+    roundedRect(ctx,190,60,1220,105,24,"#d80000");
+    ctx.fillStyle="#fff";ctx.font="900 54px Arial";ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.fillText("SELECT PRODUCTS FOR BOX ESTIMATE",800,112);
+    ctx.fillStyle="#333";ctx.font="700 32px Arial";
+    ctx.fillText("A scaled box picture will appear here.",800,420);
+    return;
+  }
+
+  const [L,W,H]=data.selectedBox;
+  summary.innerHTML=
+    `<b>Recommended Box:</b> ${L} × ${W} × ${H} cm &nbsp; | &nbsp; `+
+    `<b>Product Weight:</b> ${data.totalWeight} g &nbsp; | &nbsp; `+
+    `<b>Estimated Packing:</b> ${data.packWeight} g &nbsp; | &nbsp; `+
+    `<b>Packed Weight:</b> ${data.packedWeight} g &nbsp; | &nbsp; `+
+    `<b>Volumetric:</b> ${data.volumetricKg.toFixed(2)} kg &nbsp; | &nbsp; `+
+    `<b>Chargeable:</b> ${data.chargeableKg} kg`;
+
+  roundedRect(ctx,220,25,1160,92,22,"#d80000");
+  ctx.fillStyle="#fff";ctx.textAlign="center";ctx.textBaseline="middle";
+  ctx.font="900 52px Arial";
+  ctx.fillText("SMART PACKING BOX RECOMMENDATION",800,71);
+
+  const bx=420, by=245, bw=650, bh=360, dx=170, dy=-105;
+  ctx.fillStyle="#d6a15e";ctx.strokeStyle="#7a4a16";ctx.lineWidth=5;
+  ctx.beginPath();
+  ctx.moveTo(bx,by);ctx.lineTo(bx+bw,by);ctx.lineTo(bx+bw,by+bh);ctx.lineTo(bx,by+bh);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle="#e6ba7b";
+  ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(bx+dx,by+dy);ctx.lineTo(bx+bw+dx,by+dy);ctx.lineTo(bx+bw,by);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle="#bd7d38";
+  ctx.beginPath();ctx.moveTo(bx+bw,by);ctx.lineTo(bx+bw+dx,by+dy);ctx.lineTo(bx+bw+dx,by+bh+dy);ctx.lineTo(bx+bw,by+bh);ctx.closePath();ctx.fill();ctx.stroke();
+
+  ctx.fillStyle="rgba(255,255,255,.9)";
+  roundedRect(ctx,530,360,430,120,18,"rgba(255,255,255,.9)","#7a4a16");
+  ctx.fillStyle="#111";ctx.font="900 42px Arial";ctx.textAlign="center";ctx.textBaseline="middle";
+  ctx.fillText(`${L} × ${W} × ${H} cm`,745,415);
+  ctx.font="700 24px Arial";ctx.fillText("Recommended Outer Box Size",745,458);
+
+  drawArrow(ctx,bx,by+bh+85,bx+bw,by+bh+85,`Length ${L} cm`);
+  drawArrow(ctx,bx-80,by,bx-80,by+bh,`Height ${H} cm`);
+  drawArrow(ctx,bx+bw+25,by-20,bx+bw+dx+25,by+dy-20,`Width ${W} cm`);
+
+  ctx.fillStyle="#111";ctx.textAlign="left";ctx.textBaseline="top";
+  ctx.font="900 30px Arial";ctx.fillText("Packing Details",90,700);
+  ctx.font="700 25px Arial";
+  ctx.fillText(`Products selected: ${data.items.length}`,90,748);
+  ctx.fillText(`Product weight: ${data.totalWeight} g`,90,786);
+  ctx.fillText(`Estimated packing material: ${data.packWeight} g`,90,824);
+
+  ctx.fillText(`Packed weight: ${data.packedWeight} g`,860,748);
+  ctx.fillText(`Volumetric weight: ${data.volumetricKg.toFixed(2)} kg`,860,786);
+  ctx.fillText(`Chargeable courier weight: ${data.chargeableKg} kg`,860,824);
+}
+
+function downloadBoxPlanner(){
+  const data=getFinalPackingSolution();
+  if(!data){alert("Please select products first");return;}
+  generateBoxPlanner();
+  const canvas=document.getElementById("boxPlannerCanvas");
+  const a=document.createElement("a");
+  a.download="Games_Planet_Recommended_Box.png";
+  a.href=canvas.toDataURL("image/png",1.0);
+  a.click();
+}
+
+
+function getPackingPlacements(items, outerBox){
+  const inner=outerBox.map(v=>Math.max(0,v-2));
+  const sorted=items
+    .map((it,index)=>({
+      id:index,
+      name:it.name,
+      dims:paddedItemDims(it),
+      originalDims:[...it.dims],
+      weight:it.weight
+    }))
+    .sort((a,b)=>(b.dims[0]*b.dims[1]*b.dims[2])-(a.dims[0]*a.dims[1]*a.dims[2]));
+
+  let spaces=[{x:0,y:0,z:0,w:inner[0],h:inner[2],d:inner[1]}];
+  const placements=[];
+
+  for(const item of sorted){
+    let best=null;
+
+    spaces.forEach((space,si)=>{
+      permutations3(item.dims).forEach(o=>{
+        const [w,d,h]=o;
+        if(w<=space.w && d<=space.d && h<=space.h){
+          const waste=(space.w*space.d*space.h)-(w*d*h);
+          const score=waste + (space.w-w)*2 + (space.d-d)*2 + (space.h-h);
+          if(!best || score<best.score){
+            best={si,w,d,h,score};
+          }
+        }
+      });
+    });
+
+    if(!best) return null;
+
+    const s=spaces.splice(best.si,1)[0];
+    const placement={
+      name:item.name,
+      originalDims:item.originalDims,
+      x:s.x,y:s.y,z:s.z,
+      w:best.w,d:best.d,h:best.h
+    };
+    placements.push(placement);
+
+    const right={x:s.x+best.w,y:s.y,z:s.z,w:s.w-best.w,h:s.h,d:s.d};
+    const front={x:s.x,y:s.y,z:s.z+best.d,w:best.w,h:s.h,d:s.d-best.d};
+    const top={x:s.x,y:s.y+best.h,z:s.z,w:best.w,h:s.h-best.h,d:best.d};
+
+    [right,front,top].forEach(sp=>{
+      if(sp.w>0.5 && sp.d>0.5 && sp.h>0.5) spaces.push(sp);
+    });
+
+    spaces.sort((a,b)=>(a.w*a.d*a.h)-(b.w*b.d*b.h));
+  }
+
+  return {placements,inner};
+}
+
+function shortProductName(name){
+  return name
+    .replace(" (With Switch)","")
+    .replace(" (Without Switch)","")
+    .replace(" Controller"," Ctrl")
+    .replace("Rechargeable","Recharge.")
+    .replace("Power Cable","Cable");
+}
+
+function drawPlacementRect(ctx,p,box,area,mode,index){
+  const palette=["#fde68a","#bfdbfe","#bbf7d0","#fecaca","#ddd6fe","#fed7aa","#a7f3d0","#fbcfe8","#bae6fd","#e9d5ff"];
+  const fill=palette[index%palette.length];
+
+  let x,y,w,h;
+  if(mode==="top"){
+    x=area.x+(p.x/box[0])*area.w;
+    y=area.y+(p.z/box[1])*area.h;
+    w=(p.w/box[0])*area.w;
+    h=(p.d/box[1])*area.h;
   }else{
-    speakText(currentVoiceText || tr('vName'), false);
+    x=area.x+(p.x/box[0])*area.w;
+    y=area.y+area.h-((p.y+p.h)/box[2])*area.h;
+    w=(p.w/box[0])*area.w;
+    h=(p.h/box[2])*area.h;
   }
-}
-function repeatCurrentVoice(){ speakText(currentVoiceText || tr('vName')); }
 
-const previousWizardStep = {step0:'langStep',step1:'step0',step2:'step1',step3:'step2',step4:'step3'};
-function backButtonText(){ return currentLang==='pa' ? '⬅ ਪਿੱਛੇ' : (currentLang==='hi' ? '⬅ पीछे' : '⬅ Back'); }
-function addWizardBackButtons(){
-  ['step0','step1','step2','step3','step4'].forEach(id=>{
-    const step=document.getElementById(id); if(!step || step.querySelector('.wizard-back-wrap')) return;
-    const wrap=document.createElement('div'); wrap.className='wizard-back-wrap';
-    const btn=document.createElement('button'); btn.type='button'; btn.className='wizard-back-btn'; btn.dataset.backFor=id; btn.textContent=backButtonText();
-    btn.onclick=()=>goBackWizard(id); wrap.appendChild(btn); step.appendChild(wrap);
-  });
+  ctx.fillStyle=fill;
+  ctx.strokeStyle="#111";
+  ctx.lineWidth=2;
+  ctx.fillRect(x,y,w,h);
+  ctx.strokeRect(x,y,w,h);
+
+  const label=shortProductName(p.name);
+  const minSide=Math.min(w,h);
+  ctx.fillStyle="#111";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.font=`700 ${Math.max(12,Math.min(24,minSide/3))}px Arial`;
+  const display=w>80 && h>35 ? label : String(index+1);
+  ctx.fillText(display,x+w/2,y+h/2);
 }
-function refreshBackButtonText(){ document.querySelectorAll('.wizard-back-btn').forEach(b=>b.textContent=backButtonText()); }
-function goBackWizard(currentId){
-  clearTimeout(nameAutoTimer); stopVoice();
-  if(currentId==='step1' && experienceMode==='simple'){
-    showModeSelector();
+
+function generatePackingGuide(){
+  const canvas=document.getElementById("packingGuideCanvas");
+  const summary=document.getElementById("packingGuideSummary");
+  if(!canvas||!summary) return;
+
+  const ctx=canvas.getContext("2d");
+  canvas.width=1600;
+  canvas.height=1000;
+  ctx.fillStyle="#fff";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  const boxData=calculateRecommendedBox();
+  if(!boxData){
+    summary.innerHTML="Select products to generate the packing arrangement.";
+    roundedRect(ctx,180,55,1240,100,24,"#d80000");
+    ctx.fillStyle="#fff";
+    ctx.font="900 52px Arial";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    ctx.fillText("SELECT PRODUCTS FOR PACKING GUIDE",800,105);
+    ctx.fillStyle="#333";
+    ctx.font="700 30px Arial";
+    ctx.fillText("Top and side placement views will appear here.",800,470);
     return;
   }
-  const prev=previousWizardStep[currentId]; if(!prev) return;
-  if(prev==='langStep'){
-    hideWizardSteps(); const el=document.getElementById('langStep'); el.classList.remove('hidden');
-    document.body.classList.add('lang-modal-open','wizard-popup-open');
-    const welcome=currentLang==='hi'?'कृपया अपनी भाषा चुनें। Please select your language. कृपा करके ਆਪਣੀ language select ਕਰੋ ਜੀ।':'Please select your language.';
-    speakText(welcome,false); return;
-  }
-  const voiceMap={step0:tr('vAskName'),step1:tr('vModel'),step2:tr('vMatrix'),step3:tr('vFmcb')};
-  showStep(prev,voiceMap[prev]||'');
-}
 
-function hideWizardSteps(){
-  ['modeStep','langStep','step0','step1','step2','step3','step4'].forEach(id=>{
-    const el = document.getElementById(id);
-    if(el) el.classList.add('hidden');
-  });
-  document.body.classList.remove('wizard-popup-open');
-}
+  const result=getPackingPlacements(boxData.items,boxData.selectedBox);
+  const [L,W,H]=boxData.selectedBox;
 
-function setVoiceButtonState(show){
-  const btn=document.getElementById('voiceToggle');
-  if(!btn) return;
-  btn.classList.toggle('hidden', !show);
-  btn.textContent=voiceEnabled ? '🔊 Voice ON' : '🔇 Voice OFF';
-}
-
-function showModeSelector(){
-  stopVoice();
-  experienceMode='';
-  languageSelectedForVoice=false;
-  voiceEnabled=false;
-  setVoiceButtonState(false);
-  document.body.classList.remove('lang-modal-open');
-  hideWizardSteps();
-  const mode=document.getElementById('modeStep');
-  if(mode) mode.classList.remove('hidden');
-  document.body.classList.add('wizard-popup-open');
-}
-
-function chooseSimpleVersion(){
-  experienceMode='simple';
-  voiceEnabled=false;
-  setVoiceButtonState(false);
-  showStep('step1','');
-}
-
-function chooseDetailVersion(){
-  experienceMode='detail';
-  languageSelectedForVoice=false;
-  voiceEnabled=true;
-  setVoiceButtonState(true);
-  hideWizardSteps();
-  const lang=document.getElementById('langStep');
-  if(lang) lang.classList.remove('hidden');
-  document.body.classList.add('lang-modal-open','wizard-popup-open');
-  currentVoiceText='कृपया अपनी भाषा चुनें। Please select your language. कृपा ਕਰਕੇ ਆਪਣੀ language select ਕਰੋ ਜੀ।';
-  setTimeout(()=>speakText(currentVoiceText,false),200);
-}
-
-function showStep(id, voiceText){
-  stopVoice();
-  document.body.classList.remove('lang-modal-open');
-  hideWizardSteps();
-  document.querySelectorAll('.model-guard').forEach(el=>el.classList.add('hidden'));
-  const el = document.getElementById(id);
-  if(el){
-    el.classList.remove('hidden');
-    document.body.classList.add('wizard-popup-open');
-    el.scrollTop = 0;
-  }
-  if(voiceText) setTimeout(()=>speakText(voiceText, false), 180);
-}
-
-function updateNameNextButton(){
-  const input = document.getElementById('customerName');
-  const name = (input && input.value ? input.value.trim() : '');
-  const nextBtn = document.getElementById('nameNextBtn');
-  if(nextBtn) nextBtn.disabled = name.length < 2;
-}
-
-function startWizard(){
-  const input = document.getElementById('customerName');
-  const name = (input && input.value ? input.value.trim() : '');
-  if(!name){ speakText(tr('vNeedName')); if(input) input.focus(); return; }
-  customerNameValue = name;
-  showStep('step1', (currentLang==='en' ? 'Thank you ' : 'धन्यवाद ') + name + '. ' + tr('vModel'));
-}
-
-function selectModel(model){
-  selectedModelKey = model;
-  document.querySelectorAll('.model-btn[data-model]').forEach(btn=>btn.classList.toggle('active', btn.dataset.model === model));
-  document.querySelectorAll('[data-model-group="fmcb-row"]').forEach(row=>{ row.style.display = (row.dataset.model === model) ? 'grid' : 'none'; });
-  document.querySelectorAll('[data-model-group="combo-section"]').forEach(block=>{ block.style.display = (block.dataset.model === model) ? 'block' : 'none'; });
-  const wrap = document.getElementById('selectedModelWrap');
-  const label = document.getElementById('selectedModelLabel');
-  if(label){ label.textContent = modelLabels[model] || ''; }
-  if(wrap){ wrap.classList.remove('hidden'); }
-  showStep('step2', (modelLabels[model] || 'PS2 Model') + ' selected. ' + tr('vMatrix'));
-}
-
-function selectMatrix(value){ showStep('step3', tr('vFmcb')); }
-function selectFmcbType(value){
-  if(value === 'usbOnly'){
-    showProducts('usb');
+  if(!result){
+    summary.innerHTML=`Recommended Box: <b>${L} × ${W} × ${H} cm</b> — placement preview could not be generated.`;
     return;
   }
-  showStep('step4', tr('vProduct'));
-}
-function showStep3(){ selectMatrix('old'); }
-function showStep4(){ selectFmcbType('old'); }
 
-function updateOptionalSelectorVisibility(type){
-  document.querySelectorAll('.optional-selector-link').forEach(link=>{
-    const show = (type === 'usb' || type === 'combo');
-    link.classList.toggle('hidden', !show);
+  summary.innerHTML=
+    `<b>Box:</b> ${L} × ${W} × ${H} cm &nbsp; | &nbsp; `+
+    `<b>Items:</b> ${result.placements.length} &nbsp; | &nbsp; `+
+    `<b>Method:</b> Largest items first, smaller items in remaining spaces`;
+
+  roundedRect(ctx,210,20,1180,90,22,"#d80000");
+  ctx.fillStyle="#fff";
+  ctx.font="900 48px Arial";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText("BOX PACKING PLACEMENT GUIDE",800,65);
+
+  const topArea={x:90,y:190,w:650,h:420};
+  const sideArea={x:860,y:190,w:650,h:420};
+
+  ctx.fillStyle="#111";
+  ctx.font="900 30px Arial";
+  ctx.textAlign="center";
+  ctx.fillText(`TOP VIEW — ${L} × ${W} cm`,topArea.x+topArea.w/2,155);
+  ctx.fillText(`SIDE VIEW — ${L} × ${H} cm`,sideArea.x+sideArea.w/2,155);
+
+  ctx.strokeStyle="#111";
+  ctx.lineWidth=5;
+  ctx.strokeRect(topArea.x,topArea.y,topArea.w,topArea.h);
+  ctx.strokeRect(sideArea.x,sideArea.y,sideArea.w,sideArea.h);
+
+  result.placements.forEach((p,i)=>{
+    drawPlacementRect(ctx,p,result.inner,topArea,"top",i);
+    drawPlacementRect(ctx,p,result.inner,sideArea,"side",i);
   });
+
+  ctx.fillStyle="#111";
+  ctx.textAlign="left";
+  ctx.font="900 28px Arial";
+  ctx.fillText("Placement Order / Legend",90,670);
+
+  ctx.font="700 21px Arial";
+  const maxLegend=12;
+  result.placements.slice(0,maxLegend).forEach((p,i)=>{
+    const col=i<6?0:1;
+    const row=i%6;
+    const x=90+col*720;
+    const y=715+row*40;
+    ctx.fillText(`${i+1}. ${shortProductName(p.name)} — ${p.originalDims.join("×")} cm`,x,y);
+  });
+
+  if(result.placements.length>maxLegend){
+    ctx.font="700 20px Arial";
+    ctx.fillText(`+ ${result.placements.length-maxLegend} more item(s) placed in remaining spaces`,90,965);
+  }
+
+  ctx.font="700 22px Arial";
+  ctx.fillStyle="#7f1d1d";
+  ctx.fillText("Packing tip: Heavy items at the bottom, fragile items on top, fill empty gaps with bubble wrap/thermocol.",90,930);
 }
 
-function showProducts(type){
-  hideWizardSteps();
-  document.body.classList.remove('wizard-popup-open');
-  updateOptionalSelectorVisibility(type);
-  document.querySelectorAll('.model-guard').forEach(el=>el.classList.add('hidden'));
-  const cards = document.querySelectorAll('.model-guard');
-  if(type==='fmcb' && cards[0]) cards[0].classList.remove('hidden');
-  if(type==='usb' && cards[1]) cards[1].classList.remove('hidden');
-  if(type==='combo' && cards[2]) cards[2].classList.remove('hidden');
-  const visible = document.querySelector('.model-guard:not(.hidden)');
-  if(visible) visible.scrollIntoView({behavior:'smooth', block:'start'});
-  if(type==='fmcb') speakText(tr('vFmcbProduct'), false);
-  if(type==='usb') speakText(tr('vUsbProduct'), false);
-  if(type==='combo') speakText(tr('vComboProduct'), false);
+function downloadPackingGuide(){
+  const data=calculateRecommendedBox();
+  if(!data){alert("Please select products first");return;}
+  generatePackingGuide();
+  const canvas=document.getElementById("packingGuideCanvas");
+  const a=document.createElement("a");
+  a.download="Games_Planet_Box_Packing_Guide.png";
+  a.href=canvas.toDataURL("image/png",1.0);
+  a.click();
 }
 
-function clearModel(){
-  selectedModelKey = '';
-  document.querySelectorAll('.model-btn').forEach(btn=>btn.classList.remove('active'));
-  document.querySelectorAll('.model-guard').forEach(el=>el.classList.add('hidden'));
-  const wrap = document.getElementById('selectedModelWrap'); if(wrap){ wrap.classList.add('hidden'); }
-  updateOptionalSelectorVisibility('fmcb');
-  showStep('step1', tr('vModel'));
+
+function isoProject3D(x,y,z,originX,originY,sx,sy,sz){
+  return {
+    x: originX + (x-y)*sx,
+    y: originY + (x+y)*sy - z*sz
+  };
 }
 
-document.addEventListener('DOMContentLoaded', function(){
-  addWizardBackButtons();
-  const browser = (navigator.language || '').toLowerCase();
-  if(browser.startsWith('hi')) currentLang='hi'; else if(browser.startsWith('pa')) currentLang='pa'; else currentLang='en';
-  applyLanguage();
-  updateOptionalSelectorVisibility('fmcb');
-  showModeSelector();
-});
+function drawPoly3D(ctx,pts,fill,stroke="#111",lineWidth=2){
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x,pts[0].y);
+  for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x,pts[i].y);
+  ctx.closePath();
+  if(fill){ctx.fillStyle=fill;ctx.fill();}
+  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lineWidth;ctx.stroke();}
+}
+
+function drawIsoCuboid(ctx,p,originX,originY,sx,sy,sz,index,label){
+  const colors=[
+    ["#fde68a","#fcd34d","#f59e0b"],
+    ["#bfdbfe","#93c5fd","#60a5fa"],
+    ["#bbf7d0","#86efac","#4ade80"],
+    ["#fecaca","#fca5a5","#f87171"],
+    ["#ddd6fe","#c4b5fd","#a78bfa"],
+    ["#fed7aa","#fdba74","#fb923c"],
+    ["#a7f3d0","#6ee7b7","#34d399"],
+    ["#fbcfe8","#f9a8d4","#f472b6"],
+    ["#bae6fd","#7dd3fc","#38bdf8"],
+    ["#e9d5ff","#d8b4fe","#c084fc"]
+  ][index%10];
+
+  const x=p.x+1,y=p.z+1,z=p.y+1;
+  const w=Math.max(.6,p.w-1.1),d=Math.max(.6,p.d-1.1),h=Math.max(.6,p.h-1.1);
+
+  const A=isoProject3D(x,y,z,originX,originY,sx,sy,sz);
+  const B=isoProject3D(x+w,y,z,originX,originY,sx,sy,sz);
+  const C=isoProject3D(x+w,y+d,z,originX,originY,sx,sy,sz);
+  const D=isoProject3D(x,y+d,z,originX,originY,sx,sy,sz);
+  const At=isoProject3D(x,y,z+h,originX,originY,sx,sy,sz);
+  const Bt=isoProject3D(x+w,y,z+h,originX,originY,sx,sy,sz);
+  const Ct=isoProject3D(x+w,y+d,z+h,originX,originY,sx,sy,sz);
+  const Dt=isoProject3D(x,y+d,z+h,originX,originY,sx,sy,sz);
+
+  drawPoly3D(ctx,[A,B,Bt,At],colors[1],"#1f2937",2);
+  drawPoly3D(ctx,[B,C,Ct,Bt],colors[2],"#1f2937",2);
+  drawPoly3D(ctx,[At,Bt,Ct,Dt],colors[0],"#1f2937",2);
+
+  const center={
+    x:(At.x+Bt.x+Ct.x+Dt.x)/4,
+    y:(At.y+Bt.y+Ct.y+Dt.y)/4
+  };
+  const short=shortProductName(label);
+  ctx.fillStyle="#111827";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  const fs=Math.max(13,Math.min(25,Math.min(w*sx,d*sx)/4));
+  ctx.font=`900 ${fs}px Arial`;
+  const text = (w*sx>100 && d*sx>70) ? short : String(index+1);
+  ctx.fillText(text,center.x,center.y);
+}
+
+function drawCushionDots(ctx,poly){
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(poly[0].x,poly[0].y);
+  for(let i=1;i<poly.length;i++) ctx.lineTo(poly[i].x,poly[i].y);
+  ctx.closePath();
+  ctx.clip();
+
+  ctx.fillStyle="#fef3c7";
+  ctx.fillRect(0,0,1600,1100);
+  ctx.fillStyle="rgba(245,158,11,.25)";
+  for(let y=0;y<1100;y+=24){
+    for(let x=0;x<1600;x+=24){
+      ctx.beginPath();
+      ctx.arc(x+(y/24%2)*12,y,3,0,Math.PI*2);
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+function generatePackingGuide(){
+  const canvas=document.getElementById("packingGuideCanvas");
+  const summary=document.getElementById("packingGuideSummary");
+  if(!canvas||!summary) return;
+
+  const ctx=canvas.getContext("2d");
+  canvas.width=1600;
+  canvas.height=1050;
+  ctx.fillStyle="#f8fafc";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  const boxData=getFinalPackingSolution();
+  if(!boxData){
+    summary.innerHTML="Select products to generate the packing arrangement.";
+    roundedRect(ctx,180,50,1240,100,24,"#d80000");
+    ctx.fillStyle="#fff";
+    ctx.font="900 52px Arial";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    ctx.fillText("SELECT PRODUCTS FOR 3D PACKING GUIDE",800,100);
+    ctx.fillStyle="#334155";
+    ctx.font="700 30px Arial";
+    ctx.fillText("The open carton and product placement will appear here.",800,480);
+    return;
+  }
+
+  const result=boxData.placement;
+  const [L,W,H]=boxData.selectedBox;
+
+  if(!result){
+    summary.innerHTML=`A safe custom box could not be calculated for the current selection. Please reduce quantity or split the order into two boxes.`;
+    ctx.fillStyle="#7f1d1d";
+    ctx.font="900 38px Arial";
+    ctx.textAlign="center";
+    ctx.fillText("PACKING GUIDE UNAVAILABLE",800,480);
+    return;
+  }
+
+  summary.innerHTML=
+    `<b>Box:</b> ${L} × ${W} × ${H} cm &nbsp; | &nbsp; `+
+    `<b>Items:</b> ${result.placements.length} &nbsp; | &nbsp; `+
+    `<b>Method:</b> Heavy/big items at bottom, small items in gaps`;
+
+  roundedRect(ctx,210,18,1180,88,22,"#d80000");
+  ctx.fillStyle="#fff";
+  ctx.font="900 48px Arial";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText("OPEN CARTON — 3D PACKING PLACEMENT",800,62);
+
+  const maxDim=Math.max(L,W,H);
+  const sx=520/(L+W);
+  const sy=sx*0.48;
+  const sz=Math.min(12,400/H);
+  const originX=800;
+  const originY=600;
+
+  const floor=[
+    isoProject3D(0,0,0,originX,originY,sx,sy,sz),
+    isoProject3D(L,0,0,originX,originY,sx,sy,sz),
+    isoProject3D(L,W,0,originX,originY,sx,sy,sz),
+    isoProject3D(0,W,0,originX,originY,sx,sy,sz)
+  ];
+  drawCushionDots(ctx,floor);
+
+  // Back and side walls.
+  const wallBack=[
+    isoProject3D(0,W,0,originX,originY,sx,sy,sz),
+    isoProject3D(L,W,0,originX,originY,sx,sy,sz),
+    isoProject3D(L,W,H,originX,originY,sx,sy,sz),
+    isoProject3D(0,W,H,originX,originY,sx,sy,sz)
+  ];
+  const wallLeft=[
+    isoProject3D(0,0,0,originX,originY,sx,sy,sz),
+    isoProject3D(0,W,0,originX,originY,sx,sy,sz),
+    isoProject3D(0,W,H,originX,originY,sx,sy,sz),
+    isoProject3D(0,0,H,originX,originY,sx,sy,sz)
+  ];
+  drawPoly3D(ctx,wallBack,"rgba(214,161,94,.50)","#7a4a16",4);
+  drawPoly3D(ctx,wallLeft,"rgba(189,125,56,.45)","#7a4a16",4);
+
+  // Open flaps.
+  const topBack0=isoProject3D(0,W,H,originX,originY,sx,sy,sz);
+  const topBack1=isoProject3D(L,W,H,originX,originY,sx,sy,sz);
+  const flapDepth=Math.min(W*.45,8);
+  const f0=isoProject3D(0,W+flapDepth,H,originX,originY,sx,sy,sz);
+  const f1=isoProject3D(L,W+flapDepth,H,originX,originY,sx,sy,sz);
+  drawPoly3D(ctx,[topBack0,topBack1,f1,f0],"rgba(230,186,123,.72)","#7a4a16",4);
+
+  const leftTop0=isoProject3D(0,0,H,originX,originY,sx,sy,sz);
+  const leftTop1=isoProject3D(0,W,H,originX,originY,sx,sy,sz);
+  const lf0=isoProject3D(-flapDepth,0,H,originX,originY,sx,sy,sz);
+  const lf1=isoProject3D(-flapDepth,W,H,originX,originY,sx,sy,sz);
+  drawPoly3D(ctx,[leftTop0,leftTop1,lf1,lf0],"rgba(214,161,94,.72)","#7a4a16",4);
+
+  // Draw products from back/bottom to front/top.
+  const ordered=[...result.placements].sort((a,b)=>(a.y+a.z)-(b.y+b.z));
+  ordered.forEach((p,i)=>drawIsoCuboid(ctx,p,originX,originY,sx,sy,sz,i,p.name));
+
+  // Front edges to make carton clearer.
+  const frontBottomL=isoProject3D(0,0,0,originX,originY,sx,sy,sz);
+  const frontBottomR=isoProject3D(L,0,0,originX,originY,sx,sy,sz);
+  const frontTopL=isoProject3D(0,0,H,originX,originY,sx,sy,sz);
+  const frontTopR=isoProject3D(L,0,H,originX,originY,sx,sy,sz);
+  ctx.strokeStyle="#7a4a16";
+  ctx.lineWidth=6;
+  [[frontBottomL,frontBottomR],[frontBottomL,frontTopL],[frontBottomR,frontTopR]].forEach(seg=>{
+    ctx.beginPath();ctx.moveTo(seg[0].x,seg[0].y);ctx.lineTo(seg[1].x,seg[1].y);ctx.stroke();
+  });
+
+  // Dimension arrows.
+  drawArrow(ctx,220,860,1380,860,`Length ${L} cm`);
+  drawArrow(ctx,145,760,145,300,`Height ${H} cm`);
+  drawArrow(ctx,1180,255,1380,160,`Width ${W} cm`);
+
+  // Legend.
+  roundedRect(ctx,85,900,1430,120,18,"#ffffff","#cbd5e1");
+  ctx.fillStyle="#111827";
+  ctx.font="900 25px Arial";
+  ctx.textAlign="left";
+  ctx.fillText("Packing Order",115,930);
+
+  const legend=ordered.slice(0,10);
+  ctx.font="700 19px Arial";
+  legend.forEach((p,i)=>{
+    const col=i<5?0:1;
+    const row=i%5;
+    const x=115+col*710;
+    const y=962+row*22;
+    ctx.fillText(`${i+1}. ${shortProductName(p.name)} — ${p.originalDims.join("×")} cm`,x,y);
+  });
+
+  ctx.fillStyle="#7f1d1d";
+  ctx.font="700 20px Arial";
+  ctx.textAlign="center";
+  ctx.fillText("Keep bubble wrap around every item. Heavy items at bottom, fragile items at top.",800,1032);
+}
+
+function downloadPackingGuide(){
+  const data=getFinalPackingSolution();
+  if(!data){alert("Please select products first");return;}
+  generatePackingGuide();
+  const canvas=document.getElementById("packingGuideCanvas");
+  const a=document.createElement("a");
+  a.download="Games_Planet_3D_Box_Packing_Guide.png";
+  a.href=canvas.toDataURL("image/png",1.0);
+  a.click();
+}
+
+
+const packing3DView={
+  yaw:-0.65,
+  pitch:0.55,
+  zoom:1,
+  panX:0,
+  panY:0,
+  dragging:false,
+  lastX:0,
+  lastY:0,
+  activePointers:new Map(),
+  pinchDistance:0
+};
+
+function resetPacking3DView(){
+  packing3DView.yaw=-0.65;
+  packing3DView.pitch=0.55;
+  packing3DView.zoom=1;
+  packing3DView.panX=0;
+  packing3DView.panY=0;
+  generatePackingGuide();
+}
+
+function projectInteractive3D(x,y,z,centerX,centerY,scale){
+  const cy=Math.cos(packing3DView.yaw);
+  const sy=Math.sin(packing3DView.yaw);
+  const cp=Math.cos(packing3DView.pitch);
+  const sp=Math.sin(packing3DView.pitch);
+
+  const rx=x*cy-y*sy;
+  const ry=x*sy+y*cy;
+
+  const py=ry*cp-z*sp;
+  const pz=ry*sp+z*cp;
+
+  return {
+    x:centerX + rx*scale*packing3DView.zoom + packing3DView.panX,
+    y:centerY + py*scale*packing3DView.zoom + packing3DView.panY,
+    depth:pz
+  };
+}
+
+function drawFaceInteractive(ctx,points,fill,stroke="#111827",lineWidth=2){
+  ctx.beginPath();
+  ctx.moveTo(points[0].x,points[0].y);
+  for(let i=1;i<points.length;i++) ctx.lineTo(points[i].x,points[i].y);
+  ctx.closePath();
+  if(fill){ctx.fillStyle=fill;ctx.fill();}
+  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lineWidth;ctx.stroke();}
+}
+
+function cuboidFaces(p,centerX,centerY,scale){
+  const x=p.x+1,y=p.z+1,z=p.y+1;
+  const w=Math.max(.6,p.w-1.1),d=Math.max(.6,p.d-1.1),h=Math.max(.6,p.h-1.1);
+
+  const V=[
+    projectInteractive3D(x,y,z,centerX,centerY,scale),
+    projectInteractive3D(x+w,y,z,centerX,centerY,scale),
+    projectInteractive3D(x+w,y+d,z,centerX,centerY,scale),
+    projectInteractive3D(x,y+d,z,centerX,centerY,scale),
+    projectInteractive3D(x,y,z+h,centerX,centerY,scale),
+    projectInteractive3D(x+w,y,z+h,centerX,centerY,scale),
+    projectInteractive3D(x+w,y+d,z+h,centerX,centerY,scale),
+    projectInteractive3D(x,y+d,z+h,centerX,centerY,scale)
+  ];
+
+  return {
+    vertices:V,
+    faces:[
+      {idx:[0,1,5,4],shade:1},
+      {idx:[1,2,6,5],shade:2},
+      {idx:[2,3,7,6],shade:2},
+      {idx:[3,0,4,7],shade:1},
+      {idx:[4,5,6,7],shade:0}
+    ]
+  };
+}
+
+function generatePackingGuide(){
+  const canvas=document.getElementById("packingGuideCanvas");
+  const summary=document.getElementById("packingGuideSummary");
+  if(!canvas||!summary) return;
+
+  const ctx=canvas.getContext("2d");
+  canvas.width=1600;
+  canvas.height=1050;
+  ctx.fillStyle="#f8fafc";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  const boxData=getFinalPackingSolution();
+  if(!boxData){
+    summary.innerHTML="Select products to generate the packing arrangement.";
+    roundedRect(ctx,180,50,1240,100,24,"#d80000");
+    ctx.fillStyle="#fff";
+    ctx.font="900 52px Arial";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    ctx.fillText("SELECT PRODUCTS FOR INTERACTIVE 3D GUIDE",800,100);
+    ctx.fillStyle="#334155";
+    ctx.font="700 30px Arial";
+    ctx.fillText("Drag, rotate and zoom will work after products are selected.",800,480);
+    return;
+  }
+
+  const result=boxData.placement;
+  const [L,W,H]=boxData.selectedBox;
+  if(!result){
+    summary.innerHTML="Packing placement could not be generated for this selection.";
+    return;
+  }
+
+  summary.innerHTML=
+    `<b>Box:</b> ${L} × ${W} × ${H} cm &nbsp; | &nbsp; `+
+    `<b>Items:</b> ${result.placements.length} &nbsp; | &nbsp; `+
+    `<b>Interactive:</b> Drag to rotate, wheel/pinch to zoom`;
+
+  roundedRect(ctx,210,18,1180,88,22,"#d80000");
+  ctx.fillStyle="#fff";
+  ctx.font="900 45px Arial";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText("INTERACTIVE 3D OPEN CARTON PACKING GUIDE",800,62);
+
+  const centerX=800,centerY=570;
+  const scale=470/Math.max(L,W,H);
+
+  // Draw carton floor and walls.
+  const corners=[
+    [0,0,0],[L,0,0],[L,W,0],[0,W,0],
+    [0,0,H],[L,0,H],[L,W,H],[0,W,H]
+  ].map(v=>projectInteractive3D(v[0],v[1],v[2],centerX,centerY,scale));
+
+  const cartonFaces=[
+    {idx:[0,1,2,3],fill:"#fef3c7"},
+    {idx:[3,2,6,7],fill:"rgba(214,161,94,.50)"},
+    {idx:[0,3,7,4],fill:"rgba(189,125,56,.45)"}
+  ];
+
+  cartonFaces
+    .map(f=>({...f,depth:f.idx.reduce((s,i)=>s+corners[i].depth,0)/f.idx.length}))
+    .sort((a,b)=>a.depth-b.depth)
+    .forEach(f=>drawFaceInteractive(ctx,f.idx.map(i=>corners[i]),f.fill,"#7a4a16",4));
+
+  // Draw products sorted by depth.
+  const palette=[
+    ["#fde68a","#fcd34d","#f59e0b"],
+    ["#bfdbfe","#93c5fd","#60a5fa"],
+    ["#bbf7d0","#86efac","#4ade80"],
+    ["#fecaca","#fca5a5","#f87171"],
+    ["#ddd6fe","#c4b5fd","#a78bfa"],
+    ["#fed7aa","#fdba74","#fb923c"],
+    ["#a7f3d0","#6ee7b7","#34d399"],
+    ["#fbcfe8","#f9a8d4","#f472b6"],
+    ["#bae6fd","#7dd3fc","#38bdf8"],
+    ["#e9d5ff","#d8b4fe","#c084fc"]
+  ];
+
+  const objects=result.placements.map((p,index)=>{
+    const cf=cuboidFaces(p,centerX,centerY,scale);
+    const avg=cf.vertices.reduce((s,v)=>s+v.depth,0)/cf.vertices.length;
+    return {p,index,cf,avg};
+  }).sort((a,b)=>a.avg-b.avg);
+
+  objects.forEach(obj=>{
+    const colors=palette[obj.index%palette.length];
+    obj.cf.faces
+      .map(f=>({...f,depth:f.idx.reduce((s,i)=>s+obj.cf.vertices[i].depth,0)/f.idx.length}))
+      .sort((a,b)=>a.depth-b.depth)
+      .forEach(f=>drawFaceInteractive(ctx,f.idx.map(i=>obj.cf.vertices[i]),colors[f.shade],"#1f2937",2));
+
+    const top=obj.cf.faces.find(f=>f.shade===0);
+    const pts=top.idx.map(i=>obj.cf.vertices[i]);
+    const cx=pts.reduce((s,v)=>s+v.x,0)/pts.length;
+    const cy=pts.reduce((s,v)=>s+v.y,0)/pts.length;
+    ctx.fillStyle="#111827";
+    ctx.font="900 20px Arial";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    ctx.fillText(String(obj.index+1),cx,cy);
+  });
+
+  // Carton front edges.
+  ctx.strokeStyle="#7a4a16";
+  ctx.lineWidth=6;
+  [[0,1],[0,4],[1,5],[4,5],[5,6],[4,7]].forEach(([a,b])=>{
+    ctx.beginPath();ctx.moveTo(corners[a].x,corners[a].y);ctx.lineTo(corners[b].x,corners[b].y);ctx.stroke();
+  });
+
+  // Status and legend.
+  roundedRect(ctx,75,885,1450,125,18,"#ffffff","#cbd5e1");
+  ctx.fillStyle="#111827";
+  ctx.font="900 25px Arial";
+  ctx.textAlign="left";
+  ctx.fillText(`Box ${L} × ${W} × ${H} cm`,105,918);
+  ctx.font="700 18px Arial";
+  const legend=objects.slice(0,12);
+  legend.forEach((obj,i)=>{
+    const col=i<6?0:1;
+    const row=i%6;
+    const x=105+col*720;
+    const y=950+row*18;
+    ctx.fillText(`${obj.index+1}. ${shortProductName(obj.p.name)} — ${obj.p.originalDims.join("×")} cm`,x,y);
+  });
+
+  ctx.fillStyle="#7f1d1d";
+  ctx.font="700 19px Arial";
+  ctx.textAlign="center";
+  ctx.fillText("Drag to rotate • Mouse wheel / pinch to zoom • Heavy items at bottom • Bubble wrap in empty gaps",800,1032);
+}
+
+function setupPacking3DInteraction(){
+  const canvas=document.getElementById("packingGuideCanvas");
+  if(!canvas || canvas.dataset.interactiveReady==="1") return;
+  canvas.dataset.interactiveReady="1";
+
+  canvas.addEventListener("pointerdown",function(e){
+    canvas.setPointerCapture(e.pointerId);
+    packing3DView.activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    packing3DView.dragging=true;
+    packing3DView.lastX=e.clientX;
+    packing3DView.lastY=e.clientY;
+    canvas.classList.add("is-dragging");
+
+    if(packing3DView.activePointers.size===2){
+      const pts=[...packing3DView.activePointers.values()];
+      packing3DView.pinchDistance=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);
+    }
+  });
+
+  canvas.addEventListener("pointermove",function(e){
+    if(!packing3DView.activePointers.has(e.pointerId)) return;
+    packing3DView.activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+
+    if(packing3DView.activePointers.size===1){
+      const dx=e.clientX-packing3DView.lastX;
+      const dy=e.clientY-packing3DView.lastY;
+      packing3DView.yaw+=dx*0.008;
+      packing3DView.pitch=Math.max(-1.15,Math.min(1.15,packing3DView.pitch+dy*0.008));
+      packing3DView.lastX=e.clientX;
+      packing3DView.lastY=e.clientY;
+      generatePackingGuide();
+    }else if(packing3DView.activePointers.size===2){
+      const pts=[...packing3DView.activePointers.values()];
+      const dist=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);
+      if(packing3DView.pinchDistance){
+        packing3DView.zoom*=dist/packing3DView.pinchDistance;
+        packing3DView.zoom=Math.max(.45,Math.min(2.8,packing3DView.zoom));
+      }
+      packing3DView.pinchDistance=dist;
+      generatePackingGuide();
+    }
+  });
+
+  function endPointer(e){
+    packing3DView.activePointers.delete(e.pointerId);
+    if(packing3DView.activePointers.size===0){
+      packing3DView.dragging=false;
+      canvas.classList.remove("is-dragging");
+    }else if(packing3DView.activePointers.size===1){
+      const p=[...packing3DView.activePointers.values()][0];
+      packing3DView.lastX=p.x;
+      packing3DView.lastY=p.y;
+    }
+    packing3DView.pinchDistance=0;
+  }
+
+  canvas.addEventListener("pointerup",endPointer);
+  canvas.addEventListener("pointercancel",endPointer);
+
+  canvas.addEventListener("wheel",function(e){
+    e.preventDefault();
+    const factor=e.deltaY<0?1.1:0.9;
+    packing3DView.zoom=Math.max(.45,Math.min(2.8,packing3DView.zoom*factor));
+    generatePackingGuide();
+  },{passive:false});
+}
+
+
+/* Original product image textures inside interactive 3D box */
+const packingTextureCache=new Map();
+
+function getPackingTexture(src){
+  if(!src) return Promise.resolve(null);
+  if(packingTextureCache.has(src)) return packingTextureCache.get(src);
+
+  const promise=new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>resolve(img);
+    img.onerror=()=>resolve(null);
+    img.src=src;
+  });
+  packingTextureCache.set(src,promise);
+  return promise;
+}
+
+function drawImageTriangle(ctx,img,p0,p1,p2,t0,t1,t2){
+  const x0=t0.x,y0=t0.y,x1=t1.x,y1=t1.y,x2=t2.x,y2=t2.y;
+  const X0=p0.x,Y0=p0.y,X1=p1.x,Y1=p1.y,X2=p2.x,Y2=p2.y;
+
+  const det=(x0*(y1-y2)+x1*(y2-y0)+x2*(y0-y1));
+  if(Math.abs(det)<0.0001) return;
+
+  const a=(X0*(y1-y2)+X1*(y2-y0)+X2*(y0-y1))/det;
+  const c=(X0*(x2-x1)+X1*(x0-x2)+X2*(x1-x0))/det;
+  const e=(X0*(x1*y2-x2*y1)+X1*(x2*y0-x0*y2)+X2*(x0*y1-x1*y0))/det;
+
+  const b=(Y0*(y1-y2)+Y1*(y2-y0)+Y2*(y0-y1))/det;
+  const d=(Y0*(x2-x1)+Y1*(x0-x2)+Y2*(x1-x0))/det;
+  const f=(Y0*(x1*y2-x2*y1)+Y1*(x2*y0-x0*y2)+Y2*(x0*y1-x1*y0))/det;
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(X0,Y0);ctx.lineTo(X1,Y1);ctx.lineTo(X2,Y2);ctx.closePath();
+  ctx.clip();
+  ctx.setTransform(a,b,c,d,e,f);
+  ctx.drawImage(img,0,0);
+  ctx.restore();
+}
+
+function drawImageOnQuad(ctx,img,q0,q1,q2,q3){
+  if(!img) return;
+  const iw=img.width, ih=img.height;
+  drawImageTriangle(
+    ctx,img,
+    q0,q1,q2,
+    {x:0,y:0},{x:iw,y:0},{x:iw,y:ih}
+  );
+  drawImageTriangle(
+    ctx,img,
+    q0,q2,q3,
+    {x:0,y:0},{x:iw,y:ih},{x:0,y:ih}
+  );
+}
+
+function drawDimension3D(ctx,a,b,label,offsetX=0,offsetY=0){
+  const x1=a.x+offsetX,y1=a.y+offsetY,x2=b.x+offsetX,y2=b.y+offsetY;
+  ctx.strokeStyle="#0f172a";
+  ctx.fillStyle="#0f172a";
+  ctx.lineWidth=4;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+
+  const ang=Math.atan2(y2-y1,x2-x1), ah=15;
+  [[x1,y1,ang+Math.PI],[x2,y2,ang]].forEach(([x,y,a2])=>{
+    ctx.beginPath();
+    ctx.moveTo(x,y);
+    ctx.lineTo(x-ah*Math.cos(a2-Math.PI/6),y-ah*Math.sin(a2-Math.PI/6));
+    ctx.lineTo(x-ah*Math.cos(a2+Math.PI/6),y-ah*Math.sin(a2+Math.PI/6));
+    ctx.closePath();ctx.fill();
+  });
+
+  const mx=(x1+x2)/2,my=(y1+y2)/2;
+  ctx.font="900 25px Arial";
+  const tw=ctx.measureText(label).width+26;
+  roundedRect(ctx,mx-tw/2,my-19,tw,38,10,"rgba(255,255,255,.94)","#0f172a");
+  ctx.fillStyle="#0f172a";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText(label,mx,my);
+}
+
+/* Override selected physical items so each 3D item carries its original image */
+function getSelectedPhysicalItems(){
+  const items=[];
+  products.forEach((p,i)=>{
+    if(p.variants){
+      p.variants.forEach(v=>{
+        const qty=state['v_'+i+'_'+v]||0;
+        const image=(p.variantImages&&p.variantImages[v]) || (p.images&&p.images[0]) || "";
+        for(let n=0;n<qty;n++){
+          items.push({
+            name:`${p.name} - ${v}`,
+            dims:[...p.dimensions],
+            weight:p.weight,
+            image
+          });
+        }
+      });
+    }else{
+      const qty=state[i]||0;
+      const image=(p.images&&p.images[0])||"";
+      for(let n=0;n<qty;n++){
+        items.push({
+          name:p.name,
+          dims:[...p.dimensions],
+          weight:p.weight,
+          image
+        });
+      }
+    }
+  });
+  return items;
+}
+
+/* Override placement creator so image information stays attached */
+function getPackingPlacements(items,outerBox){
+  const inner=outerBox.map(v=>Math.max(0,v-2));
+  const sorted=items
+    .map((it,index)=>({
+      id:index,
+      name:it.name,
+      image:it.image||"",
+      dims:paddedItemDims(it),
+      originalDims:[...it.dims],
+      weight:it.weight
+    }))
+    .sort((a,b)=>(b.dims[0]*b.dims[1]*b.dims[2])-(a.dims[0]*a.dims[1]*a.dims[2]));
+
+  let spaces=[{x:0,y:0,z:0,w:inner[0],h:inner[2],d:inner[1]}];
+  const placements=[];
+
+  for(const item of sorted){
+    let best=null;
+
+    spaces.forEach((space,si)=>{
+      permutations3(item.dims).forEach(o=>{
+        const [w,d,h]=o;
+        if(w<=space.w && d<=space.d && h<=space.h){
+          const waste=(space.w*space.d*space.h)-(w*d*h);
+          const score=waste+(space.w-w)*2+(space.d-d)*2+(space.h-h);
+          if(!best||score<best.score) best={si,w,d,h,score};
+        }
+      });
+    });
+
+    if(!best) return null;
+
+    const s=spaces.splice(best.si,1)[0];
+    placements.push({
+      name:item.name,
+      image:item.image,
+      originalDims:item.originalDims,
+      x:s.x,y:s.y,z:s.z,
+      w:best.w,d:best.d,h:best.h
+    });
+
+    const right={x:s.x+best.w,y:s.y,z:s.z,w:s.w-best.w,h:s.h,d:s.d};
+    const front={x:s.x,y:s.y,z:s.z+best.d,w:best.w,h:s.h,d:s.d-best.d};
+    const top={x:s.x,y:s.y+best.h,z:s.z,w:best.w,h:s.h-best.h,d:best.d};
+
+    [right,front,top].forEach(sp=>{
+      if(sp.w>0.5&&sp.d>0.5&&sp.h>0.5) spaces.push(sp);
+    });
+    spaces.sort((a,b)=>(a.w*a.d*a.h)-(b.w*b.d*b.h));
+  }
+
+  return {placements,inner};
+}
+
+async function generatePackingGuide(){
+  const canvas=document.getElementById("packingGuideCanvas");
+  const summary=document.getElementById("packingGuideSummary");
+  if(!canvas||!summary) return;
+
+  const ctx=canvas.getContext("2d");
+  canvas.width=1600;
+  canvas.height=1080;
+  ctx.fillStyle="#f8fafc";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  const boxData=getFinalPackingSolution();
+  if(!boxData){
+    summary.innerHTML="Select products to generate the packing arrangement.";
+    roundedRect(ctx,170,45,1260,100,24,"#d80000");
+    ctx.fillStyle="#fff";
+    ctx.font="900 50px Arial";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    ctx.fillText("SELECT PRODUCTS FOR INTERACTIVE 3D GUIDE",800,95);
+    ctx.fillStyle="#334155";
+    ctx.font="700 30px Arial";
+    ctx.fillText("Original product images will appear inside the carton.",800,500);
+    return;
+  }
+
+  const result=boxData.placement;
+  const [L,W,H]=boxData.selectedBox;
+  if(!result){
+    summary.innerHTML="Packing placement could not be generated for this selection.";
+    return;
+  }
+
+  summary.innerHTML=
+    `<b>Box Size:</b> ${L} × ${W} × ${H} cm &nbsp; | &nbsp; `+
+    `<b>Items:</b> ${result.placements.length} &nbsp; | &nbsp; `+
+    `<b>Control:</b> Drag 360° • Wheel/Pinch Zoom`;
+
+  roundedRect(ctx,185,18,1230,88,22,"#d80000");
+  ctx.fillStyle="#fff";
+  ctx.font="900 43px Arial";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText("INTERACTIVE 3D CARTON — ORIGINAL PRODUCT IMAGES",800,62);
+
+  const centerX=800,centerY=590;
+  const scale=455/Math.max(L,W,H);
+
+  const corners=[
+    [0,0,0],[L,0,0],[L,W,0],[0,W,0],
+    [0,0,H],[L,0,H],[L,W,H],[0,W,H]
+  ].map(v=>projectInteractive3D(v[0],v[1],v[2],centerX,centerY,scale));
+
+  const cartonFaces=[
+    {idx:[0,1,2,3],fill:"#fef3c7"},
+    {idx:[3,2,6,7],fill:"rgba(214,161,94,.48)"},
+    {idx:[0,3,7,4],fill:"rgba(189,125,56,.44)"}
+  ];
+
+  cartonFaces
+    .map(f=>({...f,depth:f.idx.reduce((s,i)=>s+corners[i].depth,0)/f.idx.length}))
+    .sort((a,b)=>a.depth-b.depth)
+    .forEach(f=>drawFaceInteractive(ctx,f.idx.map(i=>corners[i]),f.fill,"#7a4a16",4));
+
+  const palette=[
+    ["#fde68a","#fcd34d","#f59e0b"],["#bfdbfe","#93c5fd","#60a5fa"],
+    ["#bbf7d0","#86efac","#4ade80"],["#fecaca","#fca5a5","#f87171"],
+    ["#ddd6fe","#c4b5fd","#a78bfa"],["#fed7aa","#fdba74","#fb923c"],
+    ["#a7f3d0","#6ee7b7","#34d399"],["#fbcfe8","#f9a8d4","#f472b6"],
+    ["#bae6fd","#7dd3fc","#38bdf8"],["#e9d5ff","#d8b4fe","#c084fc"]
+  ];
+
+  const textureList=await Promise.all(result.placements.map(p=>getPackingTexture(p.image)));
+
+  const objects=result.placements.map((p,index)=>{
+    const cf=cuboidFaces(p,centerX,centerY,scale);
+    const avg=cf.vertices.reduce((s,v)=>s+v.depth,0)/cf.vertices.length;
+    return {p,index,cf,avg,img:textureList[index]};
+  }).sort((a,b)=>a.avg-b.avg);
+
+  objects.forEach(obj=>{
+    const colors=palette[obj.index%palette.length];
+    obj.cf.faces
+      .map(f=>({...f,depth:f.idx.reduce((s,i)=>s+obj.cf.vertices[i].depth,0)/f.idx.length}))
+      .sort((a,b)=>a.depth-b.depth)
+      .forEach(f=>drawFaceInteractive(ctx,f.idx.map(i=>obj.cf.vertices[i]),colors[f.shade],"#1f2937",2));
+
+    const top=obj.cf.faces.find(f=>f.shade===0);
+    const pts=top.idx.map(i=>obj.cf.vertices[i]);
+
+    if(obj.img){
+      ctx.save();
+      ctx.globalAlpha=.96;
+      drawImageOnQuad(ctx,obj.img,pts[0],pts[1],pts[2],pts[3]);
+      ctx.restore();
+      drawFaceInteractive(ctx,pts,null,"#111827",2);
+    }
+
+    const cx=pts.reduce((s,v)=>s+v.x,0)/pts.length;
+    const cy=pts.reduce((s,v)=>s+v.y,0)/pts.length;
+    ctx.font="900 19px Arial";
+    const badge=String(obj.index+1);
+    roundedRect(ctx,cx-17,cy-17,34,34,17,"rgba(255,255,255,.92)","#111827");
+    ctx.fillStyle="#111827";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    ctx.fillText(badge,cx,cy);
+  });
+
+  ctx.strokeStyle="#7a4a16";
+  ctx.lineWidth=6;
+  [[0,1],[0,4],[1,5],[4,5],[5,6],[4,7]].forEach(([a,b])=>{
+    ctx.beginPath();ctx.moveTo(corners[a].x,corners[a].y);ctx.lineTo(corners[b].x,corners[b].y);ctx.stroke();
+  });
+
+  /* 3D dimension arrows that rotate together with the carton */
+  drawDimension3D(ctx,corners[0],corners[1],`Length ${L} cm`,0,55);
+  drawDimension3D(ctx,corners[0],corners[3],`Width ${W} cm`,-45,5);
+  drawDimension3D(ctx,corners[0],corners[4],`Height ${H} cm`,-60,0);
+
+  roundedRect(ctx,70,890,1460,145,18,"#ffffff","#cbd5e1");
+  ctx.fillStyle="#111827";
+  ctx.font="900 27px Arial";
+  ctx.textAlign="left";
+  ctx.fillText(`Recommended Box Size: ${L} × ${W} × ${H} cm`,100,925);
+
+  ctx.font="700 18px Arial";
+  const legend=objects.slice(0,12);
+  legend.forEach((obj,i)=>{
+    const col=i<6?0:1;
+    const row=i%6;
+    const x=100+col*730;
+    const y=960+row*19;
+    ctx.fillText(`${obj.index+1}. ${shortProductName(obj.p.name)} — ${obj.p.originalDims.join("×")} cm`,x,y);
+  });
+
+  ctx.fillStyle="#7f1d1d";
+  ctx.font="700 19px Arial";
+  ctx.textAlign="center";
+  ctx.fillText("Original product photos are shown on the 3D blocks • Drag to rotate • Pinch/wheel to zoom",800,1055);
+}
+
+function initializePage(){
+  try{
+    render();
+    setupPacking3DInteraction();
+  }catch(error){
+    console.error("Page initialization error:", error);
+    alert("Page initialization error: "+(error?.message || "Unknown error"));
+  }
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded", initializePage, {once:true});
+}else{
+  initializePage();
+}
+
 </script>
 
 
+<div class="footer-card"><div class="footer-inner">
+<div style="color:#9fb0c7;font-size:13px;margin-bottom:16px"><b style="color:#fff">Updated Price List</b><br>Last Updated: 21-07-2026</div>
+<h3>🏪 Games Planet</h3>
+<p>📍 Near JK's Tyre, Front of Raza Sugar Mill Gate<br>
+Radha Road to Gurudwara Road, Civil Lines<br>
+Rampur, U.P – 244901</p>
+<p>🕒 <b>Monday – Sunday</b><br>11:00 AM – 9:30 PM</p>
+<p>💬 <a href="https://wa.me/917983624797" style="color:#25D366;font-weight:bold;text-decoration:none;">7983624797</a></p>
+<p><a href="https://maps.app.goo.gl/JTaBzF9TTqFH9X2L9" style="display:inline-block;padding:10px 18px;background:#2563eb;color:#fff;border-radius:10px;text-decoration:none;">📍 Google Map Location</a></p>
+</div></div>
 
+<div style="text-align:center;margin:22px">
+<button class="policy-btn" onclick="document.getElementById('policyModal').style.display='flex'">🛡️ Warranty, Return & Refund Policy</button>
+</div>
+</main>
+<aside class="desktop-right">
+<div class="combined-poster-wrap" id="combinedPosterSection">
+  <div class="combined-poster-card">
+    <div class="combined-poster-head">
+      <h3>Selected Products Combined Picture</h3>
+      <div class="combined-poster-actions">
+        <button class="poster-btn poster-refresh" onclick="generateCombinedPoster()">Refresh Picture</button>
+        <button class="poster-btn poster-download" onclick="downloadCombinedPoster()">Download Picture</button>
+      </div>
+    </div>
+    <div class="poster-stage">
+      <canvas id="combinedPoster" width="1600" height="900"></canvas>
+    </div>
+    <div class="poster-note">Selected products and their total quantities automatically appear in one catalog-style picture. For 12 Core Wire, the selected quantity is shown as total meter length.</div>
+  </div>
+</div>
+<div class="combined-poster-wrap" id="boxPlannerSection">
+  <div class="combined-poster-card">
+    <div class="combined-poster-head">
+      <h3>📦 Smart Packing Box Planner</h3>
+      <div class="combined-poster-actions">
+        <button class="poster-btn poster-refresh" onclick="generateBoxPlanner()">Refresh Box</button>
+        <button class="poster-btn poster-download" onclick="downloadBoxPlanner()">Download Box Picture</button>
+      </div>
+    </div>
+    <div id="boxPlannerSummary" class="box-summary">Select products to calculate the recommended box.</div>
+    <div class="poster-stage">
+      <canvas id="boxPlannerCanvas" width="1600" height="900"></canvas>
+    </div>
+    <div class="poster-note">The box is tested using a 3D fit calculation, preset practical sizes and extra safety space for bubble wrap, thermocol and safe packing. Dimensions are not added to the WhatsApp order message.</div>
+  </div>
+</div>
 
-<div id="buyConfirmPopup" role="dialog" aria-modal="true" aria-labelledby="buyConfirmTitle">
-  <div class="buy-confirm-box">
-    <button type="button" class="buy-confirm-close" onclick="closeBuyConfirmation()" aria-label="Close">✕</button>
-    <div class="buy-confirm-icon">✅</div>
-    <h3 id="buyConfirmTitle">Are you confirmed?</h3>
-    <p id="buyConfirmMessage">To go to the next step, agree below, fill in your details, complete the payment, and book your order.</p>
-    <div class="buy-confirm-actions">
-      <button type="button" class="buy-confirm-cancel" onclick="closeBuyConfirmation()">Close</button>
-      <button type="button" class="buy-confirm-agree" onclick="agreeAndContinueBuy()">I Agree — Continue</button>
+<div class="combined-poster-wrap" id="packingGuideSection">
+  <div class="combined-poster-card">
+    <div class="combined-poster-head">
+      <h3>🧩 Box Packing Placement Guide</h3>
+      <div class="combined-poster-actions">
+        <button class="poster-btn poster-refresh" onclick="generatePackingGuide()">Refresh Guide</button>
+<button class="poster-btn poster-refresh" onclick="resetPacking3DView()">Reset 3D View</button>
+        <button class="poster-btn poster-download" onclick="downloadPackingGuide()">Download Guide</button>
+      </div>
+    </div>
+    <div id="packingGuideSummary" class="box-summary">Select products to generate the packing arrangement.</div>
+    <div class="poster-stage">
+      <canvas id="packingGuideCanvas" width="1600" height="1000"></canvas>
+    </div>
+    <div class="poster-note">This guide shows a practical suggested arrangement based on product dimensions. Keep fragile items cushioned and do not force-fit products.</div>
+<div class="packing-3d-help">🖱️ Drag to rotate • Mouse wheel to zoom • 📱 One finger drag to rotate • Two fingers pinch to zoom</div>
+  </div>
+</div>
+
+</aside>
+</div>
+
+<div id="optionalGameModal" role="dialog" aria-modal="true" aria-labelledby="optionalGameModalTitle">
+  <div class="optional-modal-box">
+    <h3 id="optionalGameModalTitle">⚠️ पहले Order और Payment करें</h3>
+    <p>Optional Games Selector इस्तेमाल करने से पहले इस page पर अपना सही USB या Combo product select करें, quantity add करें, WhatsApp पर order भेजें और payment complete करें। Payment के बाद अपनी पसंद के games select करके list WhatsApp पर submit करें।</p>
+    <div class="optional-modal-actions">
+      <button type="button" class="optional-modal-close" onclick="closeOptionalGameSelector()">अभी नहीं</button>
+      <button type="button" class="optional-modal-continue" onclick="continueOptionalGameSelector()">समझ गया — Selector खोलें</button>
     </div>
   </div>
 </div>
 
-<div id="gameSelectorWarning" role="dialog" aria-modal="true" aria-labelledby="gameSelectorWarningTitle">
-  <div class="game-selector-warning-box">
-    <button type="button" class="game-selector-warning-close" onclick="closeGameSelectorWarning()" aria-label="Close">✕</button>
-    <div class="game-selector-warning-icon">⚠️</div>
-    <h3 id="gameSelectorWarningTitle">Important Warning</h3>
-    <p>पहले अपना ऑर्डर बुक करें और पेमेंट करें। उसके बाद ही Game Selector का उपयोग करें।</p>
-    <div class="game-selector-warning-actions">
-      <button type="button" class="game-selector-cancel" onclick="closeGameSelectorWarning()">Close</button>
-      <button type="button" class="game-selector-continue" onclick="continueToGameSelector()">Continue to Game Selector</button>
-    </div>
-  </div>
-</div>
+<div id="policyModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:999999;justify-content:center;align-items:center;">
+<div style="max-width:700px;background:#111827;color:#fff;padding:20px;border-radius:14px;margin:20px;">
+<h2>🛡️ Warranty, Return & Refund Policy</h2>
+<p>✅ All products are checked before dispatch and we always try to provide the best quality products.</p>
+<p>❌ No Warranty</p>
+<p>❌ No Return</p>
+<p>❌ No Refund</p>
+<p>❌ No Replacement</p>
+<p>Please verify compatibility before placing your order.</p>
+<div style="text-align:center"><button onclick="document.getElementById('policyModal').style.display='none'" style="padding:10px 18px;border:none;border-radius:8px;background:#2563eb;color:#fff;">Close</button></div>
+</div></div>
 
-<div id="imagePopup"><span class="close" onclick="closeImg()">✕</span><img id="popupImg"></div>
 <script>
-function openImg(s){document.getElementById('imagePopup').style.display='flex';document.getElementById('popupImg').src=s;}
-function closeImg(){document.getElementById('imagePopup').style.display='none';}
-
-</script>
-
-<script id="game-selector-warning-script">
-let pendingGameSelectorUrl = '';
-function openGameSelectorWarning(url){
-  pendingGameSelectorUrl = url || '';
-  const popup = document.getElementById('gameSelectorWarning');
-  if(popup) popup.classList.add('show');
-  document.body.style.overflow = 'hidden';
+let pendingOptionalSelectorUrl="";
+function openOptionalGameSelector(event,url){
+  if(event) event.preventDefault();
+  pendingOptionalSelectorUrl=url||"";
+  const modal=document.getElementById("optionalGameModal");
+  if(modal) modal.classList.add("show");
+  document.body.style.overflow="hidden";
+  return false;
 }
-function closeGameSelectorWarning(){
-  const popup = document.getElementById('gameSelectorWarning');
-  if(popup) popup.classList.remove('show');
-  document.body.style.overflow = '';
-  pendingGameSelectorUrl = '';
+function closeOptionalGameSelector(){
+  const modal=document.getElementById("optionalGameModal");
+  if(modal) modal.classList.remove("show");
+  document.body.style.overflow="";
+  pendingOptionalSelectorUrl="";
 }
-function continueToGameSelector(){
-  const url = pendingGameSelectorUrl;
-  closeGameSelectorWarning();
-  if(url) window.open(url, '_blank', 'noopener');
+function continueOptionalGameSelector(){
+  const url=pendingOptionalSelectorUrl;
+  closeOptionalGameSelector();
+  if(url) window.open(url,"_blank","noopener");
 }
-document.addEventListener('DOMContentLoaded', function(){
-  document.querySelectorAll('.optional-selector-link').forEach(function(link){
-    link.addEventListener('click', function(event){
-      event.preventDefault();
-      openGameSelectorWarning(link.href);
-    });
-  });
-  const popup = document.getElementById('gameSelectorWarning');
-  if(popup){
-    popup.addEventListener('click', function(event){
-      if(event.target === popup) closeGameSelectorWarning();
-    });
-  }
-  document.addEventListener('keydown', function(event){
-    if(event.key === 'Escape') closeGameSelectorWarning();
-  });
+document.getElementById("optionalGameModal")?.addEventListener("click",function(event){
+  if(event.target===this) closeOptionalGameSelector();
 });
 </script>
+
+
+
 
 </body>
 </html>
