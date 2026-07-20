@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Games Planet • PS2 Quick Buy — Updated v7</title>
-<!-- Games Planet patched build: 20-Jul-2026 v7
+<title>Games Planet • PS2 Quick Buy — Updated v9</title>
+<!-- Games Planet patched build: 20-Jul-2026 v9
      Includes Simple/Detail mode, manual Name Next button, smaller PS2 images,
-     faster voice and continuous Hindi/Punjabi mixed-language speech. -->
+     per-variant Top/Optional actions and animated purchase-button pointers. -->
 <meta name="description" content="Buy FMCB/FunTuna card, USB-only, or FMCB+USB Combo for PlayStation 2 with one-tap WhatsApp redirect. Top & Optional game packs supported."/>
 
 <style>
@@ -1211,6 +1211,21 @@ body.wizard-popup-open{
 
 
 <style id="game-selector-warning-style">
+.variant-buy-card{border:1px solid #dbe3ef;border-radius:18px;background:#f8fafc;padding:13px;margin-bottom:12px;box-shadow:0 7px 18px rgba(15,23,42,.06)}
+.variant-buy-name{font-weight:900;color:#0f172a;font-size:1rem;margin-bottom:10px;text-align:center}
+.variant-pack-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.variant-pack-option{display:flex;flex-direction:column;gap:8px;border-radius:14px;padding:10px;background:#fff;border:1px solid #e2e8f0}
+.variant-pack-option .btn{width:100%;min-height:68px;white-space:normal;line-height:1.35;padding:10px;font-size:.88rem}
+.variant-pack-option .pack-price{display:block;margin-top:4px;font-size:1rem;font-weight:950}
+.variant-pack-link{display:flex;align-items:center;justify-content:center;text-align:center;min-height:44px;border:1px solid #cbd5e1;border-radius:11px;background:#fff;color:#1d4ed8;text-decoration:none;font-size:.8rem;font-weight:850;padding:7px}
+.variant-pack-link:hover{border-color:#2563eb;background:#eff6ff}
+.purchase-btn{position:relative!important;padding-left:42px!important;overflow:visible!important}
+.purchase-btn::before{content:"👉";position:absolute;left:9px;top:50%;font-size:1.25rem;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.18));animation:purchasePointerMove .75s ease-in-out infinite;pointer-events:none}
+@keyframes purchasePointerMove{0%,100%{transform:translate(-5px,-50%)}50%{transform:translate(4px,-50%)}}
+@media(prefers-reduced-motion:reduce){.purchase-btn::before{animation:none;transform:translateY(-50%)}}
+.device-photo{display:flex;flex-direction:column;align-items:center;gap:5px;margin:0}
+.device-photo small{font-size:.72rem;font-weight:850;color:#475569;text-align:center}
+@media(max-width:620px){.variant-pack-grid{grid-template-columns:1fr}.variant-pack-option .btn{min-height:62px}}
 #gameSelectorWarning{display:none;position:fixed;inset:0;z-index:20000;align-items:center;justify-content:center;padding:16px;background:rgba(2,6,23,.76);backdrop-filter:blur(7px)}
 #gameSelectorWarning.show{display:flex}
 .game-selector-warning-box{position:relative;width:min(520px,100%);background:#fff;border-radius:22px;padding:28px 20px 20px;text-align:center;box-shadow:0 30px 100px rgba(0,0,0,.45);border:2px solid #f59e0b}
@@ -1394,7 +1409,7 @@ body.wizard-popup-open{
           <div class="name">PS2 Fat (All Models) — <b>FMCB</b> <span class="pill">🟢 ₹699</span></div>
           <div></div>
           <div class="cta">
-            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Fat (All Models) — FMCB',699,'Card Only',false)">Buy</button>
+            <button class="btn buy purchase-btn" onclick="goPrefill('Memory Card','PS2 Fat (All Models) — FMCB',699,'Card Only',false)">Buy</button>
           </div>
         </div>
 
@@ -1402,7 +1417,7 @@ body.wizard-popup-open{
           <div class="name">PS2 Slim 7xxxx (All) — <b>FMCB</b> <span class="pill">🟢 ₹699</span></div>
           <div></div>
           <div class="cta">
-            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 7xxxx (All) — FMCB',699,'Card Only',false)">Buy</button>
+            <button class="btn buy purchase-btn" onclick="goPrefill('Memory Card','PS2 Slim 7xxxx (All) — FMCB',699,'Card Only',false)">Buy</button>
           </div>
         </div>
 
@@ -1410,7 +1425,7 @@ body.wizard-popup-open{
           <div class="name">PS2 Slim 9xxxx (All) — <b>FunTuna</b> <span class="pill">🟢 ₹699</span></div>
           <div></div>
           <div class="cta">
-            <button class="btn buy" onclick="goPrefill('Memory Card','PS2 Slim 9xxxx (All) — FunTuna',699,'Card Only',false)">Buy</button>
+            <button class="btn buy purchase-btn" onclick="goPrefill('Memory Card','PS2 Slim 9xxxx (All) — FunTuna',699,'Card Only',false)">Buy</button>
           </div>
         </div>
 
@@ -1427,7 +1442,8 @@ body.wizard-popup-open{
       <h2 class="title" id="usb-title">USB for PlayStation 2 — Game-Loaded</h2>
 
       <div class="card-images">
-        <img src="Usb.jpg" alt="USB Pendrive for PS2">
+        <figure class="device-photo"><img src="Usb.jpg" alt="SanDisk 64GB USB 2.0 Pendrive for PS2"><small>64GB USB 2.0</small></figure>
+        <figure class="device-photo"><img src="SanDisk_Ultra_USB3_128GB.jpg" alt="SanDisk Ultra 128GB USB 3.0 Pendrive for PS2"><small>SanDisk Ultra 128GB USB 3.0</small></figure>
         <img src="Usbhdd.jpeg" alt="USB HDD for PS2">
       </div>
 
@@ -1436,8 +1452,6 @@ body.wizard-popup-open{
       <div class="variants" id="usbList"></div>
 
       <div class="links" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-        <a class="linkbtn" href="https://youtu.be/xGR0vUM1-Jw" target="_blank" rel="noopener">🎞️ Top Games List (Video)</a>
-        <a class="linkbtn optional-selector-link hidden" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
         <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">🧩 Setup Guide</a>
       </div>
     </section>
@@ -1449,7 +1463,8 @@ body.wizard-popup-open{
 
       <div class="card-images">
         <img src="Fmcb.png" alt="FMCB 8MB Memory Card">
-        <img src="Usb.jpg" alt="USB Pendrive">
+        <figure class="device-photo"><img src="Usb.jpg" alt="SanDisk 64GB USB 2.0 Pendrive"><small>64GB USB 2.0</small></figure>
+        <figure class="device-photo"><img src="SanDisk_Ultra_USB3_128GB.jpg" alt="SanDisk Ultra 128GB USB 3.0 Pendrive"><small>SanDisk Ultra 128GB USB 3.0</small></figure>
         <img src="Usbhdd.jpeg" alt="USB HDD">
       </div>
 
@@ -1471,8 +1486,6 @@ body.wizard-popup-open{
       </div>
 
       <div class="links" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-        <a class="linkbtn" href="https://youtu.be/xGR0vUM1-Jw" target="_blank" rel="noopener">🎞️ Top Games List (Video)</a>
-        <a class="linkbtn optional-selector-link hidden" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
         <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">📺 Setup Video</a>
       </div>
 
@@ -1571,6 +1584,34 @@ const comboVariants = [
 ];
 
 function fmt(n){return `₹${Number(n).toLocaleString('en-IN')}`;}
+const topGamesVideoUrl='https://youtu.be/xGR0vUM1-Jw';
+const optionalGamesSelectorUrl='https://gamesplanet13.github.io/ps2gameselector/';
+function usbDisplayName(v){ return String(v).replace(/^(\d+GB)\s+/, '$1 USB '); }
+function makeVariantBuyCard(label,top,opt,count,onTopBuy,onOptionalBuy){
+  const card=document.createElement('div');
+  card.className='variant-buy-card';
+  card.innerHTML=`
+    <div class="variant-buy-name">${label}</div>
+    <div class="variant-pack-grid">
+      <div class="variant-pack-option">
+        <button type="button" class="btn buy purchase-btn js-top-buy">
+          Buy ${label} with Top ${count} Games
+          <span class="pack-price">${fmt(top)}</span>
+        </button>
+        <a class="variant-pack-link" href="${topGamesVideoUrl}" target="_blank" rel="noopener">🎞️ Watch Top ${count} Games List Video</a>
+      </div>
+      <div class="variant-pack-option">
+        <button type="button" class="btn alt purchase-btn js-optional-buy">
+          Buy ${label} with Optional Games
+          <span class="pack-price">${fmt(opt)}</span>
+        </button>
+        <a class="variant-pack-link optional-selector-link hidden" href="${optionalGamesSelectorUrl}" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
+      </div>
+    </div>`;
+  card.querySelector('.js-top-buy').onclick=onTopBuy;
+  card.querySelector('.js-optional-buy').onclick=onOptionalBuy;
+  return card;
+}
 function link(prefill){
   const q = new URLSearchParams(prefill).toString();
   return `order-prefill.html?${q}`;
@@ -1627,19 +1668,12 @@ function agreeAndContinueBuy(){
   box.innerHTML='';
 
   usbVariants.forEach(({v,top,opt,count})=>{
-    const row=document.createElement('div'); 
-    row.className='row';
-
-    row.innerHTML=`
-      <div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
-      <div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
-      <div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>
-    `;
-
-    row.querySelector('.btn.buy').onclick=()=>goPrefill('USB for PS2 (Game-Loaded)', v, top, 'Top', true);
-    row.querySelector('.btn.alt').onclick=()=>goPrefill('USB for PS2 (Game-Loaded)', v+' — Optional', opt, 'Optional', true);
-
-    box.appendChild(row);
+    const label=usbDisplayName(v);
+    box.appendChild(makeVariantBuyCard(
+      label,top,opt,count,
+      ()=>goPrefill('USB for PS2 (Game-Loaded)', v+' — Top '+count+' Games', top, 'Top '+count+' Games', true),
+      ()=>goPrefill('USB for PS2 (Game-Loaded)', v+' — Optional Games', opt, 'Optional Games', true)
+    ));
   });
 })();
 
@@ -1651,39 +1685,22 @@ function agreeAndContinueBuy(){
   fatBox.innerHTML=''; slim7Box.innerHTML=''; slim9Box.innerHTML='';
 
   comboVariants.forEach(({v,top,opt,count})=>{
-
-    // FAT
-    const rowF=document.createElement('div'); 
-    rowF.className='row';
-    rowF.innerHTML=`
-      <div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
-      <div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
-      <div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>`;
-    rowF.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Fat (FMCB)', top, 'Top', true);
-    rowF.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Fat (FMCB) — Optional', opt, 'Optional', true);
-    fatBox.appendChild(rowF);
-
-    // Slim 7xxxx
-    const row7=document.createElement('div'); 
-    row7.className='row';
-    row7.innerHTML=`
-      <div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
-      <div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
-      <div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>`;
-    row7.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 7xxxx (FMCB)', top, 'Top', true);
-    row7.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 7xxxx (FMCB) — Optional', opt, 'Optional', true);
-    slim7Box.appendChild(row7);
-
-    // Slim 9xxxx
-    const row9=document.createElement('div'); 
-    row9.className='row';
-    row9.innerHTML=`
-      <div class="name">${v} <span class="pill">🎮 Top ${count}</span></div>
-      <div class="cta"><button class="btn buy">🟢 ${fmt(top)} • Top</button></div>
-      <div class="cta"><button class="btn alt">🟡 ${fmt(opt)} • Optional</button></div>`;
-    row9.querySelector('.btn.buy').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 9xxxx (FunTuna)', top, 'Top', true);
-    row9.querySelector('.btn.alt').onclick=()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 9xxxx (FunTuna) — Optional', opt, 'Optional', true);
-    slim9Box.appendChild(row9);
+    const label='FMCB + '+usbDisplayName(v);
+    fatBox.appendChild(makeVariantBuyCard(
+      label,top,opt,count,
+      ()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Fat (FMCB) — Top '+count+' Games', top, 'Top '+count+' Games', true),
+      ()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Fat (FMCB) — Optional Games', opt, 'Optional Games', true)
+    ));
+    slim7Box.appendChild(makeVariantBuyCard(
+      label,top,opt,count,
+      ()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 7xxxx (FMCB) — Top '+count+' Games', top, 'Top '+count+' Games', true),
+      ()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 7xxxx (FMCB) — Optional Games', opt, 'Optional Games', true)
+    ));
+    slim9Box.appendChild(makeVariantBuyCard(
+      label,top,opt,count,
+      ()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 9xxxx (FunTuna) — Top '+count+' Games', top, 'Top '+count+' Games', true),
+      ()=>goPrefill('FMCB + USB Combo for PS2', v+' — PS2 Slim 9xxxx (FunTuna) — Optional Games', opt, 'Optional Games', true)
+    ));
 
   });
 })();
