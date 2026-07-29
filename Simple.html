@@ -1198,6 +1198,41 @@ body.wizard-popup-open{
   max-height:330px;
   overflow:auto;
 }
+#modeStep{
+  overflow:hidden !important;
+}
+#modeStep .version-grid{
+  margin-top:12px;
+}
+#step1 .ps2-gallery{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:8px !important;
+  max-height:none !important;
+  overflow:visible !important;
+}
+#step1 .ps2-gallery > div{
+  min-width:0;
+  padding:7px 4px;
+  border:1px solid #dbe3ef;
+  border-radius:12px;
+  background:#f8fafc;
+  color:#334155;
+  font-size:.72rem;
+  font-weight:800;
+  line-height:1.25;
+  text-align:center;
+}
+#step1 .ps2-gallery img{
+  display:block;
+  width:68px !important;
+  max-width:100% !important;
+  height:52px !important;
+  margin:0 auto 5px;
+  object-fit:contain;
+  cursor:zoom-in;
+  border-radius:8px;
+}
 @media(max-width:760px){
   .wizard-modal{
     width:calc(100% - 18px) !important;
@@ -1205,7 +1240,58 @@ body.wizard-popup-open{
     border-radius:20px !important;
     padding:16px !important;
   }
-  .version-grid{grid-template-columns:1fr}
+  #modeStep{
+    max-height:none !important;
+    padding:14px !important;
+  }
+  #modeStep .model-title{margin-bottom:4px}
+  #modeStep .wizard-help{font-size:.76rem;line-height:1.35}
+  #modeStep .version-grid{
+    grid-template-columns:1fr !important;
+    gap:7px !important;
+    margin-top:9px;
+  }
+  #modeStep .version-btn{
+    min-height:0 !important;
+    padding:10px 12px !important;
+  }
+  #modeStep .version-btn strong{font-size:.9rem}
+  #modeStep .version-btn small{font-size:.7rem;line-height:1.3}
+  #step1 .ps2-gallery{
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  }
+  #step1 .ps2-gallery img{
+    width:58px !important;
+    height:44px !important;
+  }
+}
+</style>
+
+<style id="ps2-image-viewer-fix">
+#imagePopup{
+  z-index:20000 !important;
+  padding:64px 14px 18px;
+}
+#imagePopup img{
+  max-width:min(94vw,900px) !important;
+  max-height:calc(100vh - 90px) !important;
+  object-fit:contain;
+}
+#imagePopup .close{
+  appearance:none;
+  border:1px solid rgba(255,255,255,.45);
+  width:auto !important;
+  min-width:92px;
+  height:42px !important;
+  padding:0 14px;
+  border-radius:999px !important;
+  background:#fff !important;
+  color:#0f172a !important;
+  font-size:.9rem !important;
+  font-weight:900;
+  line-height:1;
+  cursor:pointer;
+  z-index:2;
 }
 </style>
 
@@ -1448,7 +1534,7 @@ body.wizard-popup-open{
 
       <div class="card-images">
         <figure class="device-photo"><img src="Usb.jpg" alt="SanDisk 64GB USB 2.0 Pendrive for PS2"><small>64GB USB 2.0</small></figure>
-        <figure class="device-photo"><img src="SanDisk_Ultra_USB3_128GB.jpg" alt="SanDisk Ultra 128GB USB 3.0 Pendrive for PS2"><small>SanDisk Ultra 128GB USB 3.0</small></figure>
+        <figure class="device-photo"><img src="Sandiscultra.png" alt="SanDisk Ultra 128GB USB 3.0 Pendrive for PS2"><small>SanDisk Ultra 128GB USB 3.0</small></figure>
         <img src="Usbhdd.jpeg" alt="USB HDD for PS2">
       </div>
 
@@ -1469,7 +1555,7 @@ body.wizard-popup-open{
       <div class="card-images">
         <img src="Fmcb.png" alt="FMCB 8MB Memory Card">
         <figure class="device-photo"><img src="Usb.jpg" alt="SanDisk 64GB USB 2.0 Pendrive"><small>64GB USB 2.0</small></figure>
-        <figure class="device-photo"><img src="SanDisk_Ultra_USB3_128GB.jpg" alt="SanDisk Ultra 128GB USB 3.0 Pendrive"><small>SanDisk Ultra 128GB USB 3.0</small></figure>
+        <figure class="device-photo"><img src="Sandiscultra.png" alt="SanDisk Ultra 128GB USB 3.0 Pendrive"><small>SanDisk Ultra 128GB USB 3.0</small></figure>
         <img src="Usbhdd.jpeg" alt="USB HDD">
       </div>
 
@@ -2161,10 +2247,19 @@ document.addEventListener('DOMContentLoaded', function(){
   </div>
 </div>
 
-<div id="imagePopup"><span class="close" onclick="closeImg()">✕</span><img id="popupImg"></div>
+<div id="imagePopup" role="dialog" aria-modal="true" aria-label="Product image" onclick="if(event.target===this)closeImg()"><button type="button" class="close" onclick="closeImg()" aria-label="Close image">✕ Close</button><img id="popupImg" alt="Full product image"></div>
 <script>
-function openImg(s){document.getElementById('imagePopup').style.display='flex';document.getElementById('popupImg').src=s;}
-function closeImg(){document.getElementById('imagePopup').style.display='none';}
+function openImg(s){
+  document.getElementById('imagePopup').style.display='flex';
+  document.getElementById('popupImg').src=s;
+}
+function closeImg(){
+  document.getElementById('imagePopup').style.display='none';
+  document.getElementById('popupImg').src='';
+}
+document.addEventListener('keydown',function(event){
+  if(event.key==='Escape') closeImg();
+});
 
 </script>
 
