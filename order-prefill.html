@@ -281,10 +281,10 @@
       <span>Actual Weight</span><b id="sumActual">0kg</b>
       <span>Volumetric Weight</span><b id="sumVolumetric">0kg</b>
       <span>Chargeable Weight</span><b id="sumChargeable">1kg</b>
+      <span>VAS (2%)</span><b id="sumVas">₹0</b>
       <span>Courier Base Charge</span><b id="sumCourierBase">₹0</b>
       <span>Extra Courier GST</span><b id="sumCourierGst">₹0</b>
       <span>Courier Total</span><b id="sumCourier">₹0</b>
-      <span>VAS (2%)</span><b id="sumVas">₹0</b>
       <span class="grand-row">Grand Total</span><b class="grand-row" id="sumGrand">₹0</b>
       <span>Pay Now / Advance</span><b id="sumPaid">₹0</b>
       <span id="restLabel">Rest on Delivery</span><b id="sumRest">₹0</b>
@@ -982,7 +982,7 @@ function computeTotals(){
   const courierCharge=courierBaseCharge+courierGst;
   const invoiceIncluded=gpzInvoice();
   const productGst=invoiceIncluded?Math.ceil(discountedProducts*.18):0;
-  const vasCharge=Math.ceil((discountedProducts+productGst+courierCharge)*.02);
+  const vasCharge=Math.ceil(discountedProducts*.02);
   const grandTotal=discountedProducts+productGst+courierCharge+vasCharge;
   const advanceAmount=payment==="cod"?Math.min(grandTotal,Math.max(500,Math.ceil(grandTotal*.10))):grandTotal;
   const restAmount=payment==="cod"?Math.max(0,grandTotal-advanceAmount):0;
@@ -1046,7 +1046,7 @@ function buildWhatsAppTemplate(){
     `Line Total: ${gpzMoney(i.lineTotal)}`
   ]);
   return [
-    isCod?"🟠 COD Order on WhatsApp":"🟢 Prepaid Order on WhatsApp","",
+    isCod?"[COD ORDER]":"[PREPAID ORDER]","",
     `Order ID: ${document.getElementById("orderId").value}`,
     `Name: ${document.getElementById("name").value}`,`Mobile: ${document.getElementById("mobile").value}`,
     `Alt Mobile: ${document.getElementById("altMobile").value}`,`Email: ${document.getElementById("email").value}`,
@@ -1059,15 +1059,15 @@ function buildWhatsAppTemplate(){
     `Discount Coupon: ${o.discountCode||"Not used"}`,
     `Discount Applied: ${gpzMoney(o.discountApplied)}`,
     ...gstLines,
-    `Courier Company: ${o.courier}`,`Courier Charges: ${gpzMoney(o.courierCharge)}`,
     `VAS (2%): ${gpzMoney(o.vasCharge)}`,
+    `Courier Company: ${o.courier}`,`Courier Charges: ${gpzMoney(o.courierCharge)}`,
     `Total Amount: ${gpzMoney(o.grandTotal)}`,
     `${isCod?"Advance Paid":"Amount Paid"}: ${gpzMoney(o.advanceAmount)}`,
     ...(isCod?[`Rest on Delivery: ${gpzMoney(o.restAmount)}`]:[]),"",
-    `📏 Distance: ${document.getElementById("distance").value||""}`,
-    `⏳ ETA: ${isCod?(document.getElementById("etaTextCod")?.value||""):(document.getElementById("etaText").value||"")}`,
-    `📅 Estimated Delivery: ${isCod?(document.getElementById("dateRangeCOD")?.value||""):(document.getElementById("dateRange").value||"")}`,"",
-    "📦 PRODUCT BREAKDOWN",...itemLines,
+    `Distance: ${document.getElementById("distance").value||""}`,
+    `ETA: ${isCod?(document.getElementById("etaTextCod")?.value||""):(document.getElementById("etaText").value||"")}`,
+    `Estimated Delivery: ${isCod?(document.getElementById("dateRangeCOD")?.value||""):(document.getElementById("dateRange").value||"")}`,"",
+    "PRODUCT BREAKDOWN",...itemLines,
     `Total Products: ${o.totalQuantity}`,
     `Products Total: ${gpzMoney(o.productTotal)}`,
     `Total Courier Charges: ${gpzMoney(o.courierCharge)}`,
