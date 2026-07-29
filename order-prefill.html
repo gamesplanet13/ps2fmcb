@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Games Planet – Quick Order (Prefilled)</title>
+<title>Games Planet – PS2 Order & Courier Checkout</title>
 <style>
   /* === DAY THEME (Light) === */
   :root{
@@ -38,13 +38,26 @@
   .alt{background:var(--warn);color:#1f2937}
   .ghost{background:#f8fafc;border:1px solid #e5e7eb;color:#111827}
   .hint{color:var(--muted);font-size:13px;margin-top:6px;white-space:pre-line}
+  .choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
+  .choice{display:flex;align-items:center;gap:8px;padding:11px;border:1px solid #dbe3ef;border-radius:12px;background:#fff;font-weight:800}
+  .choice input{width:auto}
+  .rate-table-wrap{overflow:auto;margin-top:10px}
+  .rate-table{width:100%;border-collapse:collapse;font-size:12px;min-width:690px}
+  .rate-table th,.rate-table td{border:1px solid #dbe3ef;padding:7px;text-align:center}
+  .rate-table th{background:#eff6ff;color:#173b67}
+  .breakdown-item{padding:9px;margin:7px 0;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;font-size:13px;line-height:1.55}
+  .summary-grid{display:grid;grid-template-columns:1fr auto;gap:7px 14px;margin-top:12px;font-size:14px}
+  .summary-grid b{text-align:right}
+  .grand-row{margin:10px -5px 0;padding:10px 5px;border-radius:10px;background:#e7f5ff;color:#073b63;font-size:16px;font-weight:900}
+  .gst-details{display:none;margin-top:10px;padding:10px;border-radius:12px;background:#fff7ed;border:1px solid #fed7aa}
+  .warning{padding:9px;border-radius:10px;background:#fff7ed;color:#9a3412;font-size:13px;margin-top:9px}
 
   /* Hide info lines on UI (as requested) */
   #ruleNote,
   #addonsHelp { display: none !important; }
 
   @media(max-width:900px){.grid3{grid-template-columns:1fr 1fr}}
-  @media(max-width:720px){.grid2,.grid3{grid-template-columns:1fr}}
+  @media(max-width:720px){.grid2,.grid3,.choice-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -147,6 +160,20 @@
     <div class="hint" id="ruleNote"></div>
   </div>
 
+  <div class="card" id="couponCard">
+    <span class="badge">Discount Coupon</span>
+    <div class="inline">
+      <div style="flex:1 1 220px">
+        <div class="label">Coupon Code (Prepaid only)</div>
+        <input id="couponCode" placeholder="Enter coupon code">
+      </div>
+      <div style="align-self:flex-end">
+        <button type="button" class="ghost" onclick="applyCoupon()">Apply Coupon</button>
+      </div>
+    </div>
+    <div class="hint" id="couponNote">Coupon discount लागू होने पर total में अपने आप घट जाएगा।</div>
+  </div>
+
   <!-- Add-ons -->
   <div class="card">
     <span class="badge">Add-ons</span>
@@ -159,19 +186,19 @@
           <!-- Existing add-ons -->
           <option value="Wire Gamepad" data-price="375">Wire Gamepad — ₹375</option>
 
-<option value="Wireless Gamepad" data-price="499">Wireless Gamepad — ₹499</option>
+<option value="Wireless Gamepad" data-price="525">Wireless Gamepad — ₹525</option>
 
 <option value="PS2 Slim Sticker/Skin" data-price="60">PS2 Slim Sticker/Skin — ₹60</option>
-<option value="PS2 AV Cable" data-price="110">PS2 AV Cable — ₹110</option>
+<option value="PS2 AV Cable" data-price="99">PS2 AV Cable — ₹99</option>
 
 
-<option value="HDMI Converter" data-price="330">HDMI Converter — ₹330</option>
+<option value="HDMI Converter" data-price="360">HDMI Converter — ₹360</option>
 
 <option value="HDMI Cable" data-price="99">HDMI Cable — ₹99</option>
 
-<option value="Best HDMI Cable" data-price="349">Best HDMI Cable — ₹349</option>
+<option value="Best HDMI Cable" data-price="299">Best HDMI Cable — ₹299</option>
 
-<option value="Blank Memory Card 8MB" data-price="299">Blank Memory Card 8MB — ₹350</option>
+<option value="Blank Memory Card 8MB" data-price="369">Blank Memory Card 8MB — ₹369</option>
 
 <option value="AAA Batteries of duaracel PACK OF 4" data-price="88">AAA Batteries of duaracel PACK OF 4 — ₹99</option>
 
@@ -200,65 +227,67 @@
     <div class="hint" id="primeCourierNote" style="display:block;margin-top:8px"></div>
   </div>
 
-  <!-- Payment Mode -->
   <div class="card">
-    <span class="badge">Payment Mode</span>
-    <div class="btns">
-      <button id="btn-prepaid" class="ghost" onclick="setMode('prepaid')">🟢 Prepaid</button>
-      <button id="btn-cod" class="ghost" onclick="setMode('cod')">🔴 COD</button>
+    <span class="badge">GST Invoice</span>
+    <div class="choice-grid">
+      <label class="choice"><input type="radio" name="gstInvoice" value="excluded" checked onchange="computeTotals()"> GST Excluded</label>
+      <label class="choice"><input type="radio" name="gstInvoice" value="included" onchange="computeTotals()"> Include GST Invoice (18%)</label>
     </div>
-    <div class="hint" id="codNote">COD rules: ≥ ₹1899 → ₹199 • ₹1399–₹1898 → ₹199 • &lt; ₹1399 → No COD</div>
+    <div class="hint">Default: GST excluded • Seller GSTIN: <b>09DIDPS5066Q1ZB</b></div>
+    <div id="gstDetails" class="gst-details">
+      <div class="grid2">
+        <div><div class="label">Customer / Business Name</div><input id="buyerBusinessName"></div>
+        <div><div class="label">Customer GSTIN (optional)</div><input id="buyerGstin" maxlength="15"></div>
+      </div>
+      <div class="label">GST Billing Address</div>
+      <textarea id="buyerBillingAddress" rows="2"></textarea>
+    </div>
   </div>
 
-
-  <!-- Prepaid Courier Selection -->
-  <div class="card" id="prepaidCourierCard">
-    <span class="badge">Prepaid Courier</span>
-    <div class="label">Choose Courier Company</div>
-    <select id="prepaidCourier">
-      <option value="">— Select Courier —</option>
-      <option value="Trackon.in">Trackon.in</option>
-      <option value="ShreeMaruti.com">ShreeMaruti.com</option>
-      <option value="DTDC.in">DTDC.in</option>
-      <option value="Speed Post">Speed Post</option>
-      <option value="Delhivery">Delhivery</option>
-      <option value="Blue Dart">Blue Dart</option>
-      <option value="Ecom Express">Ecom Express</option>
-    </select>
-    <div class="hint">Courier availability destination pincode ke service area par depend karegi.</div>
+  <div class="card">
+    <span class="badge">Payment Method</span>
+    <div class="choice-grid">
+      <label class="choice"><input type="radio" name="paymentMode" value="prepaid" checked onchange="setMode('prepaid')"> 🟢 Prepaid</label>
+      <label class="choice" id="codChoice"><input type="radio" name="paymentMode" value="cod" onchange="setMode('cod')"> 🟠 Cash on Delivery</label>
+    </div>
+    <div class="hint" id="codNote">COD केवल ₹1,300 या अधिक product value पर उपलब्ध है। Advance: ₹500 या final total का 10%, जो भी अधिक हो।</div>
   </div>
 
-  <!-- Coupon (Prepaid only) -->
-  <div class="card" id="couponCard" style="display:none">
-    <span class="badge">Coupon</span>
-    <div class="grid2">
-      <input id="couponCode" placeholder="Enter Coupon Code (gpz2025)" autocomplete="off">
-      <button class="ghost" onclick="applyCoupon()">Apply</button>
+  <div class="card">
+    <span class="badge">Delivery & Courier</span>
+    <div class="label">Choose Delivery Speed</div>
+    <div class="choice-grid">
+      <label class="choice"><input type="radio" name="deliverySpeed" value="surface" checked onchange="syncCourierOptions()"> Surface</label>
+      <label class="choice" id="airChoice"><input type="radio" name="deliverySpeed" value="air" onchange="syncCourierOptions()"> Air</label>
+      <label class="choice" id="primeChoice"><input type="radio" name="deliverySpeed" value="prime" onchange="syncCourierOptions()"> Prime Trackon</label>
     </div>
-    <div class="hint" id="couponNote"></div>
+    <div class="label">Choose Preferred Courier</div>
+    <select id="courier" onchange="computeTotals()"></select>
+    <div class="hint">हर order पर fixed courier charge अनिवार्य है: Prepaid ₹99 • COD ₹299. Courier availability destination pincode/service area पर depend करेगी।</div>
+    <div id="courierRateGuide"></div>
   </div>
 
-  <!-- Payment summary -->
-  <div class="card" id="payCard">
-    <span class="badge">Payment Summary</span>
-    <span id="modeBadge" class="badge right">Mode: —</span>
-
-    <!-- Prepaid only -->
-    <div id="prepaidBlock" style="display:none">
-      <div class="label">Discount (auto per rules)</div>
-      <input id="discountAmount" type="number" placeholder="₹ (auto)" readonly>
-      <div class="label">Amount Paid (now)</div>
-      <input id="amountPaid_pre" type="number" placeholder="₹ (auto)" readonly>
-    </div>
-
-    <!-- COD only -->
-    <div id="codBlock" style="display:none">
-      <div class="label">COD Charges</div>
-      <input id="codCharges" type="number" placeholder="₹ (auto)" readonly>
-      <div class="label">Amount Paid / Advance (now)</div>
-      <input id="amountPaid_cod" type="number" placeholder="₹ (auto)" readonly>
-      <div class="label">Rest on Delivery</div>
-      <input id="restAmount" type="number" placeholder="₹ (auto)" readonly>
+  <div class="card">
+    <span class="badge">Price & Weight Breakdown</span>
+    <div id="itemBreakdown"></div>
+    <div class="summary-grid">
+      <span>Products Amount</span><b id="sumProducts">₹0</b>
+      <span>Discount Applied</span><b id="sumDiscount">₹0</b>
+      <span>Product GST (optional 18%)</span><b id="sumProductGst">₹0</b>
+      <span>Product Weight</span><b id="sumWeight">0g</b>
+      <span>Packaging Weight</span><b>250g</b>
+      <span>Packed Weight</span><b id="sumPacked">250g</b>
+      <span>Recommended Box</span><b id="sumBox">—</b>
+      <span>Actual Weight</span><b id="sumActual">0kg</b>
+      <span>Volumetric Weight</span><b id="sumVolumetric">0kg</b>
+      <span>Chargeable Weight</span><b id="sumChargeable">1kg</b>
+      <span>Courier Base Charge</span><b id="sumCourierBase">₹0</b>
+      <span>Extra Courier GST</span><b id="sumCourierGst">₹0</b>
+      <span>Courier Total</span><b id="sumCourier">₹0</b>
+      <span>VAS (2%)</span><b id="sumVas">₹0</b>
+      <span class="grand-row">Grand Total</span><b class="grand-row" id="sumGrand">₹0</b>
+      <span>Pay Now / Advance</span><b id="sumPaid">₹0</b>
+      <span id="restLabel">Rest on Delivery</span><b id="sumRest">₹0</b>
     </div>
   </div>
 
@@ -286,9 +315,9 @@
   <div class="card" style="text-align:center; margin-top:20px;">
     <span class="badge">Scan & Pay</span>
     <div style="margin:15px 0;">
-      <img src="Qr (1).jpg" alt="QR Code" style="max-width:260px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.15);" />
+      <img src="Current-ac-qr.jpg" alt="Games Planet Zone payment QR Code" style="max-width:260px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.15);" />
     </div>
-    <a href="Qr (1).jpg" download="GPZ_QR.jpg" class="btn act">⬇️ Download QR</a>
+    <a href="Current-ac-qr.jpg" download="Games_Planet_Zone_QR.jpg" class="btn act">⬇️ Download QR</a>
   </div>
 </div>
 
@@ -660,7 +689,7 @@ function submitOrder(){
 }
 
 /* ===== Prefill from URL ===== */
-(function(){
+(function legacyInitDisabled(){ return;
   const p=new URLSearchParams(location.search);
   if(p.has("product")) document.getElementById("product").value=p.get("product");
   if(p.has("variant")) document.getElementById("variant").value=p.get("variant");
@@ -797,6 +826,277 @@ document.getElementById("pincode").addEventListener("input",function(){
   }
 });
 document.getElementById("postoffice").addEventListener("change",()=>{ updatePrimeCourierAvailability(); });
+</script>
+
+<script id="gpz-fmcb-final-calculator">
+/* Correct FMCB/USB/Combo + PS2 Accessories checkout calculator */
+const GPZ_PARAMS=new URLSearchParams(location.search);
+const GPZ_GST_COURIERS=["Delhivery.com","BlueDart","Ecom Express","XpressBees"];
+const GPZ_SURFACE=["Trackon.in","ShreeMaruti.com","DTDC.in","Speed Post",...GPZ_GST_COURIERS];
+const GPZ_AIR=["Trackon.in","ShreeMaruti.com"];
+const GPZ_PRIME=["Trackon.in"];
+const GPZ_COD=[...GPZ_GST_COURIERS];
+const GPZ_ADDON_WEIGHTS={
+  "Wire Gamepad":250,"Wireless Gamepad":250,"PS2 Slim Sticker/Skin":0,
+  "PS2 AV Cable":70,"HDMI Converter":80,"HDMI Cable":99,"Best HDMI Cable":120,
+  "Blank Memory Card 8MB":25,"AAA Batteries of duaracel PACK OF 4":100,
+  "AAA RECHARGEABLE BATTERIES PACK OF 4":120,"AAA/AA BARTERIES CHARGER 4 SLOT":250,
+  "AAA 4 BATTERIES AND 4 PORT CHARGER COMBO":370,"TRACKON.IN PRIME COURIER SERVICE":0
+};
+let gpzCurrentOrder=null;
+
+function gpzMoney(n){return "₹"+Math.ceil(Number(n)||0).toLocaleString("en-IN");}
+function gpzEscape(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function gpzSelected(name,fallback){
+  return document.querySelector(`input[name="${name}"]:checked`)?.value||fallback;
+}
+function gpzInferWeight(product,variant){
+  const text=`${product} ${variant}`.toUpperCase();
+  let weight=25;
+  if(text.includes("500GB")) weight=175;
+  else if(text.includes("256GB")) weight=71;
+  else if(text.includes("128GB")) weight=41;
+  else if(text.includes("64GB")) weight=21;
+  if(text.includes("COMBO")) weight+=25;
+  if(text.includes("CONTROLLER")) weight=250;
+  if(text.includes("ADAPTER")) weight=340;
+  return weight;
+}
+function gpzBaseItems(){
+  const product=GPZ_PARAMS.get("product")||document.getElementById("product").value||"PS2 Product";
+  const variant=GPZ_PARAMS.get("variant")||document.getElementById("variant").value||"";
+  const base=Number(GPZ_PARAMS.get("base")||document.getElementById("basePrice").value||0);
+  const quantity=Math.max(1,Number(GPZ_PARAMS.get("quantity")||1));
+  const suppliedWeight=Number(GPZ_PARAMS.get("weight")||0);
+  let stored=null;
+  try{stored=JSON.parse(localStorage.getItem("gp_order_summary")||"null");}catch(e){}
+  const storedMatches=stored&&Array.isArray(stored.items)&&stored.items.length&&
+    (!GPZ_PARAMS.get("product")||stored.items.some(i=>String(i.name).toLowerCase()===product.toLowerCase()));
+  if(storedMatches) return stored.items.map(i=>({
+    name:i.name,quantity:Number(i.quantity)||1,unitPrice:Number(i.unitPrice)||0,
+    lineTotal:Number(i.lineTotal)||0,unitWeight:Number(i.unitWeight)||0,lineWeight:Number(i.lineWeight)||0
+  }));
+  const unitPrice=quantity?base/quantity:base;
+  const unitWeight=suppliedWeight?suppliedWeight/quantity:gpzInferWeight(product,variant);
+  return [{name:variant?`${product} — ${variant}`:product,quantity,unitPrice,lineTotal:base,unitWeight,lineWeight:unitWeight*quantity}];
+}
+function gpzAllItems(){
+  const items=gpzBaseItems();
+  document.querySelectorAll("#items .addon-row").forEach(row=>{
+    const name=row.querySelector(".i-name").value;
+    const unitPrice=Number(row.querySelector(".i-price").value||0);
+    const quantity=Number(row.querySelector(".i-qty").value||0);
+    if(quantity>0&&name!=="TRACKON.IN PRIME COURIER SERVICE"){
+      const unitWeight=GPZ_ADDON_WEIGHTS[name]||100;
+      items.push({name,quantity,unitPrice,lineTotal:unitPrice*quantity,unitWeight,lineWeight:unitWeight*quantity});
+    }
+  });
+  return items;
+}
+function gpzBox(items,totalWeight){
+  let stored=null;
+  try{stored=JSON.parse(localStorage.getItem("gp_order_summary")||"null");}catch(e){}
+  if(stored&&Array.isArray(stored.boxDimensions)&&stored.boxDimensions.every(Number)) return stored.boxDimensions.map(Number);
+  const qty=items.reduce((s,i)=>s+i.quantity,0);
+  if(totalWeight<=100) return [15,13,4];
+  if(totalWeight<=500) return [22,17,9];
+  if(totalWeight<=1000) return [28,22,12];
+  return [32,26,Math.min(30,12+Math.ceil(qty/2)*3)];
+}
+function gpzMode(){return gpzSelected("paymentMode","prepaid");}
+function gpzSpeed(){return gpzSelected("deliverySpeed","surface");}
+function gpzInvoice(){return gpzSelected("gstInvoice","excluded")==="included";}
+function gpzCourierRate(courier,speed,payment,kg){
+  return payment==="cod"?299:99;
+}
+function getSubtotal(){return gpzAllItems().reduce((s,i)=>s+i.lineTotal,0);}
+function recomputeAddons(){
+  document.getElementById("addonsTotal").value=sumAddons();
+  computeTotals();
+}
+function syncCourierOptions(){
+  const payment=gpzMode();
+  if(payment==="cod"){
+    document.querySelector('input[name="deliverySpeed"][value="surface"]').checked=true;
+    document.getElementById("airChoice").style.display="none";
+    document.getElementById("primeChoice").style.display="none";
+  }else{
+    document.getElementById("airChoice").style.display="";
+    document.getElementById("primeChoice").style.display="";
+  }
+  const speed=gpzSpeed();
+  const allowed=payment==="cod"?GPZ_COD:(speed==="air"?GPZ_AIR:(speed==="prime"?GPZ_PRIME:GPZ_SURFACE));
+  const select=document.getElementById("courier");
+  const old=select.value;
+  select.innerHTML=allowed.map(c=>`<option value="${c}">${c}</option>`).join("");
+  select.value=allowed.includes(old)?old:allowed[0];
+  computeTotals();
+}
+function setMode(nextMode){
+  const productValue=getSubtotal();
+  if(nextMode==="cod"&&productValue<1300){
+    alert("COD is available only when product value is ₹1,300 or more.");
+    document.querySelector('input[name="paymentMode"][value="prepaid"]').checked=true;
+    mode="prepaid";
+  }else{
+    mode=nextMode;
+  }
+  document.getElementById("couponCard").style.display=mode==="prepaid"?"block":"none";
+  if(mode==="cod"){
+    discountValue=0;
+    document.getElementById("couponCode").value="";
+    document.getElementById("couponNote").textContent="Coupon केवल Prepaid order पर लागू है।";
+  }
+  syncCourierOptions();
+}
+function gpzRenderRateGuide(kg){
+  document.getElementById("courierRateGuide").innerHTML=`
+  <div class="rate-table-wrap"><table class="rate-table">
+    <thead><tr><th>Payment</th><th>Mandatory courier charge</th></tr></thead>
+    <tbody><tr><td>Prepaid</td><td><b>₹99</b></td></tr><tr><td>COD</td><td><b>₹299</b></td></tr></tbody>
+  </table></div>
+  <div class="hint">यह fixed charge हर order पर लगेगा। COD केवल ₹1,300 या अधिक product value पर उपलब्ध है। VAS final order subtotal पर 2% है।</div>`;
+}
+function computeTotals(){
+  const items=gpzAllItems();
+  const productTotal=items.reduce((s,i)=>s+i.lineTotal,0);
+  const totalWeight=items.reduce((s,i)=>s+i.lineWeight,0);
+  const packingWeight=250;
+  const packedWeight=totalWeight+packingWeight;
+  const boxDimensions=gpzBox(items,totalWeight);
+  const actualKg=packedWeight/1000;
+  const volumetricKg=(boxDimensions[0]*boxDimensions[1]*boxDimensions[2])/5000;
+  const chargeableKg=Math.max(1,Math.ceil(Math.max(actualKg,volumetricKg)));
+  let payment=gpzMode();
+  if(payment==="cod"&&productTotal<1300){
+    document.querySelector('input[name="paymentMode"][value="prepaid"]').checked=true;
+    payment="prepaid"; mode="prepaid";
+  }
+  if(payment==="cod") discountValue=0;
+  const appliedDiscount=payment==="prepaid"?Math.min(productTotal,Math.max(0,Number(discountValue)||0)):0;
+  const discountedProducts=Math.max(0,productTotal-appliedDiscount);
+  const courier=document.getElementById("courier").value||"Trackon.in";
+  const speed=gpzSpeed();
+  const courierBaseCharge=gpzCourierRate(courier,speed,payment,chargeableKg);
+  const courierGst=0;
+  const courierCharge=courierBaseCharge+courierGst;
+  const invoiceIncluded=gpzInvoice();
+  const productGst=invoiceIncluded?Math.ceil(discountedProducts*.18):0;
+  const vasCharge=Math.ceil((discountedProducts+productGst+courierCharge)*.02);
+  const grandTotal=discountedProducts+productGst+courierCharge+vasCharge;
+  const advanceAmount=payment==="cod"?Math.min(grandTotal,Math.max(500,Math.ceil(grandTotal*.10))):grandTotal;
+  const restAmount=payment==="cod"?Math.max(0,grandTotal-advanceAmount):0;
+  gpzCurrentOrder={items,productTotal,totalWeight,totalQuantity:items.reduce((s,i)=>s+i.quantity,0),packingWeight,packedWeight,
+    boxDimensions,actualKg,volumetricKg,chargeableKg,paymentMode:payment,deliverySpeed:speed,courier,
+    courierBaseCharge,courierGst,courierCharge,gstInvoiceIncluded:invoiceIncluded,productGst,
+    discountApplied:appliedDiscount,discountCode:appliedDiscount?(document.getElementById("couponCode").value||"").trim():"",
+    discountedProducts,vasCharge,grandTotal,
+    advanceAmount,restAmount,hasBatteryItem:items.some(i=>/BATTER/i.test(i.name))};
+  localStorage.setItem("gp_order_summary",JSON.stringify(gpzCurrentOrder));
+  document.getElementById("basePrice").value=Number(GPZ_PARAMS.get("base")||document.getElementById("basePrice").value||0);
+  document.getElementById("addonsTotal").value=sumAddons();
+  document.getElementById("subtotal").value=productTotal;
+  document.getElementById("gstDetails").style.display=invoiceIncluded?"block":"none";
+  document.getElementById("codChoice").style.display=productTotal<1300?"none":"";
+  document.querySelector('input[name="paymentMode"][value="cod"]').disabled=productTotal<1300;
+  document.getElementById("couponCard").style.display=payment==="prepaid"?"block":"none";
+  document.getElementById("itemBreakdown").innerHTML=items.map((i,n)=>`<div class="breakdown-item"><b>${n+1}. ${gpzEscape(i.name)}</b><br>${gpzMoney(i.unitPrice)} × ${i.quantity} = <b>${gpzMoney(i.lineTotal)}</b><br>${i.unitWeight}g × ${i.quantity} = <b>${i.lineWeight}g</b></div>`).join("");
+  const values={sumProducts:gpzMoney(productTotal),sumDiscount:"-"+gpzMoney(appliedDiscount),sumProductGst:gpzMoney(productGst),sumWeight:totalWeight+"g",sumPacked:packedWeight+"g",
+    sumBox:boxDimensions.join(" × ")+" cm",sumActual:actualKg.toFixed(2)+"kg",sumVolumetric:volumetricKg.toFixed(2)+"kg",
+    sumChargeable:chargeableKg+"kg",sumCourierBase:gpzMoney(courierBaseCharge),sumCourierGst:gpzMoney(courierGst),
+    sumCourier:gpzMoney(courierCharge),sumVas:gpzMoney(vasCharge),sumGrand:gpzMoney(grandTotal),
+    sumPaid:gpzMoney(advanceAmount),sumRest:gpzMoney(restAmount)};
+  Object.entries(values).forEach(([id,value])=>document.getElementById(id).textContent=value);
+  document.getElementById("restLabel").style.display=payment==="cod"?"":"none";
+  document.getElementById("sumRest").style.display=payment==="cod"?"":"none";
+  document.getElementById("modeBadge").textContent=payment==="cod"?"Mode: COD":"Mode: Prepaid";
+  document.getElementById("modeBadge").className="badge right "+(payment==="cod"?"mode-cod":"mode-pre");
+  document.getElementById("payNow").href=gpzUpiLink(advanceAmount,payment==="cod"?"COD Advance":"Prepaid Order");
+  gpzRenderRateGuide(chargeableKg);
+}
+function gpzUpiLink(amount,note){
+  return "upi://pay?"+new URLSearchParams({pa:"gnsl.khalsa@okhdfcbank",pn:"GAMES PLANET ZONE",am:String(amount),cu:"INR",tn:note}).toString();
+}
+function productWithAddons(){return gpzCurrentOrder?gpzCurrentOrder.items.map(i=>`${i.name} x${i.quantity}`).join(", "):document.getElementById("product").value;}
+function gpzOrderVariant(){
+  const raw=(document.getElementById("variant").value||"").trim();
+  const fat=raw.match(/PS2\s+Fat(?:\s*\([^)]*\))?/i);
+  const slim7=raw.match(/PS2\s+Slim\s+7(?:0{3}|x{4})\s*(?:Series|\([^)]*\))?/i);
+  const slim9=raw.match(/PS2\s+Slim\s+9(?:0{3}|x{4})\s*(?:Series|\([^)]*\))?/i);
+  if(slim7) return "PS2 Slim 7xxxx";
+  if(slim9) return "PS2 Slim 9xxxx";
+  if(fat) return "PS2 Fat";
+  return "PS2";
+}
+function buildWhatsAppTemplate(){
+  const o=gpzCurrentOrder; if(!o) return "";
+  const isCod=o.paymentMode==="cod";
+  const house=(document.getElementById("house").value||"").trim();
+  const address=((house?house+", ":"")+(document.getElementById("address").value||"")).trim();
+  const gstLines=o.gstInvoiceIncluded?[
+    "GST Invoice: Included (18%)",`Product GST: ${gpzMoney(o.productGst)}`,"Seller GSTIN: 09DIDPS5066Q1ZB",
+    `Customer / Business Name: ${document.getElementById("buyerBusinessName").value||""}`,
+    `Customer GSTIN: ${document.getElementById("buyerGstin").value||""}`,
+    `GST Billing Address: ${document.getElementById("buyerBillingAddress").value||""}`
+  ]:["GST Invoice: Excluded"];
+  const itemLines=o.items.flatMap((i,n)=>[
+    `${n===0?"Base Product":"Add-on "+n}: ${i.name}`,
+    `Quantity: ${i.quantity}`,
+    `Unit Price: ${gpzMoney(i.unitPrice)}`,
+    `Line Total: ${gpzMoney(i.lineTotal)}`
+  ]);
+  return [
+    isCod?"🟠 COD Order on WhatsApp":"🟢 Prepaid Order on WhatsApp","",
+    `Order ID: ${document.getElementById("orderId").value}`,
+    `Name: ${document.getElementById("name").value}`,`Mobile: ${document.getElementById("mobile").value}`,
+    `Alt Mobile: ${document.getElementById("altMobile").value}`,`Email: ${document.getElementById("email").value}`,
+    `Address: ${address}`,`Landmark: ${document.getElementById("landmark").value}`,
+    `Pincode: ${document.getElementById("pincode").value}`,`State: ${document.getElementById("state").value}`,
+    `District/City: ${document.getElementById("city").value}`,`Post office: ${document.getElementById("postoffice").value}`,"",
+    "Product: PS2 Product",`Variant: ${gpzOrderVariant()}`,
+    `Base Price: ${gpzMoney(o.items[0]?.lineTotal||0)}`,
+    `Products Amount: ${gpzMoney(o.productTotal)}`,
+    `Discount Coupon: ${o.discountCode||"Not used"}`,
+    `Discount Applied: ${gpzMoney(o.discountApplied)}`,
+    ...gstLines,
+    `Courier Company: ${o.courier}`,`Courier Charges: ${gpzMoney(o.courierCharge)}`,
+    `VAS (2%): ${gpzMoney(o.vasCharge)}`,
+    `Total Amount: ${gpzMoney(o.grandTotal)}`,
+    `${isCod?"Advance Paid":"Amount Paid"}: ${gpzMoney(o.advanceAmount)}`,
+    ...(isCod?[`Rest on Delivery: ${gpzMoney(o.restAmount)}`]:[]),"",
+    `📏 Distance: ${document.getElementById("distance").value||""}`,
+    `⏳ ETA: ${isCod?(document.getElementById("etaTextCod")?.value||""):(document.getElementById("etaText").value||"")}`,
+    `📅 Estimated Delivery: ${isCod?(document.getElementById("dateRangeCOD")?.value||""):(document.getElementById("dateRange").value||"")}`,"",
+    "📦 PRODUCT BREAKDOWN",...itemLines,
+    `Total Products: ${o.totalQuantity}`,
+    `Products Total: ${gpzMoney(o.productTotal)}`,
+    `Total Courier Charges: ${gpzMoney(o.courierCharge)}`,
+    `Final Total Amount: ${gpzMoney(o.grandTotal)}`
+  ].join("\n");
+}
+function submitOrder(){
+  const required=["name","mobile","address","pincode","state","city","postoffice"];
+  const missing=required.filter(id=>!String(document.getElementById(id).value||"").trim());
+  if(missing.length){alert("Please fill all required customer and delivery details.");document.getElementById(missing[0]).focus();return;}
+  if(gpzInvoice()&&!document.getElementById("buyerBusinessName").value.trim()){alert("Please enter Customer / Business Name for GST invoice.");return;}
+  window.open(`https://wa.me/917983624797?text=${encodeURIComponent(buildWhatsAppTemplate())}`,"_blank","noopener,noreferrer");
+}
+function gpzInitialize(){
+  const product=GPZ_PARAMS.get("product")||"PS2 Product";
+  const variant=GPZ_PARAMS.get("variant")||"";
+  const base=Number(GPZ_PARAMS.get("base")||0);
+  document.getElementById("product").value=product;
+  document.getElementById("variant").value=variant;
+  document.getElementById("basePrice").value=base;
+  setPackBadge(GPZ_PARAMS.get("pack")||"");
+  document.getElementById("orderId").value=orderIdNow();
+  mode="prepaid";
+  document.querySelector('input[name="paymentMode"][value="prepaid"]').checked=true;
+  syncCourierOptions();
+}
+document.getElementById("pincode").addEventListener("input",()=>setTimeout(computeTotals,0));
+document.querySelectorAll('input[name="gstInvoice"]').forEach(el=>el.addEventListener("change",computeTotals));
+gpzInitialize();
 </script>
 </body>
 </html>
