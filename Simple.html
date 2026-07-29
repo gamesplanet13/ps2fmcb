@@ -2556,7 +2556,7 @@ function gpzRenderOpenProductCatalog(){
   const usb=[];
   usbVariants.forEach((v,index)=>{
     const weight=gpzCartWeight("USB for PS2",v.v),size=[12,8,3];
-    const image=/HDD|SSD/i.test(v.v)?"Usbhdd.jpeg":(/3\\.0/i.test(v.v)?"Sandiscultra.png":"Usb.jpg");
+    const image=/HDD|SSD/i.test(v.v)?"Usbhdd.jpeg":(/3\.0/i.test(v.v)?"Sandiscultra.png":"Usb.jpg");
     usb.push({key:`ut${index}`,product:"USB for PS2 (Game-Loaded)",variant:`${v.v} — Top ${v.count} Games`,name:`${usbDisplayName(v.v)} — Top ${v.count} Games`,price:v.top,weight,size,image});
     usb.push({key:`uo${index}`,product:"USB for PS2 (Game-Loaded)",variant:`${v.v} — Optional Games`,name:`${usbDisplayName(v.v)} — Optional Games`,price:v.opt,weight,size,image});
   });

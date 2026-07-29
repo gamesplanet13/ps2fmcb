@@ -313,11 +313,11 @@
 
   <!-- QR Code Section -->
   <div class="card" style="text-align:center; margin-top:20px;">
-    <span class="badge">Scan & Pay</span>
+    <span class="badge" id="paymentQrBadge">Non-GST Payment QR</span>
     <div style="margin:15px 0;">
-      <img src="./Qr%20%281%29.jpg" onerror="this.onerror=null;this.src='./01-Current-ac-qr.jpg';" alt="Games Planet Zone payment QR Code" style="max-width:260px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.15);" />
+      <img id="paymentQrImage" src="./Qr%20%281%29.jpg" onerror="this.onerror=null;this.src='./01-Current-ac-qr.jpg';" alt="Games Planet Zone payment QR Code" style="max-width:260px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.15);" />
     </div>
-    <a href="./Qr%20%281%29.jpg" download="Games_Planet_Zone_QR.jpg" class="btn act">⬇️ Download QR</a>
+    <a id="paymentQrDownload" href="./Qr%20%281%29.jpg" download="Games_Planet_Zone_Non_GST_QR.jpg" class="btn act">⬇️ Download QR</a>
   </div>
 </div>
 
@@ -910,6 +910,22 @@ function gpzBox(items,totalWeight){
 function gpzMode(){return gpzSelected("paymentMode","prepaid");}
 function gpzSpeed(){return gpzSelected("deliverySpeed","surface");}
 function gpzInvoice(){return gpzSelected("gstInvoice","excluded")==="included";}
+function gpzUpdatePaymentQr(invoiceIncluded){
+  const img=document.getElementById("paymentQrImage");
+  const link=document.getElementById("paymentQrDownload");
+  const badge=document.getElementById("paymentQrBadge");
+  if(!img||!link||!badge)return;
+  const src=invoiceIncluded?"./GSTcurrentQR.png":"./Qr%20%281%29.jpg";
+  img.onerror=function(){
+    this.onerror=null;
+    this.src=invoiceIncluded?"./01-GSTcurrentQR.png":"./01-Current-ac-qr.jpg";
+  };
+  img.src=src;
+  img.alt=invoiceIncluded?"Games Planet Zone GST payment QR Code":"Games Planet Zone non-GST payment QR Code";
+  link.href=src;
+  link.download=invoiceIncluded?"Games_Planet_Zone_GST_QR.png":"Games_Planet_Zone_Non_GST_QR.jpg";
+  badge.textContent=invoiceIncluded?"GST Payment QR":"Non-GST Payment QR";
+}
 function gpzCourierRate(courier,speed,payment,kg){
   if(payment==="cod") return 299;
   const billedKg=Math.max(1,Math.ceil(kg));
@@ -1002,6 +1018,7 @@ function computeTotals(){
   const courierGst=0;
   const courierCharge=courierBaseCharge+courierGst;
   const invoiceIncluded=gpzInvoice();
+  gpzUpdatePaymentQr(invoiceIncluded);
   const productGst=invoiceIncluded?Math.ceil(discountedProducts*.18):0;
   const vasApplies=GPZ_VAS_COURIERS.includes(courier);
   const vasCharge=vasApplies?Math.ceil(discountedProducts*.02):0;

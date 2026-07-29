@@ -7,7 +7,7 @@
 <!-- Games Planet patched build: 20-Jul-2026 v11
      Includes Simple/Detail mode, manual Name Next button, smaller PS2 images,
      logical animated action pointers and exact Sandiscultra.png USB 3.0 asset. -->
-<meta name="description" content="Buy FMCB/FunTuna card, USB-only, or FMCB+USB Combo for PlayStation 2 with one-tap WhatsApp redirect. Top & Optional game packs supported."/>
+<meta name="description" content="Choose FMCB/FunTuna, game-loaded USB and PS2 accessories, then build your own PlayStation 2 combo in the persistent cart."/>
 
 <style>
 :root{
@@ -1292,7 +1292,7 @@ body.wizard-popup-open{
     <div class="brand-left">
       <div class="logo">GPZ</div>
       <div>
-        <h1>PS2 Quick Buy <span>FMCB • USB • Combo</span></h1>
+        <h1>PS2 Quick Buy <span>FMCB • USB • Accessories</span></h1>
         <div class="sub">Choose the correct PS2 setup with guided steps, voice help and one-tap WhatsApp order</div>
         <div style="margin-top:8px;font-size:.78rem;color:#bbf7d0;font-weight:700">✓ Model-wise guidance &nbsp;•&nbsp; ✓ Transparent pricing &nbsp;•&nbsp; ✓ WhatsApp order</div>
       </div>
@@ -1302,7 +1302,7 @@ body.wizard-popup-open{
         <span class="nav-pill-dot"></span>
         Plug &amp; Play • No Modchip
       </div>
-      <a class="linkbtn" href="https://wa.me/917983624797?text=Hi%2C%20I%20want%20to%20buy%20FMCB%20USB%20Combo%20for%20PS2" target="_blank" rel="noopener">
+      <a class="linkbtn" href="https://wa.me/917983624797?text=Hi%2C%20I%20want%20to%20buy%20PS2%20products" target="_blank" rel="noopener">
         🛒 WhatsApp Quick Order
       </a>
     </div>
@@ -1368,17 +1368,36 @@ body.wizard-popup-open{
   
 <section id="step2" class="model-selector wizard-modal hidden">
 <h2 class="model-title" data-i18n="productTitle">Step 2 — Choose What You Want to Buy</h2>
-<div class="wizard-help" data-i18n="productHelp">Choose one clear option. FMCB Card is card only, USB Only is for a PS2 where FMCB/OPL already works, and Combo includes the correct card plus USB games.</div>
+<div class="wizard-help" data-i18n="productHelp">Choose FMCB, USB or Accessories. To make a combo, add the correct FMCB/FunTuna card and your preferred USB separately to the cart.</div>
 <div class="model-btn-row product-choice-grid">
 <button class="model-btn product-choice-btn" onclick="showProducts('fmcb')"><strong>💾 Buy FMCB Card</strong><small>केवल model-wise FMCB / FunTuna card</small></button>
 <button class="model-btn product-choice-btn" onclick="showProducts('usb')"><strong>🔌 Buy USB Only</strong><small>जब FMCB / OPL पहले से चल रहा हो</small></button>
-<button class="model-btn product-choice-btn" onclick="showProducts('combo')"><strong>🎮 Buy FMCB + USB Combo</strong><small>सही card और games वाली USB—दोनों</small></button>
+<button class="model-btn product-choice-btn" onclick="showProducts('combo')"><strong>🎮 Build FMCB + USB Combo</strong><small>FMCB और अपनी पसंद की USB cart में जोड़ें</small></button>
 <button class="model-btn product-choice-btn" onclick="showProducts('accessories')"><strong>🕹️ Buy PS2 Accessories</strong><small>Cables, controllers, adapter, converter और memory card</small></button>
 </div>
 </section>
 
 <!-- Anchor to scroll after selection -->
   <div id="cardsAnchor"></div>
+
+  <section class="card accessories-card gpz-open-product-section" id="gpzOpenFmcbSection" aria-labelledby="open-fmcb-title">
+    <div class="accessories-head">
+      <span class="badge">FMCB / FunTuna</span>
+      <h2 class="title" id="open-fmcb-title">Choose FMCB for Your PS2 Model</h2>
+      <div class="muted">Detailed guide से model पहचानें, फिर सही FMCB/FunTuna card की quantity चुनें।</div>
+    </div>
+    <div id="gpzFmcbProductGrid" class="accessories-grid"></div>
+  </section>
+
+  <section class="card accessories-card gpz-open-product-section" id="gpzOpenUsbSection" aria-labelledby="open-usb-title">
+    <div class="accessories-head">
+      <span class="badge">USB for PS2</span>
+      <h2 class="title" id="open-usb-title">Choose Game-Loaded USB</h2>
+      <div class="muted">Top Games या Optional Games चुनें। FMCB के साथ cart में जोड़कर अपना combo बनाएँ।</div>
+    </div>
+    <div id="gpzUsbProductGrid" class="accessories-grid"></div>
+    <div class="accessory-note"><a class="linkbtn" href="https://youtu.be/xGR0vUM1-Jw" target="_blank" rel="noopener">🎞️ Watch Top Games List</a></div>
+  </section>
 
   <div class="grid">
 
@@ -1487,7 +1506,7 @@ body.wizard-popup-open{
     <div class="accessories-head">
       <span class="badge">PS2 Accessories</span>
       <h2 class="title" id="accessories-title">Choose PS2 Accessories</h2>
-      <div class="muted">Quantity चुनें और उसी product का Buy Now दबाएँ।</div>
+      <div class="muted">Quantity चुनें, फिर Add to Cart या Buy Now दबाएँ।</div>
     </div>
     <div id="ps2AccessoriesGrid" class="accessories-grid"></div>
     <div class="accessory-note">Courier, GST/VAS और COD eligibility अगले pre-fill page पर existing rules के अनुसार calculate होंगे।</div>
@@ -1499,7 +1518,7 @@ body.wizard-popup-open{
     <ul class="list">
       <li>Do <b>not</b> delete FMCB / OPL / ELF / system (blue icon) files.</li>
       <li>USB works with PS2 Fat & Slim (7xxxx / 9xxxx). Plug directly into PS2 (no hub/splitter).</li>
-      <li>For Slim 9xxxx, <b>FunTuna</b> is used automatically with the combo.</li>
+      <li>For Slim 9xxxx, select the <b>FunTuna</b> card and add your preferred USB separately to the cart.</li>
     </ul>
   </div>
 
@@ -2060,18 +2079,13 @@ function updateOptionalSelectorVisibility(type){
 function showProducts(type){
   hideWizardSteps();
   document.body.classList.remove('wizard-popup-open');
-  updateOptionalSelectorVisibility(type);
-  document.querySelectorAll('.model-guard').forEach(el=>el.classList.add('hidden'));
-  const cards = document.querySelectorAll('.model-guard');
-  if(type==='fmcb' && cards[0]) cards[0].classList.remove('hidden');
-  if(type==='usb' && cards[1]) cards[1].classList.remove('hidden');
-  if(type==='combo' && cards[2]) cards[2].classList.remove('hidden');
-  if(type==='accessories' && cards[3]) cards[3].classList.remove('hidden');
-  const visible = document.querySelector('.model-guard:not(.hidden)');
-  if(visible) visible.scrollIntoView({behavior:'smooth', block:'start'});
+  showOpenDetailedCatalog();
+  const target=type==='usb'?document.getElementById('gpzOpenUsbSection'):
+    (type==='accessories'?document.getElementById('accessories-title')?.closest('.card'):document.getElementById('gpzOpenFmcbSection'));
+  if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
   if(type==='fmcb') speakText(tr('vFmcbProduct'), false);
   if(type==='usb') speakText(tr('vUsbProduct'), false);
-  if(type==='combo') speakText(tr('vComboProduct'), false);
+  if(type==='combo') speakText('Select the correct FMCB card and your preferred USB, then add both products to the cart to build your combo.', false);
   if(type==='accessories') speakText(currentLang==='hi'?'PS2 Accessories. Quantity चुनें और Buy Now दबाएं।':(currentLang==='pa'?'PS2 Accessories. Quantity ਚੁਣੋ ਅਤੇ Buy Now ਦਬਾਓ।':'PS2 Accessories. Select the required quantity and press Buy Now.'), false);
 }
 
@@ -2084,12 +2098,22 @@ function clearModel(){
   showStep('step1', tr('vModel'));
 }
 
+function showOpenDetailedCatalog(){
+  const cards=document.querySelectorAll('.model-guard');
+  if(cards[0]) cards[0].classList.add('hidden');
+  if(cards[1]) cards[1].classList.add('hidden');
+  if(cards[2]) cards[2].classList.add('hidden');
+  if(cards[3]) cards[3].classList.remove('hidden');
+  document.querySelectorAll('[data-model-group="combo-section"]').forEach(block=>block.style.display='none');
+  document.querySelectorAll('.optional-selector-link').forEach(link=>link.classList.remove('hidden'));
+}
+
 document.addEventListener('DOMContentLoaded', function(){
   addWizardBackButtons();
   const browser = (navigator.language || '').toLowerCase();
   if(browser.startsWith('hi')) currentLang='hi'; else if(browser.startsWith('pa')) currentLang='pa'; else currentLang='en';
   applyLanguage();
-  updateOptionalSelectorVisibility('fmcb');
+  showOpenDetailedCatalog();
   chooseDetailVersion();
 });
 </script>
@@ -2184,6 +2208,7 @@ document.addEventListener('DOMContentLoaded', function(){
 .gpz-inline-cart{width:100%;min-height:39px;margin-top:7px;border:1px solid #0284c7;border-radius:11px;background:linear-gradient(135deg,#e0f2fe,#bae6fd);color:#075985;font-weight:950;cursor:pointer}.gpz-inline-cart:hover{filter:brightness(.97)}
 .gpz-product-specs{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.gpz-product-specs span{padding:4px 7px;border:1px solid #d7e4ee;border-radius:8px;background:#f8fafc;color:#334155;font-size:.68rem;font-weight:800}
 .variant-pack-option{border:1px solid #dbe7f1;border-radius:15px;padding:9px;background:linear-gradient(180deg,#fff,#f8fbff);box-shadow:0 6px 18px rgba(15,23,42,.06)}
+.grid{grid-template-columns:1fr!important}.model-guard{grid-column:1/-1}.gpz-open-product-section{margin-bottom:14px}
 @media(max-width:520px){.gpz-cart-fixed{top:33px;right:5px}.gpz-cart-fixed button{height:25px;padding:0 6px;font-size:9px}.accessory-actions{grid-template-columns:1fr 1fr}.accessory-actions .qty-control{grid-column:1/-1}.buy-confirm-actions{grid-template-columns:1fr}.gpz-cart-toast{top:68px}}
 </style>
 <div class="gpz-cart-fixed" aria-label="Shopping cart controls">
@@ -2257,7 +2282,47 @@ function gpzEnhanceProductCards(){
     btn.insertAdjacentElement("afterend",specs);specs.insertAdjacentElement("afterend",cartBtn);
   });
 }
-document.addEventListener("DOMContentLoaded",()=>{gpzCartRender();gpzEnhanceProductCards()});window.addEventListener("storage",gpzCartRender);
+const gpzCatalogQty={};
+function gpzCatalogSetQty(key,delta){
+  gpzCatalogQty[key]=Math.max(1,Math.min(99,(gpzCatalogQty[key]||1)+delta));
+  const out=document.getElementById(`gpzCatalogQty${key}`);if(out)out.textContent=gpzCatalogQty[key];
+}
+function gpzCatalogAdd(key,product,variant,price,weight,size,buyNow){
+  gpzCartAdd({product,variant,unitPrice:price,unitWeight:weight,size,quantity:gpzCatalogQty[key]||1,pack:/Optional/i.test(variant)?"Optional Games":(/Top/i.test(variant)?"Top Games":"Card Only")});
+  if(buyNow)gpzCartOpen();
+}
+function gpzCatalogCard({key,product,variant,name,price,weight,size,image}){
+  gpzCatalogQty[key]=gpzCatalogQty[key]||1;
+  const args=`'${key}','${product.replace(/'/g,"\\'")}','${variant.replace(/'/g,"\\'")}',${price},${weight},[${size.join(",")}]`;
+  return `<article class="accessory-item gpz-catalog-product">
+    <img src="${image}" alt="${gpzCartEsc(name)}" loading="lazy" onclick="openImg(this.src)">
+    <div class="accessory-name">${gpzCartEsc(name)}</div>
+    <div class="accessory-meta"><span class="accessory-price">${gpzCartMoney(price)}</span><span>⚖️ ${weight}g</span></div>
+    <div class="gpz-product-specs"><span>Size ${size.join(" × ")} cm</span><span>PS2 Product</span></div>
+    <div class="accessory-actions">
+      <div class="qty-control"><button type="button" onclick="gpzCatalogSetQty('${key}',-1)">−</button><output id="gpzCatalogQty${key}">${gpzCatalogQty[key]}</output><button type="button" onclick="gpzCatalogSetQty('${key}',1)">+</button></div>
+      <button type="button" class="accessory-cart" onclick="gpzCatalogAdd(${args},false)">Add to Cart</button>
+      <button type="button" class="accessory-buy" onclick="gpzCatalogAdd(${args},true)">Buy Now</button>
+    </div>
+  </article>`;
+}
+function gpzRenderOpenProductCatalog(){
+  const fmcb=[
+    {key:"f0",product:"Memory Card",variant:"PS2 Fat (All Models) — FMCB",name:"FMCB Memory Card — PS2 Fat",price:600,weight:25,size:[12,9,2],image:"Fmcb.png"},
+    {key:"f1",product:"Memory Card",variant:"PS2 Slim 7xxxx (All) — FMCB",name:"FMCB Memory Card — PS2 Slim 7xxxx",price:600,weight:25,size:[12,9,2],image:"Fmcb.png"},
+    {key:"f2",product:"Memory Card",variant:"PS2 Slim 9xxxx (All) — FunTuna",name:"FunTuna Memory Card — PS2 Slim 9xxxx",price:600,weight:25,size:[12,9,2],image:"Fmcb.png"}
+  ];
+  const fmcbGrid=document.getElementById("gpzFmcbProductGrid");if(fmcbGrid)fmcbGrid.innerHTML=fmcb.map(gpzCatalogCard).join("");
+  const usb=[];
+  usbVariants.forEach((v,index)=>{
+    const weight=gpzCartWeight("USB for PS2",v.v),size=[12,8,3];
+    const image=/HDD|SSD/i.test(v.v)?"Usbhdd.jpeg":(/3\.0/i.test(v.v)?"Sandiscultra.png":"Usb.jpg");
+    usb.push({key:`ut${index}`,product:"USB for PS2 (Game-Loaded)",variant:`${v.v} — Top ${v.count} Games`,name:`${usbDisplayName(v.v)} — Top ${v.count} Games`,price:v.top,weight,size,image});
+    usb.push({key:`uo${index}`,product:"USB for PS2 (Game-Loaded)",variant:`${v.v} — Optional Games`,name:`${usbDisplayName(v.v)} — Optional Games`,price:v.opt,weight,size,image});
+  });
+  const usbGrid=document.getElementById("gpzUsbProductGrid");if(usbGrid)usbGrid.innerHTML=usb.map(gpzCatalogCard).join("");
+}
+document.addEventListener("DOMContentLoaded",()=>{gpzCartRender();gpzRenderOpenProductCatalog();gpzEnhanceProductCards()});window.addEventListener("storage",gpzCartRender);
 </script>
 </body>
 </html>
