@@ -438,6 +438,9 @@ function getVariantGB(){
   return m ? Number(m[1]) : null;
 }
 function isFMCBorUSBCombo(){
+  if(new URLSearchParams(location.search).get("source")==="cart"){
+    return gpzAllItems().some(i=>/FMCB|FUNTUNA|USB|COMBO/i.test(i.name));
+  }
   const p=getBaseProduct();
   const hasFMCB = p.includes("FMCB");
   const hasUSB  = p.includes("USB");
@@ -872,7 +875,7 @@ function gpzBaseItems(){
   let stored=null;
   try{stored=JSON.parse(localStorage.getItem("gp_order_summary")||"null");}catch(e){}
   const storedMatches=stored&&Array.isArray(stored.items)&&stored.items.length&&
-    (!GPZ_PARAMS.get("product")||stored.items.some(i=>String(i.name).toLowerCase()===product.toLowerCase()));
+    (GPZ_PARAMS.get("source")==="cart"||!GPZ_PARAMS.get("product")||stored.items.some(i=>String(i.name).toLowerCase()===product.toLowerCase()));
   if(storedMatches) return stored.items.map(i=>({
     name:i.name,quantity:Number(i.quantity)||1,unitPrice:Number(i.unitPrice)||0,
     lineTotal:Number(i.lineTotal)||0,unitWeight:Number(i.unitWeight)||0,lineWeight:Number(i.lineWeight)||0

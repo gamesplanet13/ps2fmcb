@@ -1636,7 +1636,9 @@ function openBuyConfirmation(){
   document.getElementById('buyConfirmMessage').textContent=c.message;
   const pop=document.getElementById('buyConfirmPopup');
   const buttons=pop.querySelectorAll('.buy-confirm-actions button');
-  buttons[0].textContent=c.close; buttons[1].textContent=c.agree;
+  buttons[0].textContent=c.close;
+  buttons[1].textContent=currentLang==='hi'?'कार्ट में जोड़ें':(currentLang==='pa'?'ਕਾਰਟ ਵਿੱਚ ਪਾਓ':'Add to Cart');
+  buttons[2].textContent=c.agree;
   pop.classList.add('open'); document.body.style.overflow='hidden';
   speakText(c.title+' '+c.message, false);
 }
@@ -1645,10 +1647,7 @@ function closeBuyConfirmation(){
   document.body.style.overflow=''; pendingBuyUrl=''; stopVoice();
 }
 function agreeAndContinueBuy(){
-  const url=pendingBuyUrl;
-  const pop=document.getElementById('buyConfirmPopup'); if(pop) pop.classList.remove('open');
-  document.body.style.overflow=''; stopVoice();
-  if(url) location.href=url;
+  if(pendingBuyUrl) addPendingToCart();
 }
 
 
@@ -1732,32 +1731,15 @@ function renderPs2Accessories(){
           <output id="accessoryQty${index}">1</output>
           <button type="button" onclick="setAccessoryQty(${index},1)" aria-label="Increase quantity">+</button>
         </div>
+        <button type="button" class="accessory-cart" onclick="addPs2AccessoryToCart(${index})">Add to Cart</button>
         <button type="button" class="accessory-buy" onclick="buyPs2Accessory(${index})">Buy Now</button>
       </div>
     </article>`;
   }).join('');
 }
 function buyPs2Accessory(index){
-  const p=ps2Accessories[index];
-  const quantity=accessoryQty[index]||1;
-  const productTotal=p.price*quantity;
-  const totalWeight=p.weight*quantity;
-  const packingWeight=250;
-  const packedWeight=totalWeight+packingWeight;
-  const boxDimensions=[p.size[0],p.size[1],Math.max(p.size[2],Math.ceil(p.size[2]*quantity*.7)+2)];
-  const actualKg=packedWeight/1000;
-  const volumetricKg=(boxDimensions[0]*boxDimensions[1]*boxDimensions[2])/5000;
-  const chargeableKg=Math.max(1,Math.ceil(Math.max(actualKg,volumetricKg)));
-  const summary={
-    items:[{name:p.name,quantity,unitPrice:p.price,lineTotal:productTotal,unitWeight:p.weight,lineWeight:totalWeight}],
-    productTotal,totalWeight,totalQuantity:quantity,packingWeight,packedWeight,boxDimensions,
-    actualKg,volumetricKg,chargeableKg,deliverySpeed:'Surface Delivery',courier:'Trackon.in',
-    courierBaseCharge:0,courierGst:0,courierCharge:0,vasCharge:0,productGst:0,
-    gstInvoiceIncluded:false,paymentMode:'prepaid',grandTotal:productTotal,hasBatteryItem:false
-  };
-  localStorage.setItem('gp_order_summary',JSON.stringify(summary));
-  const q=new URLSearchParams({product:p.name,variant:`Quantity ${quantity}`,base:productTotal,quantity,weight:totalWeight,grandTotal:productTotal,allowCod:'true'});
-  window.location.href=`order-prefill.html?${q.toString()}`;
+  addPs2AccessoryToCart(index);
+  gpzCartOpen();
 }
 document.addEventListener('DOMContentLoaded',renderPs2Accessories);
 
@@ -2123,6 +2105,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <p id="buyConfirmMessage">To go to the next step, agree below, fill in your details, complete the payment, and book your order.</p>
     <div class="buy-confirm-actions">
       <button type="button" class="buy-confirm-cancel" onclick="closeBuyConfirmation()">Close</button>
+      <button type="button" class="buy-confirm-cart" onclick="addPendingToCart()">Add to Cart</button>
       <button type="button" class="buy-confirm-agree" onclick="agreeAndContinueBuy()">I Agree — Continue</button>
     </div>
   </div>
@@ -2186,5 +2169,95 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 </script>
 
+<style id="gpz-cart-system-style">
+.gpz-cart-fixed{position:fixed;top:34px;right:8px;z-index:29990;display:flex;gap:5px;padding:4px;border:1px solid rgba(148,163,184,.35);border-radius:11px;background:rgba(2,6,23,.76);backdrop-filter:blur(9px);box-shadow:0 5px 16px rgba(0,0,0,.28)}
+.gpz-cart-fixed button{height:27px;padding:0 8px;border-radius:7px;border:1px solid rgba(125,211,252,.34);background:rgba(8,47,73,.78);color:#fff;font-size:10px;font-weight:900;white-space:nowrap;cursor:pointer}
+.gpz-cart-fixed .gpz-reset-tiny{background:rgba(127,29,29,.72);border-color:rgba(252,165,165,.35)}
+.gpz-cart-drawer{position:fixed;inset:0;z-index:40000;display:none;background:rgba(2,6,23,.68);backdrop-filter:blur(5px)}
+.gpz-cart-drawer.open{display:block}.gpz-cart-panel{position:absolute;top:0;right:0;width:min(430px,94vw);height:100%;display:flex;flex-direction:column;background:#071525;color:#e5f3ff;border-left:1px solid #27445e;box-shadow:-12px 0 35px rgba(0,0,0,.38)}
+.gpz-cart-head,.gpz-cart-foot{padding:13px;border-bottom:1px solid #22394f}.gpz-cart-head{display:flex;align-items:center;justify-content:space-between}.gpz-cart-head h3{margin:0;font-size:1rem}.gpz-cart-close{border:0;background:#172a3e;color:#fff;border-radius:9px;width:34px;height:34px;font-weight:900}
+.gpz-cart-list{padding:10px;overflow:auto;flex:1}.gpz-cart-empty{text-align:center;padding:45px 15px;color:#a9bfd2}
+.gpz-cart-item{padding:11px;margin-bottom:8px;border:1px solid #26435e;border-radius:13px;background:#0b1d30}.gpz-cart-item-name{font-size:.84rem;font-weight:900;line-height:1.3}.gpz-cart-item-variant{font-size:.72rem;color:#9fc1db;margin-top:3px}.gpz-cart-item-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:9px}.gpz-cart-qty{display:flex;align-items:center;gap:6px}.gpz-cart-qty button{width:29px;height:29px;border:0;border-radius:8px;background:#183651;color:#fff;font-weight:900}.gpz-cart-remove{border:0;background:transparent;color:#fca5a5;font-size:.72rem;font-weight:800}
+.gpz-cart-foot{border-top:1px solid #22394f;border-bottom:0}.gpz-cart-total{display:flex;justify-content:space-between;font-weight:950;margin-bottom:10px}.gpz-cart-actions{display:grid;grid-template-columns:1fr 1.35fr;gap:8px}.gpz-cart-actions button{min-height:43px;border:0;border-radius:11px;font-weight:900}.gpz-cart-continue{background:#1e3449;color:#fff}.gpz-cart-checkout{background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff}
+.gpz-cart-toast{position:fixed;top:72px;left:50%;z-index:50000;transform:translate(-50%,-12px);opacity:0;pointer-events:none;padding:9px 14px;border-radius:10px;background:#16a34a;color:#fff;font-size:.78rem;font-weight:900;transition:.2s}.gpz-cart-toast.show{opacity:1;transform:translate(-50%,0)}
+.accessory-cart{min-height:40px;border:0;border-radius:11px;background:#e0f2fe;color:#075985;font-weight:900;cursor:pointer}.accessory-actions{grid-template-columns:auto 1fr 1fr}.buy-confirm-actions{grid-template-columns:1fr 1.15fr 1.35fr}.buy-confirm-cart{border:0;background:#e0f2fe;color:#075985}
+.gpz-inline-cart{width:100%;min-height:39px;margin-top:7px;border:1px solid #0284c7;border-radius:11px;background:linear-gradient(135deg,#e0f2fe,#bae6fd);color:#075985;font-weight:950;cursor:pointer}.gpz-inline-cart:hover{filter:brightness(.97)}
+.gpz-product-specs{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.gpz-product-specs span{padding:4px 7px;border:1px solid #d7e4ee;border-radius:8px;background:#f8fafc;color:#334155;font-size:.68rem;font-weight:800}
+.variant-pack-option{border:1px solid #dbe7f1;border-radius:15px;padding:9px;background:linear-gradient(180deg,#fff,#f8fbff);box-shadow:0 6px 18px rgba(15,23,42,.06)}
+@media(max-width:520px){.gpz-cart-fixed{top:33px;right:5px}.gpz-cart-fixed button{height:25px;padding:0 6px;font-size:9px}.accessory-actions{grid-template-columns:1fr 1fr}.accessory-actions .qty-control{grid-column:1/-1}.buy-confirm-actions{grid-template-columns:1fr}.gpz-cart-toast{top:68px}}
+</style>
+<div class="gpz-cart-fixed" aria-label="Shopping cart controls">
+  <button type="button" onclick="gpzCartOpen()">🛒 Cart <span id="gpzCartCount">0</span></button>
+  <button type="button" class="gpz-reset-tiny" onclick="gpzCartReset()">Reset</button>
+</div>
+<div id="gpzCartDrawer" class="gpz-cart-drawer" onclick="if(event.target===this)gpzCartClose()">
+  <aside class="gpz-cart-panel" role="dialog" aria-modal="true" aria-labelledby="gpzCartTitle">
+    <div class="gpz-cart-head"><h3 id="gpzCartTitle">Shopping Cart</h3><button class="gpz-cart-close" onclick="gpzCartClose()">✕</button></div>
+    <div id="gpzCartList" class="gpz-cart-list"></div>
+    <div class="gpz-cart-foot">
+      <div class="gpz-cart-total"><span>Total</span><span id="gpzCartTotal">₹0</span></div>
+      <div class="gpz-cart-actions"><button class="gpz-cart-continue" onclick="gpzCartClose()">Continue Shopping</button><button class="gpz-cart-checkout" onclick="gpzCartCheckout()">Checkout</button></div>
+    </div>
+  </aside>
+</div>
+<div id="gpzCartToast" class="gpz-cart-toast">Added to cart</div>
+<script id="gpz-persistent-cart">
+const GPZ_CART_KEY="gpz_ps2_cart_v1";
+function gpzCartRead(){try{const v=JSON.parse(localStorage.getItem(GPZ_CART_KEY)||"[]");return Array.isArray(v)?v:[]}catch(e){return []}}
+function gpzCartSave(items){localStorage.setItem(GPZ_CART_KEY,JSON.stringify(items));gpzCartRender()}
+function gpzCartEsc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function gpzCartMoney(n){return "₹"+Math.round(Number(n)||0).toLocaleString("en-IN")}
+function gpzCartWeight(product,variant){const t=`${product} ${variant}`.toUpperCase();let w=25;if(t.includes("500GB"))w=175;else if(t.includes("256GB"))w=71;else if(t.includes("128GB"))w=41;else if(t.includes("64GB"))w=21;if(t.includes("COMBO"))w+=25;return w}
+function gpzCartSize(product,variant){const t=`${product} ${variant}`.toUpperCase();if(t.includes("COMBO"))return [15,12,4];if(t.includes("USB"))return [12,8,3];if(t.includes("MEMORY")||t.includes("FMCB")||t.includes("FUNTUNA"))return [12,9,2];return [15,12,5]}
+function gpzCartAdd(item){
+  const items=gpzCartRead(),key=`${item.product}|${item.variant}|${item.unitPrice}`.toLowerCase();
+  const found=items.find(x=>x.key===key);
+  if(found)found.quantity+=Math.max(1,Number(item.quantity)||1);
+  else items.push({...item,key,quantity:Math.max(1,Number(item.quantity)||1)});
+  gpzCartSave(items);gpzCartToast();return items;
+}
+function addPendingToCart(){
+  if(!pendingBuyUrl)return;
+  const u=new URL(pendingBuyUrl,location.href),p=u.searchParams;
+  const product=p.get("product")||"PS2 Product",variant=p.get("variant")||"PS2",unitPrice=Number(p.get("base")||0);
+  gpzCartAdd({product,variant,unitPrice,unitWeight:gpzCartWeight(product,variant),size:gpzCartSize(product,variant),pack:p.get("pack")||""});
+  closeBuyConfirmation();gpzCartOpen();
+}
+function addPs2AccessoryToCart(index){
+  const p=ps2Accessories[index],quantity=accessoryQty[index]||1;
+  gpzCartAdd({product:p.name,variant:"PS2",unitPrice:p.price,unitWeight:p.weight,size:p.size,quantity,pack:"Accessory"});
+}
+function gpzCartChange(index,delta){const items=gpzCartRead();if(!items[index])return;items[index].quantity+=delta;if(items[index].quantity<=0)items.splice(index,1);gpzCartSave(items)}
+function gpzCartRemove(index){const items=gpzCartRead();items.splice(index,1);gpzCartSave(items)}
+function gpzCartRender(){
+  const items=gpzCartRead(),count=items.reduce((s,i)=>s+(Number(i.quantity)||0),0),total=items.reduce((s,i)=>s+(Number(i.unitPrice)||0)*(Number(i.quantity)||0),0);
+  const countEl=document.getElementById("gpzCartCount"),list=document.getElementById("gpzCartList"),totalEl=document.getElementById("gpzCartTotal");
+  if(countEl)countEl.textContent=count;if(totalEl)totalEl.textContent=gpzCartMoney(total);if(!list)return;
+  list.innerHTML=items.length?items.map((i,n)=>`<div class="gpz-cart-item"><div class="gpz-cart-item-name">${gpzCartEsc(i.product)}</div><div class="gpz-cart-item-variant">${gpzCartEsc(i.variant||"PS2")}</div><div class="gpz-product-specs"><span>Price ${gpzCartMoney(i.unitPrice)}</span><span>Weight ${i.unitWeight||25}g each</span><span>Size ${(i.size||gpzCartSize(i.product,i.variant)).join(" × ")} cm</span></div><div class="gpz-cart-item-bottom"><b>${gpzCartMoney(i.unitPrice)} × ${i.quantity} = ${gpzCartMoney(i.unitPrice*i.quantity)}</b><div class="gpz-cart-qty"><button onclick="gpzCartChange(${n},-1)">−</button><span>${i.quantity}</span><button onclick="gpzCartChange(${n},1)">+</button><button class="gpz-cart-remove" onclick="gpzCartRemove(${n})">Remove</button></div></div></div>`).join(""):'<div class="gpz-cart-empty">Your cart is empty.<br>Add products and they will remain saved after refresh.</div>';
+}
+function gpzCartOpen(){gpzCartRender();document.getElementById("gpzCartDrawer").classList.add("open");document.body.style.overflow="hidden"}
+function gpzCartClose(){document.getElementById("gpzCartDrawer").classList.remove("open");document.body.style.overflow=""}
+function gpzCartReset(){if(!gpzCartRead().length)return;if(confirm("Reset cart and remove all saved products?")){localStorage.removeItem(GPZ_CART_KEY);gpzCartRender();gpzCartClose()}}
+function gpzCartToast(){const el=document.getElementById("gpzCartToast");el.classList.add("show");clearTimeout(gpzCartToast.timer);gpzCartToast.timer=setTimeout(()=>el.classList.remove("show"),1600)}
+function gpzCartCheckout(){
+  const cart=gpzCartRead();if(!cart.length){alert("Cart is empty.");return}
+  const items=cart.map(i=>({name:i.variant&&i.variant!=="PS2"?`${i.product} — ${i.variant}`:i.product,product:i.product,variant:i.variant||"PS2",quantity:Number(i.quantity)||1,unitPrice:Number(i.unitPrice)||0,lineTotal:(Number(i.unitPrice)||0)*(Number(i.quantity)||1),unitWeight:Number(i.unitWeight)||25,lineWeight:(Number(i.unitWeight)||25)*(Number(i.quantity)||1),size:i.size||gpzCartSize(i.product,i.variant)}));
+  const productTotal=items.reduce((s,i)=>s+i.lineTotal,0),totalWeight=items.reduce((s,i)=>s+i.lineWeight,0),totalQuantity=items.reduce((s,i)=>s+i.quantity,0);
+  localStorage.setItem("gp_order_summary",JSON.stringify({source:"cart",items,productTotal,totalWeight,totalQuantity,paymentMode:"prepaid"}));
+  const q=new URLSearchParams({source:"cart",product:"PS2 Product",variant:"PS2",base:productTotal,quantity:totalQuantity,weight:totalWeight});
+  location.href=`order-prefill.html?${q.toString()}`;
+}
+function gpzEnhanceProductCards(){
+  document.querySelectorAll(".purchase-btn").forEach(btn=>{
+    if(btn.dataset.cartReady)return;btn.dataset.cartReady="1";
+    const text=`${btn.textContent||""} ${btn.getAttribute("onclick")||""}`,weight=gpzCartWeight(text,text),size=gpzCartSize(text,text);
+    const specs=document.createElement("div");specs.className="gpz-product-specs";specs.innerHTML=`<span>Weight ${weight}g</span><span>Size ${size.join(" × ")} cm</span>`;
+    const cartBtn=document.createElement("button");cartBtn.type="button";cartBtn.className="gpz-inline-cart";cartBtn.textContent="Add to Cart";
+    cartBtn.onclick=()=>{btn.click();if(pendingBuyUrl)addPendingToCart()};
+    btn.insertAdjacentElement("afterend",specs);specs.insertAdjacentElement("afterend",cartBtn);
+  });
+}
+document.addEventListener("DOMContentLoaded",()=>{gpzCartRender();gpzEnhanceProductCards()});window.addEventListener("storage",gpzCartRender);
+</script>
 </body>
 </html>
