@@ -263,7 +263,7 @@
     </div>
     <div class="label">Choose Preferred Courier</div>
     <select id="courier" onchange="computeTotals()"></select>
-    <div class="hint">हर order पर fixed courier charge अनिवार्य है: Prepaid ₹99 • COD ₹299. Courier availability destination pincode/service area पर depend करेगी।</div>
+    <div class="hint" id="courierServiceNote">पहले valid pincode भरें। Final courier serviceability destination pincode पर depend करेगी।</div>
     <div id="courierRateGuide"></div>
   </div>
 
@@ -834,8 +834,9 @@ const GPZ_PARAMS=new URLSearchParams(location.search);
 const GPZ_GST_COURIERS=["Delhivery.com","BlueDart","Ecom Express","XpressBees"];
 const GPZ_SURFACE=["Trackon.in","ShreeMaruti.com","DTDC.in","Speed Post",...GPZ_GST_COURIERS];
 const GPZ_AIR=["Trackon.in","ShreeMaruti.com"];
-const GPZ_PRIME=["Trackon.in"];
-const GPZ_COD=[...GPZ_GST_COURIERS];
+const GPZ_PRIME=["Trackon.in","ShreeMaruti.com"];
+const GPZ_COD=["Delhivery.com","BlueDart"];
+const GPZ_VAS_COURIERS=["Delhivery.com","BlueDart","Ecom Express","XpressBees"];
 const GPZ_ADDON_WEIGHTS={
   "Wire Gamepad":250,"Wireless Gamepad":250,"PS2 Slim Sticker/Skin":0,
   "PS2 AV Cable":70,"HDMI Converter":80,"HDMI Cable":99,"Best HDMI Cable":120,
@@ -907,7 +908,12 @@ function gpzMode(){return gpzSelected("paymentMode","prepaid");}
 function gpzSpeed(){return gpzSelected("deliverySpeed","surface");}
 function gpzInvoice(){return gpzSelected("gstInvoice","excluded")==="included";}
 function gpzCourierRate(courier,speed,payment,kg){
-  return payment==="cod"?299:99;
+  if(payment==="cod") return 299;
+  const billedKg=Math.max(1,Math.ceil(kg));
+  if(speed==="prime") return billedKg*(courier==="ShreeMaruti.com"?250:200);
+  if(speed==="air") return billedKg*150;
+  if(["Trackon.in","ShreeMaruti.com","DTDC.in"].includes(courier)) return billedKg*99;
+  return Math.max(1,Math.ceil(kg/.5))*100;
 }
 function getSubtotal(){return gpzAllItems().reduce((s,i)=>s+i.lineTotal,0);}
 function recomputeAddons(){
@@ -930,6 +936,10 @@ function syncCourierOptions(){
   const old=select.value;
   select.innerHTML=allowed.map(c=>`<option value="${c}">${c}</option>`).join("");
   select.value=allowed.includes(old)?old:allowed[0];
+  const pin=(document.getElementById("pincode").value||"").trim();
+  document.getElementById("courierServiceNote").textContent=/^\d{6}$/.test(pin)
+    ? `Pincode ${pin}: mode के अनुसार courier list दिखाई गई है। Final serviceability courier booking के समय confirm होगी।`
+    : "पहले valid 6-digit pincode भरें। Final courier serviceability destination pincode पर depend करेगी।";
   computeTotals();
 }
 function setMode(nextMode){
@@ -952,10 +962,18 @@ function setMode(nextMode){
 function gpzRenderRateGuide(kg){
   document.getElementById("courierRateGuide").innerHTML=`
   <div class="rate-table-wrap"><table class="rate-table">
-    <thead><tr><th>Payment</th><th>Mandatory courier charge</th></tr></thead>
-    <tbody><tr><td>Prepaid</td><td><b>₹99</b></td></tr><tr><td>COD</td><td><b>₹299</b></td></tr></tbody>
+    <thead><tr><th>Mode</th><th>Courier charge</th><th>VAS</th></tr></thead>
+    <tbody>
+      <tr><td>Surface: Trackon / Shree Maruti / DTDC</td><td><b>₹99/kg</b></td><td>No VAS</td></tr>
+      <tr><td>Surface: Delhivery / BlueDart / Ecom / XpressBees</td><td><b>₹100/500g</b></td><td>VAS 2%</td></tr>
+      <tr><td>Surface: Speed Post</td><td><b>₹100/500g</b></td><td>No VAS</td></tr>
+      <tr><td>Air: Trackon / Shree Maruti</td><td><b>₹150/kg</b></td><td>No VAS</td></tr>
+      <tr><td>Prime: Trackon</td><td><b>₹200/kg</b></td><td>No VAS</td></tr>
+      <tr><td>Prime: Shree Maruti</td><td><b>₹250/kg</b></td><td>No VAS</td></tr>
+      <tr><td>COD: Delhivery / BlueDart</td><td><b>₹299</b></td><td>VAS 2%</td></tr>
+    </tbody>
   </table></div>
-  <div class="hint">यह fixed charge हर order पर लगेगा। COD केवल ₹1,300 या अधिक product value पर उपलब्ध है। VAS final order subtotal पर 2% है।</div>`;
+  <div class="hint">COD में केवल Delhivery और BlueDart उपलब्ध हैं। COD केवल ₹1,300 या अधिक product value पर उपलब्ध है। Current chargeable weight: ${Number(kg).toFixed(2)}kg.</div>`;
 }
 function computeTotals(){
   const items=gpzAllItems();
@@ -966,7 +984,7 @@ function computeTotals(){
   const boxDimensions=gpzBox(items,totalWeight);
   const actualKg=packedWeight/1000;
   const volumetricKg=(boxDimensions[0]*boxDimensions[1]*boxDimensions[2])/5000;
-  const chargeableKg=Math.max(1,Math.ceil(Math.max(actualKg,volumetricKg)));
+  const chargeableKg=Math.max(.5,Math.max(actualKg,volumetricKg));
   let payment=gpzMode();
   if(payment==="cod"&&productTotal<1300){
     document.querySelector('input[name="paymentMode"][value="prepaid"]').checked=true;
@@ -982,7 +1000,8 @@ function computeTotals(){
   const courierCharge=courierBaseCharge+courierGst;
   const invoiceIncluded=gpzInvoice();
   const productGst=invoiceIncluded?Math.ceil(discountedProducts*.18):0;
-  const vasCharge=Math.ceil(discountedProducts*.02);
+  const vasApplies=GPZ_VAS_COURIERS.includes(courier);
+  const vasCharge=vasApplies?Math.ceil(discountedProducts*.02):0;
   const grandTotal=discountedProducts+productGst+courierCharge+vasCharge;
   const advanceAmount=payment==="cod"?Math.min(grandTotal,Math.max(500,Math.ceil(grandTotal*.10))):grandTotal;
   const restAmount=payment==="cod"?Math.max(0,grandTotal-advanceAmount):0;
@@ -990,7 +1009,7 @@ function computeTotals(){
     boxDimensions,actualKg,volumetricKg,chargeableKg,paymentMode:payment,deliverySpeed:speed,courier,
     courierBaseCharge,courierGst,courierCharge,gstInvoiceIncluded:invoiceIncluded,productGst,
     discountApplied:appliedDiscount,discountCode:appliedDiscount?(document.getElementById("couponCode").value||"").trim():"",
-    discountedProducts,vasCharge,grandTotal,
+    discountedProducts,vasApplies,vasCharge,grandTotal,
     advanceAmount,restAmount,hasBatteryItem:items.some(i=>/BATTER/i.test(i.name))};
   localStorage.setItem("gp_order_summary",JSON.stringify(gpzCurrentOrder));
   document.getElementById("basePrice").value=Number(GPZ_PARAMS.get("base")||document.getElementById("basePrice").value||0);
@@ -1003,7 +1022,7 @@ function computeTotals(){
   document.getElementById("itemBreakdown").innerHTML=items.map((i,n)=>`<div class="breakdown-item"><b>${n+1}. ${gpzEscape(i.name)}</b><br>${gpzMoney(i.unitPrice)} × ${i.quantity} = <b>${gpzMoney(i.lineTotal)}</b><br>${i.unitWeight}g × ${i.quantity} = <b>${i.lineWeight}g</b></div>`).join("");
   const values={sumProducts:gpzMoney(productTotal),sumDiscount:"-"+gpzMoney(appliedDiscount),sumProductGst:gpzMoney(productGst),sumWeight:totalWeight+"g",sumPacked:packedWeight+"g",
     sumBox:boxDimensions.join(" × ")+" cm",sumActual:actualKg.toFixed(2)+"kg",sumVolumetric:volumetricKg.toFixed(2)+"kg",
-    sumChargeable:chargeableKg+"kg",sumCourierBase:gpzMoney(courierBaseCharge),sumCourierGst:gpzMoney(courierGst),
+    sumChargeable:chargeableKg.toFixed(2)+"kg",sumCourierBase:gpzMoney(courierBaseCharge),sumCourierGst:gpzMoney(courierGst),
     sumCourier:gpzMoney(courierCharge),sumVas:gpzMoney(vasCharge),sumGrand:gpzMoney(grandTotal),
     sumPaid:gpzMoney(advanceAmount),sumRest:gpzMoney(restAmount)};
   Object.entries(values).forEach(([id,value])=>document.getElementById(id).textContent=value);
@@ -1059,7 +1078,7 @@ function buildWhatsAppTemplate(){
     `Discount Coupon: ${o.discountCode||"Not used"}`,
     `Discount Applied: ${gpzMoney(o.discountApplied)}`,
     ...gstLines,
-    `VAS (2%): ${gpzMoney(o.vasCharge)}`,
+    `VAS (2%): ${o.vasApplies?gpzMoney(o.vasCharge):"Not Applicable"}`,
     `Courier Company: ${o.courier}`,`Courier Charges: ${gpzMoney(o.courierCharge)}`,
     `Total Amount: ${gpzMoney(o.grandTotal)}`,
     `${isCod?"Advance Paid":"Amount Paid"}: ${gpzMoney(o.advanceAmount)}`,
@@ -1094,7 +1113,7 @@ function gpzInitialize(){
   document.querySelector('input[name="paymentMode"][value="prepaid"]').checked=true;
   syncCourierOptions();
 }
-document.getElementById("pincode").addEventListener("input",()=>setTimeout(computeTotals,0));
+document.getElementById("pincode").addEventListener("input",()=>setTimeout(syncCourierOptions,0));
 document.querySelectorAll('input[name="gstInvoice"]').forEach(el=>el.addEventListener("change",computeTotals));
 gpzInitialize();
 </script>
