@@ -1502,6 +1502,25 @@ body.wizard-popup-open{
 <!-- Anchor to scroll after selection -->
   <div id="cardsAnchor"></div>
 
+  <section class="card accessories-card gpz-open-product-section" aria-labelledby="open-fmcb-title">
+    <div class="accessories-head">
+      <span class="badge">FMCB / FunTuna</span>
+      <h2 class="title" id="open-fmcb-title">Choose FMCB for Your PS2 Model</h2>
+      <div class="muted">अपना सही PS2 model चुनें। Quantity बदलकर Add to Cart या Buy Now दबाएँ।</div>
+    </div>
+    <div id="gpzFmcbProductGrid" class="accessories-grid"></div>
+  </section>
+
+  <section class="card accessories-card gpz-open-product-section" aria-labelledby="open-usb-title">
+    <div class="accessories-head">
+      <span class="badge">USB for PS2</span>
+      <h2 class="title" id="open-usb-title">Choose Game-Loaded USB</h2>
+      <div class="muted">Top Games या Optional Games product चुनें। FMCB के साथ cart में जोड़कर अपना combo बनाएँ।</div>
+    </div>
+    <div id="gpzUsbProductGrid" class="accessories-grid"></div>
+    <div class="accessory-note"><a class="linkbtn" href="https://youtu.be/xGR0vUM1-Jw" target="_blank" rel="noopener">🎞️ Watch Top Games List</a></div>
+  </section>
+
   <div class="grid">
 
     <!-- 1) FMCB (hidden until model select) -->
@@ -2305,8 +2324,8 @@ function showOpenCatalog(){
   document.body.classList.remove('lang-modal-open','wizard-popup-open');
   hideWizardSteps();
   const cards=document.querySelectorAll('.model-guard');
-  if(cards[0]) cards[0].classList.remove('hidden');
-  if(cards[1]) cards[1].classList.remove('hidden');
+  if(cards[0]) cards[0].classList.add('hidden');
+  if(cards[1]) cards[1].classList.add('hidden');
   if(cards[2]) cards[2].classList.add('hidden');
   if(cards[3]) cards[3].classList.remove('hidden');
   document.querySelectorAll('[data-model-group="fmcb-row"]').forEach(row=>row.style.display='grid');
@@ -2503,7 +2522,47 @@ function gpzEnhanceProductCards(){
     btn.insertAdjacentElement("afterend",specs);specs.insertAdjacentElement("afterend",cartBtn);
   });
 }
-document.addEventListener("DOMContentLoaded",()=>{gpzCartRender();gpzEnhanceProductCards()});window.addEventListener("storage",gpzCartRender);
+const gpzCatalogQty={};
+function gpzCatalogSetQty(key,delta){
+  gpzCatalogQty[key]=Math.max(1,Math.min(99,(gpzCatalogQty[key]||1)+delta));
+  const out=document.getElementById(`gpzCatalogQty${key}`);if(out)out.textContent=gpzCatalogQty[key];
+}
+function gpzCatalogAdd(key,product,variant,price,weight,size,buyNow){
+  gpzCartAdd({product,variant,unitPrice:price,unitWeight:weight,size,quantity:gpzCatalogQty[key]||1,pack:/Optional/i.test(variant)?"Optional Games":(/Top/i.test(variant)?"Top Games":"Card Only")});
+  if(buyNow)gpzCartOpen();
+}
+function gpzCatalogCard({key,product,variant,name,price,weight,size,image}){
+  gpzCatalogQty[key]=gpzCatalogQty[key]||1;
+  const args=`'${key}','${product.replace(/'/g,"\\'")}','${variant.replace(/'/g,"\\'")}',${price},${weight},[${size.join(",")}]`;
+  return `<article class="accessory-item gpz-catalog-product">
+    <img src="${image}" alt="${gpzCartEsc(name)}" loading="lazy" onclick="openImg(this.src)">
+    <div class="accessory-name">${gpzCartEsc(name)}</div>
+    <div class="accessory-meta"><span class="accessory-price">${gpzCartMoney(price)}</span><span>⚖️ ${weight}g</span></div>
+    <div class="gpz-product-specs"><span>Size ${size.join(" × ")} cm</span><span>PS2 Product</span></div>
+    <div class="accessory-actions">
+      <div class="qty-control"><button type="button" onclick="gpzCatalogSetQty('${key}',-1)">−</button><output id="gpzCatalogQty${key}">${gpzCatalogQty[key]}</output><button type="button" onclick="gpzCatalogSetQty('${key}',1)">+</button></div>
+      <button type="button" class="accessory-cart" onclick="gpzCatalogAdd(${args},false)">Add to Cart</button>
+      <button type="button" class="accessory-buy" onclick="gpzCatalogAdd(${args},true)">Buy Now</button>
+    </div>
+  </article>`;
+}
+function gpzRenderOpenProductCatalog(){
+  const fmcb=[
+    {key:"f0",product:"Memory Card",variant:"PS2 Fat (All Models) — FMCB",name:"FMCB Memory Card — PS2 Fat",price:600,weight:25,size:[12,9,2],image:"Fmcb.png"},
+    {key:"f1",product:"Memory Card",variant:"PS2 Slim 7xxxx (All) — FMCB",name:"FMCB Memory Card — PS2 Slim 7xxxx",price:600,weight:25,size:[12,9,2],image:"Fmcb.png"},
+    {key:"f2",product:"Memory Card",variant:"PS2 Slim 9xxxx (All) — FunTuna",name:"FunTuna Memory Card — PS2 Slim 9xxxx",price:600,weight:25,size:[12,9,2],image:"Fmcb.png"}
+  ];
+  const fmcbGrid=document.getElementById("gpzFmcbProductGrid");if(fmcbGrid)fmcbGrid.innerHTML=fmcb.map(gpzCatalogCard).join("");
+  const usb=[];
+  usbVariants.forEach((v,index)=>{
+    const weight=gpzCartWeight("USB for PS2",v.v),size=[12,8,3];
+    const image=/HDD|SSD/i.test(v.v)?"Usbhdd.jpeg":(/3\\.0/i.test(v.v)?"Sandiscultra.png":"Usb.jpg");
+    usb.push({key:`ut${index}`,product:"USB for PS2 (Game-Loaded)",variant:`${v.v} — Top ${v.count} Games`,name:`${usbDisplayName(v.v)} — Top ${v.count} Games`,price:v.top,weight,size,image});
+    usb.push({key:`uo${index}`,product:"USB for PS2 (Game-Loaded)",variant:`${v.v} — Optional Games`,name:`${usbDisplayName(v.v)} — Optional Games`,price:v.opt,weight,size,image});
+  });
+  const usbGrid=document.getElementById("gpzUsbProductGrid");if(usbGrid)usbGrid.innerHTML=usb.map(gpzCatalogCard).join("");
+}
+document.addEventListener("DOMContentLoaded",()=>{gpzCartRender();gpzRenderOpenProductCatalog();gpzEnhanceProductCards()});window.addEventListener("storage",gpzCartRender);
 </script>
 </body>
 </html>
