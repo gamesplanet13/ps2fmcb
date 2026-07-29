@@ -1367,9 +1367,9 @@ body.wizard-popup-open{
     <div class="brand-left">
       <div class="logo">GPZ</div>
       <div>
-        <h1>PS2 Quick Buy <span>FMCB • USB • Combo</span></h1>
-        <div class="sub">Choose FMCB, USB Only, or FMCB + USB Combo</div>
-        <div style="margin-top:8px;font-size:.78rem;color:#bbf7d0;font-weight:700">✓ Simple selection &nbsp;•&nbsp; ✓ Model-wise FMCB/Combo &nbsp;•&nbsp; ✓ WhatsApp order</div>
+        <h1>PS2 Quick Buy <span>FMCB • USB • Accessories</span></h1>
+        <div class="sub">Choose products directly and build your own combo in the cart</div>
+        <div style="margin-top:8px;font-size:.78rem;color:#bbf7d0;font-weight:700">✓ Open product catalog &nbsp;•&nbsp; ✓ Build your own combo &nbsp;•&nbsp; ✓ WhatsApp order</div>
       </div>
     </div>
     <div class="brand-actions">
@@ -1377,7 +1377,7 @@ body.wizard-popup-open{
         <span class="nav-pill-dot"></span>
         Plug &amp; Play • No Modchip
       </div>
-      <a class="linkbtn" href="https://wa.me/917983624797?text=Hi%2C%20I%20want%20to%20buy%20FMCB%20USB%20Combo%20for%20PS2" target="_blank" rel="noopener">
+      <a class="linkbtn" href="https://wa.me/917983624797?text=Hi%2C%20I%20want%20to%20buy%20PS2%20products" target="_blank" rel="noopener">
         🛒 WhatsApp Quick Order
       </a>
     </div>
@@ -1385,7 +1385,7 @@ body.wizard-popup-open{
 
   <!-- Top navigation shortcuts -->
   <div class="controls">
-    <button type="button" class="linkbtn hidden" id="changeProductChoice" onclick="showModeSelector()">⬅ Change Product</button>
+    <button type="button" class="linkbtn hidden" id="changeProductChoice" onclick="showOpenCatalog()">⬅ All Products</button>
     <a class="linkbtn optional-selector-link hidden" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
     <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">▶️ Setup Video</a>
     <button type="button" class="linkbtn hidden" onclick="toggleVoice()" id="voiceToggle">🔊 Voice ON</button>
@@ -1609,7 +1609,7 @@ body.wizard-popup-open{
     <div class="accessories-head">
       <span class="badge">PS2 Accessories</span>
       <h2 class="title" id="accessories-title">Choose PS2 Accessories</h2>
-      <div class="muted">Quantity चुनें और उसी product का Buy Now दबाएँ।</div>
+      <div class="muted">Quantity चुनें, फिर Add to Cart या Buy Now दबाएँ।</div>
     </div>
     <div id="ps2AccessoriesGrid" class="accessories-grid"></div>
     <div class="accessory-note">Courier, GST/VAS और COD eligibility अगले pre-fill page पर existing rules के अनुसार calculate होंगे।</div>
@@ -1621,7 +1621,7 @@ body.wizard-popup-open{
     <ul class="list">
       <li>Do <b>not</b> delete FMCB / OPL / ELF / system (blue icon) files.</li>
       <li>USB works with PS2 Fat & Slim (7xxxx / 9xxxx). Plug directly into PS2 (no hub/splitter).</li>
-      <li>For Slim 9xxxx, <b>FunTuna</b> is used automatically with the combo.</li>
+      <li>For Slim 9xxxx, select the <b>FunTuna</b> memory card and add your preferred USB separately to the cart.</li>
     </ul>
   </div>
 
@@ -2295,13 +2295,33 @@ function clearModel(){
   showStep('step1', tr('vModel'));
 }
 
+function showOpenCatalog(){
+  stopVoice();
+  experienceMode='simple';
+  pendingQuickProductType='';
+  selectedModelKey='';
+  voiceEnabled=false;
+  setVoiceButtonState(false);
+  document.body.classList.remove('lang-modal-open','wizard-popup-open');
+  hideWizardSteps();
+  const cards=document.querySelectorAll('.model-guard');
+  if(cards[0]) cards[0].classList.remove('hidden');
+  if(cards[1]) cards[1].classList.remove('hidden');
+  if(cards[2]) cards[2].classList.add('hidden');
+  if(cards[3]) cards[3].classList.remove('hidden');
+  document.querySelectorAll('[data-model-group="fmcb-row"]').forEach(row=>row.style.display='grid');
+  document.querySelectorAll('[data-model-group="combo-section"]').forEach(block=>block.style.display='none');
+  document.querySelectorAll('.optional-selector-link').forEach(link=>link.classList.remove('hidden'));
+  const changeBtn=document.getElementById('changeProductChoice');
+  if(changeBtn) changeBtn.classList.add('hidden');
+}
+
 document.addEventListener('DOMContentLoaded', function(){
   addWizardBackButtons();
   const browser = (navigator.language || '').toLowerCase();
   if(browser.startsWith('hi')) currentLang='hi'; else if(browser.startsWith('pa')) currentLang='pa'; else currentLang='en';
   applyLanguage();
-  updateOptionalSelectorVisibility('fmcb');
-  showModeSelector();
+  showOpenCatalog();
 });
 </script>
 
@@ -2390,6 +2410,12 @@ document.addEventListener('DOMContentLoaded', function(){
 </script>
 
 <style id="gpz-cart-system-style">
+#modeStep,#langStep,#step0,#step1,#step2,#step3,#step4{display:none!important}
+.grid{grid-template-columns:1fr!important}.model-guard{grid-column:1/-1}
+#fmcbCard,#usbList{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+#fmcbCard .row{display:flex!important;flex-direction:column;align-items:stretch;gap:9px;padding:12px;border:1px solid #dbe7f1;border-radius:15px;background:linear-gradient(180deg,#fff,#f8fbff);box-shadow:0 6px 18px rgba(15,23,42,.06)}
+#fmcbCard .row .name{min-height:48px;line-height:1.4}#fmcbCard .row .cta{display:block}#fmcbCard .row .cta .purchase-btn{width:100%}
+#usbList .variant-buy-card{height:100%;border:1px solid #dbe7f1;border-radius:16px;padding:10px;background:#f8fbff}
 .gpz-cart-fixed{position:fixed;top:34px;right:8px;z-index:29990;display:flex;gap:5px;padding:4px;border:1px solid rgba(148,163,184,.35);border-radius:11px;background:rgba(2,6,23,.76);backdrop-filter:blur(9px);box-shadow:0 5px 16px rgba(0,0,0,.28)}
 .gpz-cart-fixed button{height:27px;padding:0 8px;border-radius:7px;border:1px solid rgba(125,211,252,.34);background:rgba(8,47,73,.78);color:#fff;font-size:10px;font-weight:900;white-space:nowrap;cursor:pointer}
 .gpz-cart-fixed .gpz-reset-tiny{background:rgba(127,29,29,.72);border-color:rgba(252,165,165,.35)}
