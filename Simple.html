@@ -1340,7 +1340,24 @@ body.wizard-popup-open{
 .buy-confirm-cancel{background:#fff;border:1px solid #cbd5e1;color:#334155}.buy-confirm-agree{background:linear-gradient(135deg,#16a34a,#22c55e);border:0;color:#fff}
 @media(max-width:520px){.buy-confirm-actions{grid-template-columns:1fr}.buy-confirm-box{padding:22px 16px}}
 </style>
-<style id="gpz-ticker">.gpz-ticker{position:sticky;top:0;z-index:30000;background:#000;color:#fff;height:30px;overflow:hidden;display:flex;align-items:center}.gpz-ticker .track{white-space:nowrap;padding-left:100%;display:inline-block;animation:gpzmar 45s linear infinite;font-weight:700;font-size:13px}@keyframes gpzmar{from{transform:translateX(0)}to{transform:translateX(-100%)}}</style></head>
+<style id="gpz-ticker">.gpz-ticker{position:sticky;top:0;z-index:30000;background:#000;color:#fff;height:30px;overflow:hidden;display:flex;align-items:center}.gpz-ticker .track{white-space:nowrap;padding-left:100%;display:inline-block;animation:gpzmar 45s linear infinite;font-weight:700;font-size:13px}@keyframes gpzmar{from{transform:translateX(0)}to{transform:translateX(-100%)}}</style>
+<style id="ps2-accessories-style">
+.accessories-card{grid-column:1/-1}
+.accessories-head{text-align:center;margin-bottom:14px}
+.accessories-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:12px}
+.accessory-item{display:flex;flex-direction:column;gap:9px;border:1px solid #dbe3ef;border-radius:17px;padding:12px;background:#fff;box-shadow:0 7px 20px rgba(15,23,42,.07)}
+.accessory-item img{width:100%;height:130px;object-fit:contain;border-radius:12px;background:#f8fafc;cursor:zoom-in}
+.accessory-name{font-weight:900;color:#0f172a;line-height:1.3;min-height:42px}
+.accessory-meta{display:flex;justify-content:space-between;gap:8px;color:#475569;font-size:.78rem}
+.accessory-price{font-size:1.1rem;font-weight:950;color:#0f766e}
+.accessory-actions{display:grid;grid-template-columns:auto 1fr;gap:8px;margin-top:auto}
+.qty-control{display:grid;grid-template-columns:34px 38px 34px;align-items:center;border:1px solid #cbd5e1;border-radius:11px;overflow:hidden}
+.qty-control button{height:40px;border:0;background:#f1f5f9;color:#0f172a;font-size:1.15rem;font-weight:900;cursor:pointer}
+.qty-control output{text-align:center;font-weight:900;color:#0f172a}
+.accessory-buy{min-height:40px;border:0;border-radius:11px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-weight:900;cursor:pointer}
+.accessory-note{margin-top:13px;padding:10px;border-radius:12px;background:#eff6ff;color:#1e3a8a;font-size:.8rem;line-height:1.5;text-align:center}
+@media(max-width:520px){.accessories-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.accessory-item{padding:8px}.accessory-item img{height:92px}.accessory-name{font-size:.8rem;min-height:50px}.accessory-meta{display:block}.accessory-actions{grid-template-columns:1fr}.qty-control{grid-template-columns:1fr 36px 1fr}.accessory-buy{font-size:.78rem}}
+</style></head>
 <body>
 <div class="gpz-ticker"><div class="track">🎮 आपका Games Planet में स्वागत है। हमारे पास Classic Retro Gaming Consoles, Arcade Machines, Commercial & Non‑Commercial Game Boxes, Coin Machines, Parts, Spare Parts, Repair Services, New & Used PlayStation Consoles, Game Sticks, Controllers और Gaming Accessories उपलब्ध हैं। अधिक जानकारी के लिए हमारी WhatsApp Profile Catalog देखें या हमसे संपर्क करें।</div></div>
 <div class="wrap">
@@ -1390,6 +1407,10 @@ body.wizard-popup-open{
       <button type="button" class="version-btn" onclick="chooseQuickProduct('combo')">
         <strong>🎮 Buy FMCB + USB Combo</strong>
         <small>PS2 model के अनुसार complete plug-and-play combo</small>
+      </button>
+      <button type="button" class="version-btn" onclick="chooseQuickProduct('accessories')">
+        <strong>🕹️ Buy PS2 Accessories</strong>
+        <small>Cables, controllers, adapter, converter और memory card</small>
       </button>
     </div>
   </section>
@@ -1582,6 +1603,17 @@ body.wizard-popup-open{
 
     </section>
   </div>
+
+  <!-- 4) PS2 ACCESSORIES -->
+  <section class="card model-guard accessories-card hidden" aria-labelledby="accessories-title">
+    <div class="accessories-head">
+      <span class="badge">PS2 Accessories</span>
+      <h2 class="title" id="accessories-title">Choose PS2 Accessories</h2>
+      <div class="muted">Quantity चुनें और उसी product का Buy Now दबाएँ।</div>
+    </div>
+    <div id="ps2AccessoriesGrid" class="accessories-grid"></div>
+    <div class="accessory-note">Courier, GST/VAS और COD eligibility अगले pre-fill page पर existing rules के अनुसार calculate होंगे।</div>
+  </section>
 
   <!-- Important Notes -->
   <div class="section">
@@ -1795,6 +1827,72 @@ function agreeAndContinueBuy(){
 
   });
 })();
+
+// ===== PS2 ACCESSORIES: QUANTITY + PREFILL =====
+const ps2Accessories = [
+  {name:'PS2 Slim Power Adapter with Power Cable',price:599,weight:420,image:'ps2adaptercable.jpeg',size:[18,12,6]},
+  {name:'Power Cable for PS2 / PS3 / PS4 / PS5',price:129,weight:130,image:'ps2pcable.jpeg',size:[18,8,4]},
+  {name:'AV Cable for PS2',price:99,weight:70,image:'ps2av.jpeg',size:[16,9,3]},
+  {name:'Best AV Cable for PS2',price:179,weight:140,image:'best-av-cable-for-ps2.png',size:[18,8,4]},
+  {name:'AV Component Connector',price:160,weight:60,image:'av-component-connector.png',size:[18,7,3]},
+  {name:'AV Male to Male Cable',price:120,weight:150,image:'av-male-to-male-cable.png',size:[20,12,4]},
+  {name:'HDMI Converter for PS2',price:360,weight:80,image:'ps2hdmi.jpeg',size:[12,8,4]},
+  {name:'HDMI Cable 1.5 Meter',price:99,weight:99,image:'hdmicable.jpeg',size:[18,10,4]},
+  {name:'PS2 Wired Controller (Replica)',price:375,weight:250,image:'ps2wire.jpeg',size:[18,15,7]},
+  {name:'PS2 Wireless Controller',price:525,weight:250,image:'ps2wireless.jpeg',size:[18,15,7]},
+  {name:'USB to PS2 / PS3 / PC Controller Converter',price:360,weight:100,image:'usbtops2.jpg',size:[14,9,4]},
+  {name:'PS2 8MB Blank Memory Card',price:369,weight:25,image:'ps28mb.jpeg',size:[8,6,2]}
+];
+const accessoryQty = {};
+function setAccessoryQty(index,change){
+  accessoryQty[index]=Math.max(1,Math.min(99,(accessoryQty[index]||1)+change));
+  const out=document.getElementById(`accessoryQty${index}`);
+  if(out) out.textContent=accessoryQty[index];
+}
+function renderPs2Accessories(){
+  const grid=document.getElementById('ps2AccessoriesGrid');
+  if(!grid || grid.dataset.ready) return;
+  grid.dataset.ready='1';
+  grid.innerHTML=ps2Accessories.map((p,index)=>{
+    accessoryQty[index]=1;
+    return `<article class="accessory-item">
+      <img src="${p.image}" alt="${p.name}" loading="lazy" onclick="openImg(this.src)">
+      <div class="accessory-name">${p.name}</div>
+      <div class="accessory-meta"><span class="accessory-price">₹${p.price}</span><span>⚖️ ${p.weight}g each</span></div>
+      <div class="accessory-actions">
+        <div class="qty-control" aria-label="Quantity">
+          <button type="button" onclick="setAccessoryQty(${index},-1)" aria-label="Reduce quantity">−</button>
+          <output id="accessoryQty${index}">1</output>
+          <button type="button" onclick="setAccessoryQty(${index},1)" aria-label="Increase quantity">+</button>
+        </div>
+        <button type="button" class="accessory-buy" onclick="buyPs2Accessory(${index})">Buy Now</button>
+      </div>
+    </article>`;
+  }).join('');
+}
+function buyPs2Accessory(index){
+  const p=ps2Accessories[index];
+  const quantity=accessoryQty[index]||1;
+  const productTotal=p.price*quantity;
+  const totalWeight=p.weight*quantity;
+  const packingWeight=250;
+  const packedWeight=totalWeight+packingWeight;
+  const boxDimensions=[p.size[0],p.size[1],Math.max(p.size[2],Math.ceil(p.size[2]*quantity*.7)+2)];
+  const actualKg=packedWeight/1000;
+  const volumetricKg=(boxDimensions[0]*boxDimensions[1]*boxDimensions[2])/5000;
+  const chargeableKg=Math.max(1,Math.ceil(Math.max(actualKg,volumetricKg)));
+  const summary={
+    items:[{name:p.name,quantity,unitPrice:p.price,lineTotal:productTotal,unitWeight:p.weight,lineWeight:totalWeight}],
+    productTotal,totalWeight,totalQuantity:quantity,packingWeight,packedWeight,boxDimensions,
+    actualKg,volumetricKg,chargeableKg,deliverySpeed:'Surface Delivery',courier:'Trackon.in',
+    courierBaseCharge:0,courierGst:0,courierCharge:0,vasCharge:0,productGst:0,
+    gstInvoiceIncluded:false,paymentMode:'prepaid',grandTotal:productTotal,hasBatteryItem:false
+  };
+  localStorage.setItem('gp_order_summary',JSON.stringify(summary));
+  const q=new URLSearchParams({product:p.name,variant:`Quantity ${quantity}`,base:productTotal,quantity,weight:totalWeight,grandTotal:productTotal,allowCod:'true'});
+  window.location.href=`order-prefill.html?${q.toString()}`;
+}
+document.addEventListener('DOMContentLoaded',renderPs2Accessories);
 
 // ===== MULTI-LANGUAGE GUIDED WIZARD + ORIGINAL PRODUCT LOGIC =====
 const modelLabels = {
@@ -2099,6 +2197,11 @@ function chooseQuickProduct(type){
     showProducts('usb');
     return;
   }
+  if(type==='accessories'){
+    selectedModelKey='';
+    showProducts('accessories');
+    return;
+  }
   showStep('step1','');
 }
 
@@ -2192,11 +2295,13 @@ function showProducts(type){
   if(type==='fmcb' && cards[0]) cards[0].classList.remove('hidden');
   if(type==='usb' && cards[1]) cards[1].classList.remove('hidden');
   if(type==='combo' && cards[2]) cards[2].classList.remove('hidden');
+  if(type==='accessories' && cards[3]) cards[3].classList.remove('hidden');
   const visible = document.querySelector('.model-guard:not(.hidden)');
   if(visible) visible.scrollIntoView({behavior:'smooth', block:'start'});
   if(type==='fmcb') speakText(tr('vFmcbProduct'), false);
   if(type==='usb') speakText(tr('vUsbProduct'), false);
   if(type==='combo') speakText(tr('vComboProduct'), false);
+  if(type==='accessories') speakText('PS2 Accessories. Select quantity and press Buy Now.', false);
 }
 
 function clearModel(){

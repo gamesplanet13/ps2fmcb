@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Games Planet • PS2 Quick Buy — Updated v9</title>
-<!-- Games Planet patched build: 20-Jul-2026 v9
+<title>Games Planet • PS2 Quick Buy — Updated v11</title>
+<!-- Games Planet patched build: 20-Jul-2026 v11
      Includes Simple/Detail mode, manual Name Next button, smaller PS2 images,
-     per-variant Top/Optional actions and animated purchase-button pointers. -->
+     logical animated action pointers and exact Sandiscultra.png USB 3.0 asset. -->
 <meta name="description" content="Buy FMCB/FunTuna card, USB-only, or FMCB+USB Combo for PlayStation 2 with one-tap WhatsApp redirect. Top & Optional game packs supported."/>
 
 <style>
@@ -1219,10 +1219,11 @@ body.wizard-popup-open{
 .variant-pack-option .pack-price{display:block;margin-top:4px;font-size:1rem;font-weight:950}
 .variant-pack-link{display:flex;align-items:center;justify-content:center;text-align:center;min-height:44px;border:1px solid #cbd5e1;border-radius:11px;background:#fff;color:#1d4ed8;text-decoration:none;font-size:.8rem;font-weight:850;padding:7px}
 .variant-pack-link:hover{border-color:#2563eb;background:#eff6ff}
-.purchase-btn{position:relative!important;padding-left:42px!important;overflow:visible!important}
-.purchase-btn::before{content:"👉";position:absolute;left:9px;top:50%;font-size:1.25rem;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.18));animation:purchasePointerMove .75s ease-in-out infinite;pointer-events:none}
+.purchase-btn,.version-btn,.lang-btn,.step-primary,.model-btn,.buy-confirm-agree,.game-selector-continue{position:relative!important;padding-left:42px!important;overflow:visible!important}
+.purchase-btn::before,.version-btn::before,.lang-btn::before,.step-primary::before,.model-btn::before,.buy-confirm-agree::before,.game-selector-continue::before{content:"👉";position:absolute;left:9px;top:50%;font-size:1.25rem;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.18));animation:purchasePointerMove .75s ease-in-out infinite;pointer-events:none}
+.step-primary:disabled::before,.lang-btn:disabled::before,.model-btn:disabled::before{display:none}
 @keyframes purchasePointerMove{0%,100%{transform:translate(-5px,-50%)}50%{transform:translate(4px,-50%)}}
-@media(prefers-reduced-motion:reduce){.purchase-btn::before{animation:none;transform:translateY(-50%)}}
+@media(prefers-reduced-motion:reduce){.purchase-btn::before,.version-btn::before,.lang-btn::before,.step-primary::before,.model-btn::before,.buy-confirm-agree::before,.game-selector-continue::before{animation:none;transform:translateY(-50%)}}
 .device-photo{display:flex;flex-direction:column;align-items:center;gap:5px;margin:0}
 .device-photo small{font-size:.72rem;font-weight:850;color:#475569;text-align:center}
 @media(max-width:620px){.variant-pack-grid{grid-template-columns:1fr}.variant-pack-option .btn{min-height:62px}}
@@ -1254,7 +1255,34 @@ body.wizard-popup-open{
 .buy-confirm-cancel{background:#fff;border:1px solid #cbd5e1;color:#334155}.buy-confirm-agree{background:linear-gradient(135deg,#16a34a,#22c55e);border:0;color:#fff}
 @media(max-width:520px){.buy-confirm-actions{grid-template-columns:1fr}.buy-confirm-box{padding:22px 16px}}
 </style>
-<style id="gpz-ticker">.gpz-ticker{position:sticky;top:0;z-index:30000;background:#000;color:#fff;height:30px;overflow:hidden;display:flex;align-items:center}.gpz-ticker .track{white-space:nowrap;padding-left:100%;display:inline-block;animation:gpzmar 45s linear infinite;font-weight:700;font-size:13px}@keyframes gpzmar{from{transform:translateX(0)}to{transform:translateX(-100%)}}</style></head>
+<style id="gpz-ticker">.gpz-ticker{position:sticky;top:0;z-index:30000;background:#000;color:#fff;height:30px;overflow:hidden;display:flex;align-items:center}.gpz-ticker .track{white-space:nowrap;padding-left:100%;display:inline-block;animation:gpzmar 45s linear infinite;font-weight:700;font-size:13px}@keyframes gpzmar{from{transform:translateX(0)}to{transform:translateX(-100%)}}</style>
+<style id="professional-guided-flow">
+.product-choice-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+.product-choice-btn{display:flex!important;flex-direction:column;align-items:flex-start!important;justify-content:center;gap:5px;text-align:left!important;min-height:92px}
+.product-choice-btn strong{font-size:.94rem;color:#0f172a}
+.product-choice-btn small{font-size:.72rem;line-height:1.35;color:#64748b;font-weight:700}
+@media(max-width:620px){
+  .product-choice-grid{grid-template-columns:1fr!important;gap:8px!important}
+  .product-choice-btn{min-height:68px;padding-top:10px!important;padding-bottom:10px!important}
+}
+</style>
+<style id="ps2-accessories-style">
+.accessories-card{grid-column:1/-1}
+.accessories-head{text-align:center;margin-bottom:14px}
+.accessories-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:12px}
+.accessory-item{display:flex;flex-direction:column;gap:9px;border:1px solid #dbe3ef;border-radius:17px;padding:12px;background:#fff;box-shadow:0 7px 20px rgba(15,23,42,.07)}
+.accessory-item img{width:100%;height:130px;object-fit:contain;border-radius:12px;background:#f8fafc;cursor:zoom-in}
+.accessory-name{font-weight:900;color:#0f172a;line-height:1.3;min-height:42px}
+.accessory-meta{display:flex;justify-content:space-between;gap:8px;color:#475569;font-size:.78rem}
+.accessory-price{font-size:1.1rem;font-weight:950;color:#0f766e}
+.accessory-actions{display:grid;grid-template-columns:auto 1fr;gap:8px;margin-top:auto}
+.qty-control{display:grid;grid-template-columns:34px 38px 34px;align-items:center;border:1px solid #cbd5e1;border-radius:11px;overflow:hidden}
+.qty-control button{height:40px;border:0;background:#f1f5f9;color:#0f172a;font-size:1.15rem;font-weight:900;cursor:pointer}
+.qty-control output{text-align:center;font-weight:900;color:#0f172a}
+.accessory-buy{min-height:40px;border:0;border-radius:11px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-weight:900;cursor:pointer}
+.accessory-note{margin-top:13px;padding:10px;border-radius:12px;background:#eff6ff;color:#1e3a8a;font-size:.8rem;line-height:1.5;text-align:center}
+@media(max-width:520px){.accessories-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.accessory-item{padding:8px}.accessory-item img{height:92px}.accessory-name{font-size:.8rem;min-height:50px}.accessory-meta{display:block}.accessory-actions{grid-template-columns:1fr}.qty-control{grid-template-columns:1fr 36px 1fr}.accessory-buy{font-size:.78rem}}
+</style></head>
 <body>
 <div class="gpz-ticker"><div class="track">🎮 आपका Games Planet में स्वागत है। हमारे पास Classic Retro Gaming Consoles, Arcade Machines, Commercial & Non‑Commercial Game Boxes, Coin Machines, Parts, Spare Parts, Repair Services, New & Used PlayStation Consoles, Game Sticks, Controllers और Gaming Accessories उपलब्ध हैं। अधिक जानकारी के लिए हमारी WhatsApp Profile Catalog देखें या हमसे संपर्क करें।</div></div>
 <div class="wrap">
@@ -1286,23 +1314,6 @@ body.wizard-popup-open{
     <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">▶️ Setup Video</a>
     <button type="button" class="linkbtn hidden" onclick="toggleVoice()" id="voiceToggle">🔊 Voice ON</button>
   </div>
-
-  <!-- VERSION SELECTOR -->
-  <section id="modeStep" class="model-selector wizard-modal">
-    <h2 class="model-title">Choose Page Version</h2>
-    <div class="wizard-help">अपनी जरूरत के हिसाब से Simple या Detail Version चुनें।</div>
-    <div class="version-grid">
-      <button type="button" class="version-btn" onclick="chooseSimpleVersion()">
-        <strong>⚡ Simple Version</strong>
-        <small>सीधे PS2 Model से शुरू होगा। कोई voice guidance नहीं चलेगी।</small>
-      </button>
-      <button type="button" class="version-btn" onclick="chooseDetailVersion()">
-        <strong>🔊 Detail Version</strong>
-        <small>Language, Name और पूरी step-by-step voice guidance के साथ शुरू होगा।</small>
-      </button>
-    </div>
-  </section>
-
 
   <!-- LANGUAGE FIRST STEP -->
   <section id="langStep" class="model-selector language-modal wizard-modal hidden">
@@ -1356,34 +1367,13 @@ body.wizard-popup-open{
 
   
 <section id="step2" class="model-selector wizard-modal hidden">
-<h2 class="model-title" data-i18n="matrixTitle">Step 2 — Matrix Chip</h2>
-<div class="wizard-help" data-i18n="matrixHelp">Matrix is a boot chip. If Matrix appears on screen when PS2 starts, choose Matrix. If not, choose No. If you do not know, choose Don't Know.</div>
-<img class="step-img" src="Matrixps2.jpg" onclick="openImg(this.src)">
-<div class="model-btn-row">
-<button class="model-btn" onclick="selectMatrix('yes')">Matrix</button>
-<button class="model-btn" onclick="selectMatrix('no')">No</button>
-<button class="model-btn" onclick="selectMatrix('dontknow')">Don't Know</button>
-</div>
-</section>
-
-<section id="step3" class="model-selector wizard-modal hidden">
-<h2 class="model-title" data-i18n="fmcbTitle">Step 3 — FMCB Type</h2>
-<div class="wizard-help" data-i18n="fmcbHelp">Choose FMCB with OPL Only for USB gameplay. Choose Full FMCB + Apps if you also need extra apps. If FMCB/OPL already works and you only need a USB with games, choose Need Only USB with Games.</div>
-<img class="step-img" src="Fmcb.jpeg" onclick="openImg(this.src)"><img class="step-img" src="OPL10.png" onclick="openImg(this.src)">
-<div class="model-btn-row">
-<button class="model-btn" onclick="selectFmcbType('opl')">FMCB with OPL Only</button>
-<button class="model-btn" onclick="selectFmcbType('full')">Full FMCB + Apps</button>
-<button class="model-btn" onclick="selectFmcbType('usbOnly')">Need Only USB with Games</button>
-</div>
-</section>
-
-<section id="step4" class="model-selector wizard-modal hidden">
-<h2 class="model-title" data-i18n="productTitle">Step 4 — Product Type</h2>
-<div class="wizard-help" data-i18n="productHelp">Choose FMCB Card, USB Only, or Combo according to your setup.</div>
-<div class="model-btn-row">
-<button class="model-btn" onclick="showProducts('fmcb')">FMCB Card</button>
-<button class="model-btn" onclick="showProducts('usb')">USB Only</button>
-<button class="model-btn" onclick="showProducts('combo')">FMCB + USB Combo</button>
+<h2 class="model-title" data-i18n="productTitle">Step 2 — Choose What You Want to Buy</h2>
+<div class="wizard-help" data-i18n="productHelp">Choose one clear option. FMCB Card is card only, USB Only is for a PS2 where FMCB/OPL already works, and Combo includes the correct card plus USB games.</div>
+<div class="model-btn-row product-choice-grid">
+<button class="model-btn product-choice-btn" onclick="showProducts('fmcb')"><strong>💾 Buy FMCB Card</strong><small>केवल model-wise FMCB / FunTuna card</small></button>
+<button class="model-btn product-choice-btn" onclick="showProducts('usb')"><strong>🔌 Buy USB Only</strong><small>जब FMCB / OPL पहले से चल रहा हो</small></button>
+<button class="model-btn product-choice-btn" onclick="showProducts('combo')"><strong>🎮 Buy FMCB + USB Combo</strong><small>सही card और games वाली USB—दोनों</small></button>
+<button class="model-btn product-choice-btn" onclick="showProducts('accessories')"><strong>🕹️ Buy PS2 Accessories</strong><small>Cables, controllers, adapter, converter और memory card</small></button>
 </div>
 </section>
 
@@ -1443,7 +1433,7 @@ body.wizard-popup-open{
 
       <div class="card-images">
         <figure class="device-photo"><img src="Usb.jpg" alt="SanDisk 64GB USB 2.0 Pendrive for PS2"><small>64GB USB 2.0</small></figure>
-        <figure class="device-photo"><img src="SanDisk_Ultra_USB3_128GB.jpg" alt="SanDisk Ultra 128GB USB 3.0 Pendrive for PS2"><small>SanDisk Ultra 128GB USB 3.0</small></figure>
+        <figure class="device-photo"><img src="Sandiscultra.png" alt="SanDisk Ultra Flair 64GB and 128GB USB 3.0 Pendrive for PS2"><small>SanDisk Ultra Flair — 64GB / 128GB PD 3.0</small></figure>
         <img src="Usbhdd.jpeg" alt="USB HDD for PS2">
       </div>
 
@@ -1464,7 +1454,7 @@ body.wizard-popup-open{
       <div class="card-images">
         <img src="Fmcb.png" alt="FMCB 8MB Memory Card">
         <figure class="device-photo"><img src="Usb.jpg" alt="SanDisk 64GB USB 2.0 Pendrive"><small>64GB USB 2.0</small></figure>
-        <figure class="device-photo"><img src="SanDisk_Ultra_USB3_128GB.jpg" alt="SanDisk Ultra 128GB USB 3.0 Pendrive"><small>SanDisk Ultra 128GB USB 3.0</small></figure>
+        <figure class="device-photo"><img src="Sandiscultra.png" alt="SanDisk Ultra Flair 64GB and 128GB USB 3.0 Pendrive"><small>SanDisk Ultra Flair — 64GB / 128GB PD 3.0</small></figure>
         <img src="Usbhdd.jpeg" alt="USB HDD">
       </div>
 
@@ -1492,6 +1482,17 @@ body.wizard-popup-open{
     </section>
   </div>
 
+  <!-- 4) PS2 ACCESSORIES -->
+  <section class="card model-guard accessories-card hidden" aria-labelledby="accessories-title">
+    <div class="accessories-head">
+      <span class="badge">PS2 Accessories</span>
+      <h2 class="title" id="accessories-title">Choose PS2 Accessories</h2>
+      <div class="muted">Quantity चुनें और उसी product का Buy Now दबाएँ।</div>
+    </div>
+    <div id="ps2AccessoriesGrid" class="accessories-grid"></div>
+    <div class="accessory-note">Courier, GST/VAS और COD eligibility अगले pre-fill page पर existing rules के अनुसार calculate होंगे।</div>
+  </section>
+
   <!-- Important Notes -->
   <div class="section">
     <h3>⚠️ Important Notes</h3>
@@ -1499,17 +1500,6 @@ body.wizard-popup-open{
       <li>Do <b>not</b> delete FMCB / OPL / ELF / system (blue icon) files.</li>
       <li>USB works with PS2 Fat & Slim (7xxxx / 9xxxx). Plug directly into PS2 (no hub/splitter).</li>
       <li>For Slim 9xxxx, <b>FunTuna</b> is used automatically with the combo.</li>
-    </ul>
-  </div>
-
-  <!-- Chip Condition -->
-  <div class="section">
-    <h3>⚠️ Chip Condition (Read Before Order)</h3>
-    <ul class="list">
-      <li>🟢 FMCB & FunTuna both work without any modding chip.</li>
-      <li>🟢 If your PS2 has <b>Matrix</b> or <b>Sumo Lite</b> chip → usually OK.</li>
-      <li>🔴 If your PS2 has a <b>DVD Boot Chip</b> → 99% chances FMCB/FunTuna will not work.</li>
-      <li>👉 In that case, chip wires must be disconnected (requires opening PS2). Message us for the step-by-step guidance video.</li>
     </ul>
   </div>
 
@@ -1705,6 +1695,72 @@ function agreeAndContinueBuy(){
   });
 })();
 
+// ===== PS2 ACCESSORIES: QUANTITY + PREFILL =====
+const ps2Accessories = [
+  {name:'PS2 Slim Power Adapter with Power Cable',price:599,weight:420,image:'ps2adaptercable.jpeg',size:[18,12,6]},
+  {name:'Power Cable for PS2 / PS3 / PS4 / PS5',price:129,weight:130,image:'ps2pcable.jpeg',size:[18,8,4]},
+  {name:'AV Cable for PS2',price:99,weight:70,image:'ps2av.jpeg',size:[16,9,3]},
+  {name:'Best AV Cable for PS2',price:179,weight:140,image:'best-av-cable-for-ps2.png',size:[18,8,4]},
+  {name:'AV Component Connector',price:160,weight:60,image:'av-component-connector.png',size:[18,7,3]},
+  {name:'AV Male to Male Cable',price:120,weight:150,image:'av-male-to-male-cable.png',size:[20,12,4]},
+  {name:'HDMI Converter for PS2',price:360,weight:80,image:'ps2hdmi.jpeg',size:[12,8,4]},
+  {name:'HDMI Cable 1.5 Meter',price:99,weight:99,image:'hdmicable.jpeg',size:[18,10,4]},
+  {name:'PS2 Wired Controller (Replica)',price:375,weight:250,image:'ps2wire.jpeg',size:[18,15,7]},
+  {name:'PS2 Wireless Controller',price:525,weight:250,image:'ps2wireless.jpeg',size:[18,15,7]},
+  {name:'USB to PS2 / PS3 / PC Controller Converter',price:360,weight:100,image:'usbtops2.jpg',size:[14,9,4]},
+  {name:'PS2 8MB Blank Memory Card',price:369,weight:25,image:'ps28mb.jpeg',size:[8,6,2]}
+];
+const accessoryQty = {};
+function setAccessoryQty(index,change){
+  accessoryQty[index]=Math.max(1,Math.min(99,(accessoryQty[index]||1)+change));
+  const out=document.getElementById(`accessoryQty${index}`);
+  if(out) out.textContent=accessoryQty[index];
+}
+function renderPs2Accessories(){
+  const grid=document.getElementById('ps2AccessoriesGrid');
+  if(!grid || grid.dataset.ready) return;
+  grid.dataset.ready='1';
+  grid.innerHTML=ps2Accessories.map((p,index)=>{
+    accessoryQty[index]=1;
+    return `<article class="accessory-item">
+      <img src="${p.image}" alt="${p.name}" loading="lazy" onclick="openImg(this.src)">
+      <div class="accessory-name">${p.name}</div>
+      <div class="accessory-meta"><span class="accessory-price">₹${p.price}</span><span>⚖️ ${p.weight}g each</span></div>
+      <div class="accessory-actions">
+        <div class="qty-control" aria-label="Quantity">
+          <button type="button" onclick="setAccessoryQty(${index},-1)" aria-label="Reduce quantity">−</button>
+          <output id="accessoryQty${index}">1</output>
+          <button type="button" onclick="setAccessoryQty(${index},1)" aria-label="Increase quantity">+</button>
+        </div>
+        <button type="button" class="accessory-buy" onclick="buyPs2Accessory(${index})">Buy Now</button>
+      </div>
+    </article>`;
+  }).join('');
+}
+function buyPs2Accessory(index){
+  const p=ps2Accessories[index];
+  const quantity=accessoryQty[index]||1;
+  const productTotal=p.price*quantity;
+  const totalWeight=p.weight*quantity;
+  const packingWeight=250;
+  const packedWeight=totalWeight+packingWeight;
+  const boxDimensions=[p.size[0],p.size[1],Math.max(p.size[2],Math.ceil(p.size[2]*quantity*.7)+2)];
+  const actualKg=packedWeight/1000;
+  const volumetricKg=(boxDimensions[0]*boxDimensions[1]*boxDimensions[2])/5000;
+  const chargeableKg=Math.max(1,Math.ceil(Math.max(actualKg,volumetricKg)));
+  const summary={
+    items:[{name:p.name,quantity,unitPrice:p.price,lineTotal:productTotal,unitWeight:p.weight,lineWeight:totalWeight}],
+    productTotal,totalWeight,totalQuantity:quantity,packingWeight,packedWeight,boxDimensions,
+    actualKg,volumetricKg,chargeableKg,deliverySpeed:'Surface Delivery',courier:'Trackon.in',
+    courierBaseCharge:0,courierGst:0,courierCharge:0,vasCharge:0,productGst:0,
+    gstInvoiceIncluded:false,paymentMode:'prepaid',grandTotal:productTotal,hasBatteryItem:false
+  };
+  localStorage.setItem('gp_order_summary',JSON.stringify(summary));
+  const q=new URLSearchParams({product:p.name,variant:`Quantity ${quantity}`,base:productTotal,quantity,weight:totalWeight,grandTotal:productTotal,allowCod:'true'});
+  window.location.href=`order-prefill.html?${q.toString()}`;
+}
+document.addEventListener('DOMContentLoaded',renderPs2Accessories);
+
 // ===== MULTI-LANGUAGE GUIDED WIZARD + ORIGINAL PRODUCT LOGIC =====
 const modelLabels = {
   fat: "PS2 Fat (All Models)",
@@ -1719,7 +1775,6 @@ let currentVoiceText = "";
 let repeatVoiceLoop = false;
 let nameAutoTimer = null;
 let currentLang = "en";
-let experienceMode = "";
 let languageSelectedForVoice = false;
 
 const langVoice = {
@@ -1733,14 +1788,10 @@ const T = {
     languageTitle:'Select Your Language', languageHelp:'Choose your language. Voice and main page text will continue in the selected language. Technical words like PS2, FMCB, USB, OPL and Combo will stay in English.', languageNote:'Select your language, then press Next.',
     nameTitle:'Please type your name', nameHelp:'Please type your name. This helps us make your order message correctly.', next:'Next', listenAgain:'🔊 Listen Again', voiceMini:'Type your name, then press the Next button.',
     modelTitle:'Step 1 — Select Your PS2 Model', modelHelp:'If you do not know your PS2 Model, check the pictures and select the matching model.', selectedModel:'Selected Model', changeModel:'Change Model',
-    matrixTitle:'Step 2 — Matrix Chip', matrixHelp:'Matrix is a boot chip. If Matrix appears on screen when PS2 starts, choose Matrix. If not, choose No. If you do not know, choose Don\'t Know.',
-    fmcbTitle:'Step 3 — FMCB Type', fmcbHelp:'Choose FMCB with OPL Only for USB gameplay. Choose Full FMCB + Apps if you also need extra apps. If FMCB/OPL already works and you only need a USB with games, choose Need Only USB with Games.',
-    productTitle:'Step 4 — Product Type', productHelp:'Choose FMCB Card, USB Only, or FMCB + USB Combo. Top Games are pre-loaded; Optional Games are loaded after you submit your selected game list.',
+    productTitle:'Step 2 — Choose What You Want to Buy', productHelp:'Choose FMCB Card, USB Only, FMCB + USB Combo, or PS2 Accessories. Accessories include cables, controllers, adapter, converter and memory card.',
     vName:'Welcome to Games Planet. First choose your language, then type your name. This page will guide you step by step to choose the correct PS2 product.',
     vAskName:'Please type your name, then press the Next button.', vNeedName:'Please type your name first.',
     vModel:'Now select your PlayStation 2 model. If you do not know your PS2 Model, look carefully at the pictures. Choose PS2 FAT, PS2 Slim 70000 Series, or PS2 Slim 90000 Series. Correct model helps us show the correct FMCB or FunTuna option.',
-    vMatrix:'Matrix is a boot chip. If Matrix appears on screen when your PS2 starts, choose Matrix. If Matrix does not appear, choose No. If you are not sure, choose Don\'t Know. Do not be confused; the next step will explain the benefit.',
-    vFmcb:'PlayStation 2 normally needs disc to play games. PS2 is discontinued, so discs are not easily available and working is not guaranteed. The best option is USB gameplay. Earlier PS2 had to be opened for Mod Chip, but now Soft Mod is available. FMCB Card can soft mod your PS2 without opening it. Choose FMCB with OPL Only if you only want USB gameplay. Choose Full FMCB + Apps if you need OPL, uLaunchELF, NES Emulator and extra Apps.',
     vProduct:'Now choose Product Type. Top Games means your USB will already have our top demanding games loaded. To check which games are included in Top Games, use the Top Games List Video given below. Optional Games means we will load games according to your choice. For Optional Games, first book the order, fill your details, submit the order and complete payment. After that open Optional Games Selector, select your games, and submit the list on WhatsApp. If you already have OPL or FMCB in your PS2 and only need USB with games, choose USB Only. If you need FMCB Card plus USB games, choose FMCB + USB Combo. If you only need FMCB Card, choose FMCB Card.',
     vFmcbProduct:'You selected FMCB Card. Choose this if you only need FMCB or FunTuna Memory Card for Soft Mod and OPL. After this, Buy will open the order page for your selected PS2 Model. If you also need USB with games, go back and choose Combo.', vUsbProduct:'You selected USB Only. Choose this only if OPL or FMCB already works on your PS2. In Top Games, our top demanding games are already loaded. To check which games are included, open the Top Games List Video given below. In Optional Games, games will be loaded according to your choice. For Optional Games, first book the order, fill your details, submit the order and complete payment. After payment, open Optional Games Selector, select your games, and submit the list on WhatsApp. Then those selected games will be loaded for you.', vComboProduct:'You selected FMCB + USB Combo. Choose this if you do not have FMCB Card, OPL setup, or USB games. Combo includes FMCB or FunTuna Card plus USB with games. In Top Games, our top demanding games are already loaded. To see the Top Games list, open the Top Games List Video below. If you want games of your own choice, choose Optional Games. First book the order, fill your details, submit the order and complete payment. After payment, open Optional Games Selector, select your games, and submit the list on WhatsApp. Then your selected games will be loaded.'
   },
@@ -1748,14 +1799,10 @@ const T = {
     languageTitle:'भाषा चुनें', languageHelp:'अपनी भाषा चुनें। Voice और main page text उसी भाषा में चलेगा। PS2, FMCB, USB, OPL और Combo जैसे English words English में ही रहेंगे।', languageNote:'Language select करके Next दबाएं।',
     nameTitle:'अपना नाम टाइप करें', nameHelp:'कृपया अपना नाम टाइप करें। इससे order message सही बनेगा।', next:'Next', listenAgain:'🔊 फिर से सुनें', voiceMini:'अपना नाम type करें, फिर Next button दबाएं।',
     modelTitle:'Step 1 — अपना PS2 Model चुनें', modelHelp:'अगर आपको PS2 Model नहीं पता, तो pictures देखकर सही model चुनें।', selectedModel:'Selected Model', changeModel:'Change Model',
-    matrixTitle:'Step 2 — Matrix Chip', matrixHelp:'Matrix एक boot chip है। PS2 start होते ही screen पर Matrix लिखा आए तो Matrix चुनें। नहीं आए तो No चुनें। पता नहीं हो तो Don\'t Know चुनें।',
-    fmcbTitle:'Step 3 — FMCB Type', fmcbHelp:'USB gameplay के लिए FMCB with OPL Only चुनें। Extra Apps भी चाहिए तो Full FMCB + Apps चुनें। अगर आपके PS2 में FMCB/OPL पहले से चलता है और सिर्फ games वाली USB चाहिए, तो Need Only USB with Games चुनें।',
-    productTitle:'Step 4 — Product Type', productHelp:'अपने setup के हिसाब से FMCB Card, USB Only या FMCB + USB Combo चुनें। Top Games pre-loaded हैं; Optional Games आपकी selected list के अनुसार load होंगे।',
+    productTitle:'Step 2 — क्या खरीदना है चुनें', productHelp:'FMCB Card, USB Only, FMCB + USB Combo या PS2 Accessories में से चुनें। Accessories में cables, controllers, adapter, converter और memory card हैं।',
     vName:'Games Planet में आपका स्वागत है। सबसे पहले अपनी भाषा चुनें, फिर अपना नाम टाइप करें। यह page आपको step by step सही PS2 product चुनने में मदद करेगा।',
     vAskName:'कृपया अपना नाम टाइप करें, फिर Next button दबाएं।', vNeedName:'कृपया पहले अपना नाम टाइप करें।',
     vModel:'अब अपना PlayStation 2 model चुनें। अगर आपको PS2 Model नहीं पता, तो pictures ध्यान से देखें। PS2 FAT, PS2 Slim 70000 Series, या PS2 Slim 90000 Series में से सही button दबाएं। सही model से FMCB और FunTuna option सही दिखाई देगा।',
-    vMatrix:'Matrix एक boot chip है। अगर आपका PS2 start होते ही screen पर Matrix लिखा आता है, तो Matrix चुनें। अगर Matrix नहीं आता, तो No चुनें। अगर आपको पता नहीं है, तो Don\'t Know चुनें। Confuse न हों, अगले step में इसका फायदा समझ आ जाएगा।',
-    vFmcb:'PlayStation 2 में game खेलने के लिए पहले disc चाहिए होती थी। अब PlayStation 2 discontinued है, इसलिए disc आसानी से नहीं मिलती, और मिल भी जाए तो चलने की guarantee नहीं होती। इसलिए best option USB gameplay है। पहले PS2 को shop पर ले जाकर खुलवाना पड़ता था और Mod Chip लगवानी पड़ती थी। अब Soft Mod आ चुका है। FMCB Card से PS2 बिना खोले soft mod हो जाता है। सिर्फ USB gameplay चाहिए तो FMCB with OPL Only चुनें। OPL, uLaunchELF, NES Emulator और extra Apps चाहिए तो Full FMCB + Apps चुनें।',
     vProduct:'अब Product Type चुनें। Top Games का मतलब है USB में हमारे top demanding games पहले से load होंगे। Top Games में कौन-कौन से games हैं, उसके लिए नीचे Top Games List Video दिया गया है। Optional Games का मतलब है आपकी पसंद के games load करके दिए जाएंगे। Optional Games के लिए पहले order book करें, अपनी details fill करें, submit करें और payment करें। उसके बाद Optional Games Selector पर जाकर games select करें और list WhatsApp पर submit करें। अगर आपके PS2 में पहले से OPL या FMCB चल रहा है और केवल USB with games चाहिए, तो USB Only चुनें। अगर FMCB Card plus USB games दोनों चाहिए, तो FMCB + USB Combo चुनें। अगर सिर्फ FMCB Card चाहिए, तो FMCB Card चुनें।',
     vFmcbProduct:'आपने FMCB Card चुना है। यह option तब चुनें जब आपको केवल FMCB या FunTuna Memory Card चाहिए, जिससे PS2 में Soft Mod और OPL setup चले। Buy दबाने पर selected PS2 Model का order page खुलेगा। अगर आपको USB with games भी चाहिए, तो वापस जाकर Combo चुनें।', vUsbProduct:'आपने USB Only चुना है। यह option तभी सही है जब आपके PS2 में पहले से OPL या FMCB चल रहा हो। Top Games के अंदर हमारे top demanding games पहले से load हैं। Top Games में कौन-कौन से games हैं, उसके लिए नीचे Top Games List Video दिया गया है। Optional Games में आपकी पसंद के games load करके दिए जाएंगे। Optional Games के लिए पहले order book करें, अपनी details fill करें, submit करें और payment करें। Payment के बाद Optional Games Selector पर जाकर games select करें और list WhatsApp पर submit करें। फिर वही selected games आपके लिए load किए जाएंगे।', vComboProduct:'आपने FMCB + USB Combo चुना है। यह option तब सही है जब आपके पास FMCB Card, OPL setup या USB games कुछ भी नहीं है। Combo में FMCB या FunTuna Card plus USB with games दोनों मिलेंगे। Top Games के अंदर हमारे top demanding games पहले से load हैं। Top Games में कौन-कौन से games हैं, उसके लिए नीचे Top Games List Video दिया गया है। अगर आपको अपनी पसंद के games चाहिए, तो Optional Games चुनें। पहले order book करें, details fill करें, submit करें और payment करें। Payment के बाद Optional Games Selector पर जाकर games select करें और list WhatsApp पर submit करें। फिर आपकी selected games load की जाएंगी।'
   }
@@ -1773,18 +1820,12 @@ T.pa = copyLang('hi',{
   modelHelp:'ਜੇ ਤੁਹਾਨੂੰ PS2 Model ਨਹੀਂ ਪਤਾ, ਤਾਂ pictures ਵੇਖ ਕੇ matching model ਚੁਣੋ।',
   selectedModel:'Selected Model',
   changeModel:'Change Model',
-  matrixTitle:'Step 2 — Matrix Chip',
-  matrixHelp:'Matrix ਇੱਕ boot chip ਹੈ। ਜੇ PS2 start ਹੁੰਦੇ ਹੀ screen ਤੇ Matrix ਲਿਖਿਆ ਆਵੇ, ਤਾਂ Matrix ਚੁਣੋ। ਨਹੀਂ ਆਉਂਦਾ ਤਾਂ No ਚੁਣੋ। ਪਤਾ ਨਹੀਂ ਤਾਂ Don\'t Know ਚੁਣੋ।',
-  fmcbTitle:'Step 3 — FMCB Type',
-  fmcbHelp:'USB gameplay ਲਈ FMCB with OPL Only ਚੁਣੋ। Extra Apps ਵੀ ਚਾਹੀਦੇ ਹਨ ਤਾਂ Full FMCB + Apps ਚੁਣੋ। ਜੇ ਤੁਹਾਡੇ PS2 ਵਿੱਚ FMCB/OPL ਪਹਿਲਾਂ ਤੋਂ ਚੱਲਦਾ ਹੈ ਅਤੇ ਸਿਰਫ games ਵਾਲੀ USB ਚਾਹੀਦੀ ਹੈ, ਤਾਂ Need Only USB with Games ਚੁਣੋ।',
-  productTitle:'Step 4 — Product Type',
-  productHelp:'ਆਪਣੇ setup ਦੇ ਹਿਸਾਬ ਨਾਲ FMCB Card, USB Only ਜਾਂ FMCB + USB Combo ਚੁਣੋ। Top Games pre-loaded ਹਨ; Optional Games ਤੁਹਾਡੀ selected list ਦੇ ਅਨੁਸਾਰ load ਹੋਣਗੀਆਂ।',
+  productTitle:'Step 2 — ਕੀ ਖਰੀਦਣਾ ਹੈ ਚੁਣੋ',
+  productHelp:'FMCB Card, USB Only, FMCB + USB Combo ਜਾਂ PS2 Accessories ਵਿੱਚੋਂ ਚੁਣੋ। Accessories ਵਿੱਚ cables, controllers, adapter, converter ਅਤੇ memory card ਹਨ।',
   vName:'Games Planet ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ। ਪਹਿਲਾਂ language ਚੁਣੋ, ਫਿਰ ਆਪਣਾ ਨਾਮ type ਕਰੋ। ਇਹ page ਤੁਹਾਨੂੰ step by step ਸਹੀ PS2 product ਚੁਣਨ ਵਿੱਚ ਮਦਦ ਕਰੇਗਾ।',
   vAskName:'ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਨਾਮ type ਕਰੋ, ਫਿਰ Next button ਦਬਾਓ।',
   vNeedName:'ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ ਆਪਣਾ ਨਾਮ type ਕਰੋ।',
   vModel:'ਹੁਣ ਆਪਣਾ PlayStation 2 model ਚੁਣੋ। ਜੇ ਤੁਹਾਨੂੰ PS2 Model ਨਹੀਂ ਪਤਾ, ਤਾਂ pictures ਧਿਆਨ ਨਾਲ ਵੇਖੋ। PS2 FAT, PS2 Slim 70000 Series ਜਾਂ PS2 Slim 90000 Series ਵਿਚੋਂ ਸਹੀ button ਦਬਾਓ। ਸਹੀ model ਨਾਲ FMCB ਅਤੇ FunTuna option ਸਹੀ ਦਿਖੇਗਾ।',
-  vMatrix:'Matrix ਇੱਕ boot chip ਹੈ। ਜੇ ਤੁਹਾਡਾ PS2 start ਹੁੰਦੇ ਹੀ screen ਤੇ Matrix ਲਿਖਿਆ ਆਉਂਦਾ ਹੈ, ਤਾਂ Matrix ਚੁਣੋ। ਜੇ Matrix ਨਹੀਂ ਆਉਂਦਾ ਤਾਂ No ਚੁਣੋ। ਜੇ ਪਤਾ ਨਹੀਂ ਤਾਂ Don\'t Know ਚੁਣੋ। Confuse ਨਾ ਹੋਵੋ, ਅਗਲੇ step ਵਿੱਚ ਇਸਦਾ benefit ਸਮਝ ਆ ਜਾਵੇਗਾ।',
-  vFmcb:'PlayStation 2 ਵਿੱਚ game ਖੇਡਣ ਲਈ ਪਹਿਲਾਂ disc ਚਾਹੀਦੀ ਸੀ। ਹੁਣ PlayStation 2 discontinued ਹੈ, ਇਸ ਲਈ disc ਆਸਾਨੀ ਨਾਲ ਨਹੀਂ ਮਿਲਦੀ, ਅਤੇ ਮਿਲ ਵੀ ਜਾਵੇ ਤਾਂ ਚੱਲਣ ਦੀ guarantee ਨਹੀਂ ਹੁੰਦੀ। ਇਸ ਲਈ best option USB gameplay ਹੈ। ਪਹਿਲਾਂ PS2 ਨੂੰ shop ਤੇ ਲੈ ਜਾ ਕੇ ਖੁਲਵਾਉਣਾ ਪੈਂਦਾ ਸੀ ਅਤੇ Mod Chip ਲਗਵਾਉਣੀ ਪੈਂਦੀ ਸੀ। ਹੁਣ Soft Mod ਆ ਚੁੱਕਾ ਹੈ। FMCB Card ਨਾਲ PS2 ਬਿਨਾਂ ਖੋਲ੍ਹੇ soft mod ਹੋ ਜਾਂਦਾ ਹੈ। ਸਿਰਫ USB gameplay ਚਾਹੀਦਾ ਹੈ ਤਾਂ FMCB with OPL Only ਚੁਣੋ। OPL, uLaunchELF, NES Emulator ਅਤੇ extra Apps ਚਾਹੀਦੇ ਹਨ ਤਾਂ Full FMCB + Apps ਚੁਣੋ।',
   vProduct:'ਹੁਣ Product Type ਚੁਣੋ। Top Games ਦਾ ਮਤਲਬ ਹੈ USB ਵਿੱਚ ਸਾਡੇ top demanding games ਪਹਿਲਾਂ ਤੋਂ load ਹੋਣਗੇ। Top Games ਵਿੱਚ ਕਿਹੜੀਆਂ games ਹਨ, ਉਸ ਲਈ ਹੇਠਾਂ Top Games List Video ਦਿੱਤਾ ਹੈ। Optional Games ਦਾ ਮਤਲਬ ਹੈ ਤੁਹਾਡੀ ਪਸੰਦ ਦੀਆਂ games load ਕਰਕੇ ਦਿੱਤੀਆਂ ਜਾਣਗੀਆਂ। Optional Games ਲਈ ਪਹਿਲਾਂ order book ਕਰੋ, ਆਪਣੀਆਂ details fill ਕਰੋ, submit ਕਰੋ ਅਤੇ payment ਕਰੋ। ਉਸ ਤੋਂ ਬਾਅਦ Optional Games Selector ਤੇ ਜਾ ਕੇ games select ਕਰੋ ਅਤੇ list WhatsApp ਤੇ submit ਕਰੋ। ਜੇ ਤੁਹਾਡੇ PS2 ਵਿੱਚ ਪਹਿਲਾਂ ਤੋਂ OPL ਜਾਂ FMCB ਚੱਲ ਰਿਹਾ ਹੈ ਅਤੇ ਸਿਰਫ USB with games ਚਾਹੀਦੀ ਹੈ, ਤਾਂ USB Only ਚੁਣੋ। ਜੇ FMCB Card plus USB games ਦੋਵੇਂ ਚਾਹੀਦੇ ਹਨ, ਤਾਂ FMCB + USB Combo ਚੁਣੋ। ਜੇ ਸਿਰਫ FMCB Card ਚਾਹੀਦਾ ਹੈ, ਤਾਂ FMCB Card ਚੁਣੋ।',
   vFmcbProduct:'ਤੁਸੀਂ FMCB Card ਚੁਣਿਆ ਹੈ। ਇਹ option ਉਦੋਂ ਚੁਣੋ ਜਦੋਂ ਤੁਹਾਨੂੰ ਸਿਰਫ FMCB ਜਾਂ FunTuna Memory Card ਚਾਹੀਦਾ ਹੈ, ਜਿਸ ਨਾਲ PS2 ਵਿੱਚ Soft Mod ਅਤੇ OPL setup ਚੱਲੇਗਾ। Buy ਦਬਾਉਣ ਤੇ selected PS2 Model ਦਾ order page ਖੁਲੇਗਾ। ਜੇ ਤੁਹਾਨੂੰ USB with games ਵੀ ਚਾਹੀਦੀ ਹੈ, ਤਾਂ ਵਾਪਸ ਜਾ ਕੇ Combo ਚੁਣੋ.',
   vUsbProduct:'ਤੁਸੀਂ USB Only ਚੁਣਿਆ ਹੈ। Top Games ਵਿੱਚ ਸਾਡੇ top demanding games ਪਹਿਲਾਂ ਤੋਂ load ਹਨ। ਕਿਹੜੀਆਂ games ਹਨ, ਇਹ ਹੇਠਾਂ Top Games List Video ਵਿੱਚ ਵੇਖੋ। Optional Games ਲਈ ਪਹਿਲਾਂ order ਅਤੇ payment complete ਕਰੋ, ਫਿਰ Optional Games Selector ਤੋਂ games ਚੁਣ ਕੇ WhatsApp ਤੇ list submit ਕਰੋ।',
@@ -1935,10 +1976,10 @@ function toggleVoice(){
 }
 function repeatCurrentVoice(){ speakText(currentVoiceText || tr('vName')); }
 
-const previousWizardStep = {step0:'langStep',step1:'step0',step2:'step1',step3:'step2',step4:'step3'};
+const previousWizardStep = {step0:'langStep',step1:'step0',step2:'step1'};
 function backButtonText(){ return currentLang==='pa' ? '⬅ ਪਿੱਛੇ' : (currentLang==='hi' ? '⬅ पीछे' : '⬅ Back'); }
 function addWizardBackButtons(){
-  ['step0','step1','step2','step3','step4'].forEach(id=>{
+  ['step0','step1','step2'].forEach(id=>{
     const step=document.getElementById(id); if(!step || step.querySelector('.wizard-back-wrap')) return;
     const wrap=document.createElement('div'); wrap.className='wizard-back-wrap';
     const btn=document.createElement('button'); btn.type='button'; btn.className='wizard-back-btn'; btn.dataset.backFor=id; btn.textContent=backButtonText();
@@ -1948,10 +1989,6 @@ function addWizardBackButtons(){
 function refreshBackButtonText(){ document.querySelectorAll('.wizard-back-btn').forEach(b=>b.textContent=backButtonText()); }
 function goBackWizard(currentId){
   clearTimeout(nameAutoTimer); stopVoice();
-  if(currentId==='step1' && experienceMode==='simple'){
-    showModeSelector();
-    return;
-  }
   const prev=previousWizardStep[currentId]; if(!prev) return;
   if(prev==='langStep'){
     hideWizardSteps(); const el=document.getElementById('langStep'); el.classList.remove('hidden');
@@ -1959,12 +1996,12 @@ function goBackWizard(currentId){
     const welcome=currentLang==='hi'?'कृपया अपनी भाषा चुनें। Please select your language. कृपा करके ਆਪਣੀ language select ਕਰੋ ਜੀ।':'Please select your language.';
     speakText(welcome,false); return;
   }
-  const voiceMap={step0:tr('vAskName'),step1:tr('vModel'),step2:tr('vMatrix'),step3:tr('vFmcb')};
+  const voiceMap={step0:tr('vAskName'),step1:tr('vModel'),step2:tr('vProduct')};
   showStep(prev,voiceMap[prev]||'');
 }
 
 function hideWizardSteps(){
-  ['modeStep','langStep','step0','step1','step2','step3','step4'].forEach(id=>{
+  ['langStep','step0','step1','step2'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.classList.add('hidden');
   });
@@ -1978,28 +2015,7 @@ function setVoiceButtonState(show){
   btn.textContent=voiceEnabled ? '🔊 Voice ON' : '🔇 Voice OFF';
 }
 
-function showModeSelector(){
-  stopVoice();
-  experienceMode='';
-  languageSelectedForVoice=false;
-  voiceEnabled=false;
-  setVoiceButtonState(false);
-  document.body.classList.remove('lang-modal-open');
-  hideWizardSteps();
-  const mode=document.getElementById('modeStep');
-  if(mode) mode.classList.remove('hidden');
-  document.body.classList.add('wizard-popup-open');
-}
-
-function chooseSimpleVersion(){
-  experienceMode='simple';
-  voiceEnabled=false;
-  setVoiceButtonState(false);
-  showStep('step1','');
-}
-
 function chooseDetailVersion(){
-  experienceMode='detail';
   languageSelectedForVoice=false;
   voiceEnabled=true;
   setVoiceButtonState(true);
@@ -2049,19 +2065,8 @@ function selectModel(model){
   const label = document.getElementById('selectedModelLabel');
   if(label){ label.textContent = modelLabels[model] || ''; }
   if(wrap){ wrap.classList.remove('hidden'); }
-  showStep('step2', (modelLabels[model] || 'PS2 Model') + ' selected. ' + tr('vMatrix'));
+  showStep('step2', (modelLabels[model] || 'PS2 Model') + ' selected. ' + tr('vProduct'));
 }
-
-function selectMatrix(value){ showStep('step3', tr('vFmcb')); }
-function selectFmcbType(value){
-  if(value === 'usbOnly'){
-    showProducts('usb');
-    return;
-  }
-  showStep('step4', tr('vProduct'));
-}
-function showStep3(){ selectMatrix('old'); }
-function showStep4(){ selectFmcbType('old'); }
 
 function updateOptionalSelectorVisibility(type){
   document.querySelectorAll('.optional-selector-link').forEach(link=>{
@@ -2079,11 +2084,13 @@ function showProducts(type){
   if(type==='fmcb' && cards[0]) cards[0].classList.remove('hidden');
   if(type==='usb' && cards[1]) cards[1].classList.remove('hidden');
   if(type==='combo' && cards[2]) cards[2].classList.remove('hidden');
+  if(type==='accessories' && cards[3]) cards[3].classList.remove('hidden');
   const visible = document.querySelector('.model-guard:not(.hidden)');
   if(visible) visible.scrollIntoView({behavior:'smooth', block:'start'});
   if(type==='fmcb') speakText(tr('vFmcbProduct'), false);
   if(type==='usb') speakText(tr('vUsbProduct'), false);
   if(type==='combo') speakText(tr('vComboProduct'), false);
+  if(type==='accessories') speakText(currentLang==='hi'?'PS2 Accessories. Quantity चुनें और Buy Now दबाएं।':(currentLang==='pa'?'PS2 Accessories. Quantity ਚੁਣੋ ਅਤੇ Buy Now ਦਬਾਓ।':'PS2 Accessories. Select the required quantity and press Buy Now.'), false);
 }
 
 function clearModel(){
@@ -2101,7 +2108,7 @@ document.addEventListener('DOMContentLoaded', function(){
   if(browser.startsWith('hi')) currentLang='hi'; else if(browser.startsWith('pa')) currentLang='pa'; else currentLang='en';
   applyLanguage();
   updateOptionalSelectorVisibility('fmcb');
-  showModeSelector();
+  chooseDetailVersion();
 });
 </script>
 
