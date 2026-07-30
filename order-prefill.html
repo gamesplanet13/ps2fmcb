@@ -308,7 +308,7 @@
   <!-- Actions -->
   <div class="btns">
     <button class="alt" onclick="submitOrder()">Submit this order</button>
-    <a id="payNow" class="btn act" href="#" target="_blank" rel="noopener">Pay Now</a>
+    <button id="payNow" class="btn act" type="button" onclick="launchUpiPayment()">Pay Now</button>
   </div>
 
   <!-- QR Code Section -->
@@ -866,6 +866,19 @@ function gpzInferWeight(product,variant){
   if(text.includes("ADAPTER")) weight=340;
   return weight;
 }
+function gpzItemDimensions(item){
+  if(item&&item.dimensions){
+    if(Array.isArray(item.dimensions)) return item.dimensions.join(" × ")+" cm";
+    return String(item.dimensions);
+  }
+  const w=Number(item?.unitWeight)||0;
+  if(w<=30) return "10 × 7 × 2 cm";
+  if(w<=100) return "15 × 10 × 4 cm";
+  if(w<=300) return "20 × 15 × 8 cm";
+  if(w<=600) return "22 × 17 × 9 cm";
+  if(w<=1200) return "28 × 22 × 12 cm";
+  return "32 × 26 × 18 cm";
+}
 function gpzBaseItems(){
   const product=GPZ_PARAMS.get("product")||document.getElementById("product").value||"PS2 Product";
   const variant=GPZ_PARAMS.get("variant")||document.getElementById("variant").value||"";
@@ -878,11 +891,12 @@ function gpzBaseItems(){
     (GPZ_PARAMS.get("source")==="cart"||!GPZ_PARAMS.get("product")||stored.items.some(i=>String(i.name).toLowerCase()===product.toLowerCase()));
   if(storedMatches) return stored.items.map(i=>({
     name:i.name,quantity:Number(i.quantity)||1,unitPrice:Number(i.unitPrice)||0,
-    lineTotal:Number(i.lineTotal)||0,unitWeight:Number(i.unitWeight)||0,lineWeight:Number(i.lineWeight)||0
+    lineTotal:Number(i.lineTotal)||0,unitWeight:Number(i.unitWeight)||0,lineWeight:Number(i.lineWeight)||0,
+    dimensions:i.dimensions||i.unitDimensions||""
   }));
   const unitPrice=quantity?base/quantity:base;
   const unitWeight=suppliedWeight?suppliedWeight/quantity:gpzInferWeight(product,variant);
-  return [{name:variant?`${product} — ${variant}`:product,quantity,unitPrice,lineTotal:base,unitWeight,lineWeight:unitWeight*quantity}];
+  return [{name:variant?`${product} — ${variant}`:product,quantity,unitPrice,lineTotal:base,unitWeight,lineWeight:unitWeight*quantity,dimensions:GPZ_PARAMS.get("dimensions")||""}];
 }
 function gpzAllItems(){
   const items=gpzBaseItems();
@@ -892,7 +906,7 @@ function gpzAllItems(){
     const quantity=Number(row.querySelector(".i-qty").value||0);
     if(quantity>0&&name!=="TRACKON.IN PRIME COURIER SERVICE"){
       const unitWeight=GPZ_ADDON_WEIGHTS[name]||100;
-      items.push({name,quantity,unitPrice,lineTotal:unitPrice*quantity,unitWeight,lineWeight:unitWeight*quantity});
+      items.push({name,quantity,unitPrice,lineTotal:unitPrice*quantity,unitWeight,lineWeight:unitWeight*quantity,dimensions:""});
     }
   });
   return items;
@@ -1055,11 +1069,24 @@ function computeTotals(){
   document.getElementById("sumRest").style.display=payment==="cod"?"":"none";
   document.getElementById("modeBadge").textContent=payment==="cod"?"Mode: COD":"Mode: Prepaid";
   document.getElementById("modeBadge").className="badge right "+(payment==="cod"?"mode-cod":"mode-pre");
-  document.getElementById("payNow").href=gpzUpiLink(advanceAmount,payment==="cod"?"COD Advance":"Prepaid Order");
+  document.getElementById("payNow").dataset.upi=gpzUpiLink(advanceAmount,payment==="cod"?"COD Payment":"Prepaid Order");
   gpzRenderRateGuide(chargeableKg);
 }
 function gpzUpiLink(amount,note){
   return "upi://pay?"+new URLSearchParams({pa:"gnsl.khalsa@okhdfcbank",pn:"GAMES PLANET ZONE",am:String(amount),cu:"INR",tn:note}).toString();
+}
+function launchUpiPayment(){
+  computeTotals();
+  const o=gpzCurrentOrder;
+  if(!o||!Number(o.advanceAmount)){
+    alert("Payment amount is not ready. Please complete the order details first.");
+    return;
+  }
+  const note=o.paymentMode==="cod"?"COD Payment":"Prepaid Order";
+  const upiUrl=gpzUpiLink(o.advanceAmount,note);
+  // Direct navigation to the UPI scheme opens the installed UPI-app chooser
+  // on Android instead of opening another website/prefill tab.
+  window.location.assign(upiUrl);
 }
 function productWithAddons(){return gpzCurrentOrder?gpzCurrentOrder.items.map(i=>`${i.name} x${i.quantity}`).join(", "):document.getElementById("product").value;}
 function gpzOrderVariant(){
@@ -1077,6 +1104,10 @@ function buildWhatsAppTemplate(){
   const isCod=o.paymentMode==="cod";
   const house=(document.getElementById("house").value||"").trim();
   const address=((house?house+", ":"")+(document.getElementById("address").value||"")).trim();
+  const firstName=String(o.items[0]?.name||"Games Planet Product");
+  const firstParts=firstName.split(/\s+—\s+/);
+  const simpleProduct=o.items.length>1?"Multiple Products":firstParts.shift();
+  const simpleVariant=o.items.length>1?"See complete breakdown below":(firstParts.join(" — ")||"As selected");
   const gstTop=o.gstInvoiceIncluded?"GST Invoice: Included (18%)":"GST Invoice: Excluded";
   const gstCustomerLines=o.gstInvoiceIncluded?[
     "Seller GSTIN: 09DIDPS5066Q1ZB",
@@ -1085,10 +1116,16 @@ function buildWhatsAppTemplate(){
     `GST Billing Address: ${document.getElementById("buyerBillingAddress").value||""}`
   ]:[];
   const itemLines=o.items.flatMap((i,n)=>[
-    `${n===0?"Base Product":"Add-on "+n}: ${i.name}`,
+    `${n+1}. ${n===0?"PRODUCT":"ADD-ON"}`,
+    `Name / Variant: ${i.name}`,
     `Quantity: ${i.quantity}`,
     `Unit Price: ${gpzMoney(i.unitPrice)}`,
-    `Line Total: ${gpzMoney(i.lineTotal)}`
+    `Line Total: ${gpzMoney(i.lineTotal)}`,
+    `Unit Weight: ${i.unitWeight}g`,
+    `Total Weight: ${i.lineWeight}g`,
+    `Approx. Unit Dimensions: ${gpzItemDimensions(i)}`,
+    "────────────────────",
+    ""
   ]);
   return [
     isCod?"🔴 COD Order on WhatsApp":"🟢 Prepaid Order on WhatsApp","",
@@ -1098,9 +1135,11 @@ function buildWhatsAppTemplate(){
     `Address: ${address}`,`Landmark: ${document.getElementById("landmark").value}`,
     `Pincode: ${document.getElementById("pincode").value}`,`State: ${document.getElementById("state").value}`,
     `District/City: ${document.getElementById("city").value}`,`Post office: ${document.getElementById("postoffice").value}`,"",
-    `Product: ${o.items[0]?.name||"Games Planet Product"}`,
-    `Variant: ${o.items.length>1?"Multiple products":"As selected"}`,
+    `Product: ${simpleProduct}`,
+    `Variant: ${simpleVariant}`,
+    `Base Price: ${gpzMoney(o.items[0]?.lineTotal||0)}`,
     `Courier Company: ${o.courier}`,
+    `Discount Applied: ${o.discountApplied?gpzMoney(o.discountApplied):""}`,
     gstTop,
     `Amount Paid: ${gpzMoney(o.advanceAmount)}`,
     ...(isCod?[`Rest on Delivery: ${gpzMoney(o.restAmount)}`]:[]),"",
@@ -1111,15 +1150,24 @@ function buildWhatsAppTemplate(){
     "🧾 COMPLETE ORDER BREAKDOWN",
     "━━━━━━━━━━━━━━━━━━━━","",
     ...itemLines,"",
+    "📦 WEIGHT & DIMENSION BREAKDOWN",
+    `Products Weight: ${o.totalWeight}g`,
+    `Packaging Weight: ${o.packingWeight}g`,
+    `Packed Weight: ${o.packedWeight}g`,
+    `Recommended Box: ${o.boxDimensions.join(" × ")} cm`,
+    `Actual Weight: ${o.actualKg.toFixed(2)}kg`,
+    `Volumetric Weight: ${o.volumetricKg.toFixed(2)}kg`,
+    `Chargeable Weight: ${o.chargeableKg.toFixed(2)}kg`,"",
     "━━━━━━━━━━━━━━━━━━━━",
     "💰 PAYMENT BREAKDOWN",
     "━━━━━━━━━━━━━━━━━━━━","",
     `Total Products: ${o.totalQuantity}`,
     `Products + Add-ons: ${gpzMoney(o.productTotal)}`,
     `Courier Charges: +${gpzMoney(o.courierCharge)}`,
+    `Products + Courier: ${gpzMoney(o.productTotal+o.courierCharge)}`,
     `Discount Coupon: ${o.discountCode||"Not used"}`,
     `Discount Applied: -${gpzMoney(o.discountApplied)}`,
-    `Amount Before GST: ${gpzMoney(o.amountBeforeGst)}`,
+    `Amount After Discount: ${gpzMoney(o.amountBeforeGst)}`,
     `GST Invoice (18%): ${o.gstInvoiceIncluded?"+"+gpzMoney(o.productGst):gpzMoney(0)+" (Excluded)"}`,
     ...gstCustomerLines,
     `Total Before VAS: ${gpzMoney(o.totalBeforeVas)}`,
