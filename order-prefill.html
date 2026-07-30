@@ -1019,17 +1019,22 @@ function computeTotals(){
   const courierCharge=courierBaseCharge+courierGst;
   const invoiceIncluded=gpzInvoice();
   gpzUpdatePaymentQr(invoiceIncluded);
-  const productGst=invoiceIncluded?Math.ceil(discountedProducts*.18):0;
+  // Billing order:
+  // Products + add-ons + courier - discount + GST = total before VAS.
+  // VAS is calculated on that total, then added to make the final amount.
+  const amountBeforeGst=Math.max(0,productTotal+courierCharge-appliedDiscount);
+  const productGst=invoiceIncluded?Math.ceil(amountBeforeGst*.18):0;
+  const totalBeforeVas=amountBeforeGst+productGst;
   const vasApplies=GPZ_VAS_COURIERS.includes(courier);
-  const vasCharge=vasApplies?Math.ceil(discountedProducts*.02):0;
-  const grandTotal=discountedProducts+productGst+courierCharge+vasCharge;
+  const vasCharge=vasApplies?Math.ceil(totalBeforeVas*.02):0;
+  const grandTotal=totalBeforeVas+vasCharge;
   const advanceAmount=payment==="cod"?Math.min(grandTotal,Math.max(500,Math.ceil(grandTotal*.10))):grandTotal;
   const restAmount=payment==="cod"?Math.max(0,grandTotal-advanceAmount):0;
   gpzCurrentOrder={items,productTotal,totalWeight,totalQuantity:items.reduce((s,i)=>s+i.quantity,0),packingWeight,packedWeight,
     boxDimensions,actualKg,volumetricKg,chargeableKg,paymentMode:payment,deliverySpeed:speed,courier,
     courierBaseCharge,courierGst,courierCharge,gstInvoiceIncluded:invoiceIncluded,productGst,
     discountApplied:appliedDiscount,discountCode:appliedDiscount?(document.getElementById("couponCode").value||"").trim():"",
-    discountedProducts,vasApplies,vasCharge,grandTotal,
+    discountedProducts,amountBeforeGst,totalBeforeVas,vasApplies,vasCharge,grandTotal,
     advanceAmount,restAmount,hasBatteryItem:items.some(i=>/BATTER/i.test(i.name))};
   localStorage.setItem("gp_order_summary",JSON.stringify(gpzCurrentOrder));
   document.getElementById("basePrice").value=Number(GPZ_PARAMS.get("base")||document.getElementById("basePrice").value||0);
@@ -1072,12 +1077,13 @@ function buildWhatsAppTemplate(){
   const isCod=o.paymentMode==="cod";
   const house=(document.getElementById("house").value||"").trim();
   const address=((house?house+", ":"")+(document.getElementById("address").value||"")).trim();
-  const gstLines=o.gstInvoiceIncluded?[
-    "GST Invoice: Included (18%)",`Product GST: ${gpzMoney(o.productGst)}`,"Seller GSTIN: 09DIDPS5066Q1ZB",
+  const gstTop=o.gstInvoiceIncluded?"GST Invoice: Included (18%)":"GST Invoice: Excluded";
+  const gstCustomerLines=o.gstInvoiceIncluded?[
+    "Seller GSTIN: 09DIDPS5066Q1ZB",
     `Customer / Business Name: ${document.getElementById("buyerBusinessName").value||""}`,
     `Customer GSTIN: ${document.getElementById("buyerGstin").value||""}`,
     `GST Billing Address: ${document.getElementById("buyerBillingAddress").value||""}`
-  ]:["GST Invoice: Excluded"];
+  ]:[];
   const itemLines=o.items.flatMap((i,n)=>[
     `${n===0?"Base Product":"Add-on "+n}: ${i.name}`,
     `Quantity: ${i.quantity}`,
@@ -1085,32 +1091,45 @@ function buildWhatsAppTemplate(){
     `Line Total: ${gpzMoney(i.lineTotal)}`
   ]);
   return [
-    isCod?"[COD ORDER]":"[PREPAID ORDER]","",
+    isCod?"🔴 COD Order on WhatsApp":"🟢 Prepaid Order on WhatsApp","",
     `Order ID: ${document.getElementById("orderId").value}`,
     `Name: ${document.getElementById("name").value}`,`Mobile: ${document.getElementById("mobile").value}`,
     `Alt Mobile: ${document.getElementById("altMobile").value}`,`Email: ${document.getElementById("email").value}`,
     `Address: ${address}`,`Landmark: ${document.getElementById("landmark").value}`,
     `Pincode: ${document.getElementById("pincode").value}`,`State: ${document.getElementById("state").value}`,
     `District/City: ${document.getElementById("city").value}`,`Post office: ${document.getElementById("postoffice").value}`,"",
-    "Product: PS2 Product",`Variant: ${gpzOrderVariant()}`,
-    `Base Price: ${gpzMoney(o.items[0]?.lineTotal||0)}`,
-    `Products Amount: ${gpzMoney(o.productTotal)}`,
-    `Discount Coupon: ${o.discountCode||"Not used"}`,
-    `Discount Applied: ${gpzMoney(o.discountApplied)}`,
-    ...gstLines,
-    `VAS (2%): ${o.vasApplies?gpzMoney(o.vasCharge):"Not Applicable"}`,
-    `Courier Company: ${o.courier}`,`Courier Charges: ${gpzMoney(o.courierCharge)}`,
-    `Total Amount: ${gpzMoney(o.grandTotal)}`,
-    `${isCod?"Advance Paid":"Amount Paid"}: ${gpzMoney(o.advanceAmount)}`,
+    `Product: ${o.items[0]?.name||"Games Planet Product"}`,
+    `Variant: ${o.items.length>1?"Multiple products":"As selected"}`,
+    `Courier Company: ${o.courier}`,
+    gstTop,
+    `Amount Paid: ${gpzMoney(o.advanceAmount)}`,
     ...(isCod?[`Rest on Delivery: ${gpzMoney(o.restAmount)}`]:[]),"",
-    `Distance: ${document.getElementById("distance").value||""}`,
-    `ETA: ${isCod?(document.getElementById("etaTextCod")?.value||""):(document.getElementById("etaText").value||"")}`,
-    `Estimated Delivery: ${isCod?(document.getElementById("dateRangeCOD")?.value||""):(document.getElementById("dateRange").value||"")}`,"",
-    "PRODUCT BREAKDOWN",...itemLines,
+    `📏 Distance: ${document.getElementById("distance").value||""}`,
+    `⏳ ${isCod?"COD":"Prepaid"} Order ETA: ${isCod?(document.getElementById("etaTextCod")?.value||""):(document.getElementById("etaText").value||"")}`,
+    `📅 Estimated Delivery: ${isCod?(document.getElementById("dateRangeCOD")?.value||""):(document.getElementById("dateRange").value||"")}`,"",
+    "━━━━━━━━━━━━━━━━━━━━",
+    "🧾 COMPLETE ORDER BREAKDOWN",
+    "━━━━━━━━━━━━━━━━━━━━","",
+    ...itemLines,"",
+    "━━━━━━━━━━━━━━━━━━━━",
+    "💰 PAYMENT BREAKDOWN",
+    "━━━━━━━━━━━━━━━━━━━━","",
     `Total Products: ${o.totalQuantity}`,
-    `Products Total: ${gpzMoney(o.productTotal)}`,
-    `Total Courier Charges: ${gpzMoney(o.courierCharge)}`,
-    `Final Total Amount: ${gpzMoney(o.grandTotal)}`
+    `Products + Add-ons: ${gpzMoney(o.productTotal)}`,
+    `Courier Charges: +${gpzMoney(o.courierCharge)}`,
+    `Discount Coupon: ${o.discountCode||"Not used"}`,
+    `Discount Applied: -${gpzMoney(o.discountApplied)}`,
+    `Amount Before GST: ${gpzMoney(o.amountBeforeGst)}`,
+    `GST Invoice (18%): ${o.gstInvoiceIncluded?"+"+gpzMoney(o.productGst):gpzMoney(0)+" (Excluded)"}`,
+    ...gstCustomerLines,
+    `Total Before VAS: ${gpzMoney(o.totalBeforeVas)}`,
+    `VAS (2%): ${o.vasApplies?"+"+gpzMoney(o.vasCharge):gpzMoney(0)+" (Not Applicable)"}`,
+    "",
+    `Final Order Total: ${gpzMoney(o.grandTotal)}`,
+    `Amount Paid: ${gpzMoney(o.advanceAmount)}`,
+    ...(isCod?[`Rest on Delivery: ${gpzMoney(o.restAmount)}`]:[`Remaining Amount: ${gpzMoney(0)}`]),
+    `Payment Status: ${isCod?"PARTIALLY PAID — COD":"FULLY PAID"}`,
+    `Payment Method: ${isCod?"Cash on Delivery":"Prepaid"}`
   ].join("\n");
 }
 function submitOrder(){
@@ -1118,12 +1137,33 @@ function submitOrder(){
   const missing=required.filter(id=>!String(document.getElementById(id).value||"").trim());
   if(missing.length){alert("Please fill all required customer and delivery details.");document.getElementById(missing[0]).focus();return;}
   if(gpzInvoice()&&!document.getElementById("buyerBusinessName").value.trim()){alert("Please enter Customer / Business Name for GST invoice.");return;}
-  window.open(`https://wa.me/917983624797?text=${encodeURIComponent(buildWhatsAppTemplate())}`,"_blank","noopener,noreferrer");
+  const message=buildWhatsAppTemplate();
+  const saved={
+    orderId:document.getElementById("orderId").value,
+    createdAt:new Date().toISOString(),
+    customer:{name:document.getElementById("name").value,mobile:document.getElementById("mobile").value,email:document.getElementById("email").value},
+    paymentMode:gpzCurrentOrder.paymentMode,
+    paymentStatus:gpzCurrentOrder.paymentMode==="cod"?"Amount paid — verification pending":"Payment submitted — verification pending",
+    amountPaid:gpzCurrentOrder.advanceAmount,
+    restOnDelivery:gpzCurrentOrder.restAmount,
+    total:gpzCurrentOrder.grandTotal,
+    courier:gpzCurrentOrder.courier,
+    items:gpzCurrentOrder.items,
+    message
+  };
+  let orders=[];try{orders=JSON.parse(localStorage.getItem("gp_customer_orders_v1")||"[]")}catch(e){}
+  const at=orders.findIndex(x=>x.orderId===saved.orderId);if(at>=0)orders[at]=saved;else orders.unshift(saved);
+  localStorage.setItem("gp_customer_orders_v1",JSON.stringify(orders.slice(0,100)));
+  window.open(`https://wa.me/917983624797?text=${encodeURIComponent(message)}`,"_blank","noopener,noreferrer");
+  setTimeout(()=>location.href="orders.html",450);
 }
 function gpzInitialize(){
-  const product=GPZ_PARAMS.get("product")||"PS2 Product";
-  const variant=GPZ_PARAMS.get("variant")||"";
-  const base=Number(GPZ_PARAMS.get("base")||0);
+  let stored=null;
+  try{stored=JSON.parse(localStorage.getItem("gp_order_summary")||"null");}catch(e){}
+  const cartItems=stored&&Array.isArray(stored.items)?stored.items:[];
+  const product=cartItems.length?cartItems.map(i=>`${i.name} × ${Number(i.quantity)||1}`).join(" | "):(GPZ_PARAMS.get("product")||"Games Planet Product");
+  const variant=cartItems.length>1?"Multiple selected products":(GPZ_PARAMS.get("variant")||"As selected");
+  const base=cartItems.length?cartItems.reduce((s,i)=>s+(Number(i.lineTotal)||0),0):Number(GPZ_PARAMS.get("base")||0);
   document.getElementById("product").value=product;
   document.getElementById("variant").value=variant;
   document.getElementById("basePrice").value=base;
