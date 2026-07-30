@@ -1104,10 +1104,16 @@ function buildWhatsAppTemplate(){
   const isCod=o.paymentMode==="cod";
   const house=(document.getElementById("house").value||"").trim();
   const address=((house?house+", ":"")+(document.getElementById("address").value||"")).trim();
-  const firstName=String(o.items[0]?.name||"Games Planet Product");
-  const firstParts=firstName.split(/\s+—\s+/);
-  const simpleProduct=o.items.length>1?"Multiple Products":firstParts.shift();
-  const simpleVariant=o.items.length>1?"See complete breakdown below":(firstParts.join(" — ")||"As selected");
+  const simpleProducts=o.items.map(i=>{
+    const parts=String(i.name||"Games Planet Product").split(/\s+—\s+/);
+    return `${parts[0]} x${i.quantity}`;
+  }).join(" + ");
+  const simpleVariants=o.items.map(i=>{
+    const parts=String(i.name||"").split(/\s+—\s+/);
+    const details=parts.slice(1).join(" — ");
+    return details?`${details} x${i.quantity}`:"";
+  }).filter(Boolean).join(" + ") ||
+    `${(document.getElementById("variant").value||"PS2").trim()} x${o.items[0]?.quantity||1}`;
   const gstTop=o.gstInvoiceIncluded?"GST Invoice: Included (18%)":"GST Invoice: Excluded";
   const gstCustomerLines=o.gstInvoiceIncluded?[
     "Seller GSTIN: 09DIDPS5066Q1ZB",
@@ -1135,8 +1141,8 @@ function buildWhatsAppTemplate(){
     `Address: ${address}`,`Landmark: ${document.getElementById("landmark").value}`,
     `Pincode: ${document.getElementById("pincode").value}`,`State: ${document.getElementById("state").value}`,
     `District/City: ${document.getElementById("city").value}`,`Post office: ${document.getElementById("postoffice").value}`,"",
-    `Product: ${simpleProduct}`,
-    `Variant: ${simpleVariant}`,
+    `Product: ${simpleProducts}`,
+    `Variant: ${simpleVariants}`,
     `Base Price: ${gpzMoney(o.items[0]?.lineTotal||0)}`,
     `Courier Company: ${o.courier}`,
     `Discount Applied: ${o.discountApplied?gpzMoney(o.discountApplied):""}`,
