@@ -1,0 +1,27 @@
+{
+  "name": "Games Planet",
+  "short_name": "Games Planet",
+  "id": "./",
+  "description": "Live Games Planet products, prices, videos and ordering.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "games-planet-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "games-planet-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
