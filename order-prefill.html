@@ -231,10 +231,10 @@
   <div class="card">
     <span class="badge">GST Invoice</span>
     <div class="choice-grid">
-      <label class="choice"><input type="radio" name="gstInvoice" value="excluded" checked onchange="computeTotals()"> GST Excluded</label>
+      <label class="choice"><input type="radio" name="gstInvoice" value="excluded" checked onchange="computeTotals()"> Estimated Bill</label>
       <label class="choice"><input type="radio" name="gstInvoice" value="included" onchange="computeTotals()"> Include GST Invoice (18%)</label>
     </div>
-    <div class="hint">Default: GST excluded • Seller GSTIN: <b>09DIDPS5066Q1ZB</b></div>
+    <div class="hint">Default: Estimated Bill • GST invoice optional • Seller GSTIN: <b>09DIDPS5066Q1ZB</b></div>
     <div id="gstDetails" class="gst-details">
       <div class="grid2">
         <div><div class="label">Customer / Business Name</div><input id="buyerBusinessName"></div>
@@ -1285,5 +1285,5 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
   window.addEventListener('load',()=>navigator.serviceWorker.register('./pincode-offline-sw.js').catch(()=>{}));
 }
 </script>
-</body>
+<script>window.GPZ_PROJECT_KIND='fmcb';</script><script src="gpz-order-enhancements.js"></script></body>
 </html>
