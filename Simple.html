@@ -2504,12 +2504,45 @@ function gpzCartOpen(){gpzCartRender();document.getElementById("gpzCartDrawer").
 function gpzCartClose(){document.getElementById("gpzCartDrawer").classList.remove("open");document.body.style.overflow=""}
 function gpzCartReset(){if(!gpzCartRead().length)return;if(confirm("Reset cart and remove all saved products?")){localStorage.removeItem(GPZ_CART_KEY);gpzCartRender();gpzCartClose()}}
 function gpzCartToast(){const el=document.getElementById("gpzCartToast");el.classList.add("show");clearTimeout(gpzCartToast.timer);gpzCartToast.timer=setTimeout(()=>el.classList.remove("show"),1600)}
+function gpzCartCheckoutSummary(items){
+  const list=Array.isArray(items)?items:[];
+  const allText=list.map(i=>`${i.product||""} | ${i.variant||""} | ${i.name||""} | ${i.pack||""}`).join(" | ");
+
+  let model="";
+  if(/PS2\s*SLIM\s*(?:7XXXX|70000|70XXX|7\s*SERIES)/i.test(allText)) model="7xxxx";
+  else if(/PS2\s*SLIM\s*(?:9XXXX|90000|90XXX|9\s*SERIES)/i.test(allText)) model="9xxxx";
+  else if(/PS2\s*FAT/i.test(allText)) model="Fat";
+
+  const storageMatch=allText.match(/(64|128|256|500)\s*GB/i);
+  const storage=storageMatch?`${storageMatch[1]}GB`:"";
+  const hasUsb=list.some(i=>/USB for PS2|FMCB \+ USB Combo/i.test(`${i.product||""} ${i.name||""}`));
+  const hasFmcb=list.some(i=>/FMCB|FunTuna/i.test(`${i.product||""} ${i.variant||""} ${i.name||""}`));
+  const isFunTuna=/FunTuna/i.test(allText)&&!/\bFMCB\b/i.test(allText.replace(/FMCB \+ USB Combo for PS2/ig,""));
+
+  const parts=[];
+  if(hasFmcb) parts.push(`${isFunTuna?"FunTuna":"FMCB"}${model?" "+model:""}`);
+  if(hasUsb) parts.push(`USB${storage?" "+storage:""}`);
+
+  list.forEach(i=>{
+    const product=String(i.product||"").trim();
+    const variant=String(i.variant||"").trim();
+    const core=(product==="Memory Card"&&/FMCB|FunTuna/i.test(variant)) || /USB for PS2|FMCB \+ USB Combo/i.test(product);
+    if(core||!product||/^PS2 Product$/i.test(product)) return;
+    const q=Math.max(1,Number(i.quantity)||1);
+    parts.push(product+(q>1?` x${q}`:""));
+  });
+
+  const packText=list.map(i=>`${i.pack||""} ${i.variant||""}`).join(" | ");
+  const variant=/OPTIONAL/i.test(packText)?"Optional Games":(/\bTOP\b/i.test(packText)?"Top Games":"");
+  return {product:parts.join(" + "),variant};
+}
 function gpzCartCheckout(){
   const cart=gpzCartRead();if(!cart.length){alert("Cart is empty.");return}
-  const items=cart.map(i=>({name:i.variant&&i.variant!=="PS2"?`${i.product} — ${i.variant}`:i.product,product:i.product,variant:i.variant||"PS2",quantity:Number(i.quantity)||1,unitPrice:Number(i.unitPrice)||0,lineTotal:(Number(i.unitPrice)||0)*(Number(i.quantity)||1),unitWeight:Number(i.unitWeight)||25,lineWeight:(Number(i.unitWeight)||25)*(Number(i.quantity)||1),size:i.size||gpzCartSize(i.product,i.variant)}));
+  const items=cart.map(i=>({name:i.variant&&i.variant!=="PS2"?`${i.product} — ${i.variant}`:i.product,product:i.product,variant:i.variant||"PS2",pack:i.pack||"",quantity:Number(i.quantity)||1,unitPrice:Number(i.unitPrice)||0,lineTotal:(Number(i.unitPrice)||0)*(Number(i.quantity)||1),unitWeight:Number(i.unitWeight)||25,lineWeight:(Number(i.unitWeight)||25)*(Number(i.quantity)||1),size:i.size||gpzCartSize(i.product,i.variant)}));
   const productTotal=items.reduce((s,i)=>s+i.lineTotal,0),totalWeight=items.reduce((s,i)=>s+i.lineWeight,0),totalQuantity=items.reduce((s,i)=>s+i.quantity,0);
-  localStorage.setItem("gp_order_summary",JSON.stringify({source:"cart",items,productTotal,totalWeight,totalQuantity,paymentMode:"prepaid"}));
-  const q=new URLSearchParams({source:"cart",product:"PS2 Product",variant:"PS2",base:productTotal,quantity:totalQuantity,weight:totalWeight});
+  const summary=gpzCartCheckoutSummary(items);
+  localStorage.setItem("gp_order_summary",JSON.stringify({source:"cart",items,productTotal,totalWeight,totalQuantity,paymentMode:"prepaid",product:summary.product,variant:summary.variant}));
+  const q=new URLSearchParams({source:"cart",product:summary.product,variant:summary.variant,base:productTotal,quantity:totalQuantity,weight:totalWeight});
   location.href=`order-prefill.html?${q.toString()}`;
 }
 function gpzEnhanceProductCards(){
