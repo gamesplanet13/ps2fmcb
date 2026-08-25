@@ -1153,7 +1153,9 @@ function computeTotals(){
   const courier=document.getElementById("courier").value||"Trackon.in";
   const speed=gpzSpeed();
   const courierBaseCharge=gpzCourierRate(courier,speed,payment,chargeableKg);
-  const courierGst=0;
+  // Courier GST applies only to the GST courier partners.
+  // This was previously hard-coded to 0, so the declared GPZ_GST_COURIERS list was never used.
+  const courierGst=GPZ_GST_COURIERS.includes(courier)?Math.ceil(courierBaseCharge*.18):0;
   const courierCharge=courierBaseCharge+courierGst;
   const invoiceIncluded=gpzInvoice();
   gpzUpdatePaymentQr(invoiceIncluded);
@@ -1167,7 +1169,7 @@ function computeTotals(){
     boxDimensions,actualKg,volumetricKg,chargeableKg,paymentMode:payment,deliverySpeed:speed,courier,
     courierBaseCharge,courierGst,courierCharge,gstInvoiceIncluded:invoiceIncluded,productGst,
     discountApplied:appliedDiscount,discountCode:appliedDiscount?(document.getElementById("couponCode").value||"").trim():"",
-    discountedProducts,vasApplies,vasCharge,baseOrderPrice:productTotal+courierCharge+vasCharge,grandTotal,
+    discountedProducts,vasApplies,vasCharge,baseOrderPrice:productTotal+courierCharge,grandTotal,
     advanceAmount,restAmount,hasBatteryItem:items.some(i=>/BATTER/i.test(i.name))};
   localStorage.setItem("gp_order_summary",JSON.stringify(gpzCurrentOrder));
   document.getElementById("basePrice").value=Number(GPZ_PARAMS.get("base")||document.getElementById("basePrice").value||0);
@@ -1207,101 +1209,73 @@ function gpzOrderVariant(){
 }
 function gpzMessageProductVariant(){
   const items=(gpzCurrentOrder&&Array.isArray(gpzCurrentOrder.items))?gpzCurrentOrder.items:[];
-  const productCounts=new Map();
-  let addonQtyTotal=0;
-  const models=[];
-  const versions=[];
-  const storages=[];
-
-  const addCount=(label,qty)=>{
-    const clean=String(label||"").trim();
-    if(!clean)return;
-    productCounts.set(clean,(productCounts.get(clean)||0)+Math.max(1,Number(qty)||1));
-  };
-  const addUnique=(arr,value)=>{
-    const clean=String(value||"").trim();
-    if(clean&&!arr.some(v=>v.toLowerCase()===clean.toLowerCase()))arr.push(clean);
-  };
-  const collectVariantParts=text=>{
-    const raw=String(text||"");
-
-    if(/(?:PS2\s*SLIM\s*)?(?:9XXXX|90XXX|9000\d|9000X|9\s*SERIES)/i.test(raw)) addUnique(models,"90xxx");
-    else if(/(?:PS2\s*SLIM\s*)?(?:7XXXX|70XXX|7000\d|7000X|7\s*SERIES)/i.test(raw)) addUnique(models,"70xxx");
-    else if(/PS2\s*FAT/i.test(raw)) addUnique(models,"PS2 Fat");
-
-    const versionMatch=raw.match(/(?:FUNTUNA|FMCB|OPL)[^0-9]{0,15}(\d+(?:\.\d+)+)/i);
-    if(versionMatch) addUnique(versions,versionMatch[1]);
-    else {
-      const plainVersion=raw.match(/\b(?:1\.966|2\.0)\b/i);
-      if(plainVersion) addUnique(versions,plainVersion[0]);
-    }
-
-    const storageRe=/(\d+\s*(?:GB|TB))(?:\s*(SSD|HDD))?/ig;
-    let m;
-    while((m=storageRe.exec(raw))){
-      const storage=m[1].replace(/\s+/g,"").toUpperCase();
-      const type=(m[2]||"").toUpperCase();
-      addUnique(storages,type?`${storage} ${type}`:storage);
-    }
-  };
-
-  const addonNames=Object.keys(GPZ_ADDON_WEIGHTS||{}).filter(n=>n!=="TRACKON.IN PRIME COURIER SERVICE");
-  const classifyItem=(name,qty)=>{
-    const raw=String(name||"").trim();
-    if(!raw)return;
-    const upper=raw.toUpperCase();
-    const q=Math.max(1,Number(qty)||1);
-    const addon=addonNames.find(a=>upper===a.toUpperCase()||upper.startsWith(a.toUpperCase()+" —")||upper.startsWith(a.toUpperCase()+" -"));
-    if(addon){ addonQtyTotal+=q; collectVariantParts(raw); return; }
-
-    let matchedMain=false;
-    if(/FMCB|FUNTUNA/i.test(raw)){ addCount("FMCB",q); matchedMain=true; }
-    if(/\bUSB\b/i.test(raw)){ addCount("USB",q); matchedMain=true; }
-    if(!matchedMain){
-      const clean=raw.split(/\s+[—–-]\s+/)[0].trim()||raw;
-      addCount(clean,q);
-    }
-    collectVariantParts(raw);
-  };
-
-  items.forEach(i=>classifyItem(i.name,i.quantity));
-
   const domProduct=(GPZ_PARAMS.get("product")||document.getElementById("product").value||"").trim();
   const domVariant=(GPZ_PARAMS.get("variant")||document.getElementById("variant").value||"").trim();
   const packRaw=(GPZ_PARAMS.get("pack")||"").trim();
-  collectVariantParts(domProduct);
-  collectVariantParts(domVariant);
+  const allText=[domProduct,domVariant,packRaw,...items.map(i=>i.name)].join(" | ");
 
-  if(!productCounts.size&&domProduct){
-    const q=Math.max(1,Number(GPZ_PARAMS.get("quantity")||1));
-    classifyItem(domProduct,q);
+  const qtyLabel=(label,qty)=>Number(qty)>1?`${label} x${Number(qty)}`:label;
+  const productParts=[];
+  const seen=new Set();
+  const addPart=(label,qty=1)=>{
+    const clean=String(label||"").trim();
+    if(!clean)return;
+    const rendered=qtyLabel(clean,qty);
+    const key=rendered.toLowerCase();
+    if(!seen.has(key)){seen.add(key);productParts.push(rendered);}
+  };
+
+  // Model belongs in Product, not Variant.
+  let model="";
+  if(/(?:PS2\s*SLIM\s*)?(?:7XXXX|70XXX|7000\d|7000X|7\s*SERIES)/i.test(allText)) model="7xxxx";
+  else if(/(?:PS2\s*SLIM\s*)?(?:9XXXX|90XXX|9000\d|9000X|9\s*SERIES)/i.test(allText)) model="9xxxx";
+  else if(/PS2\s*FAT/i.test(allText)) model="Fat";
+
+  // Storage belongs in Product, e.g. USB 64GB / USB 256GB SSD.
+  let storage="";
+  const storageMatch=allText.match(/(\d+)\s*(GB|TB)(?:\s*(SSD|HDD))?/i);
+  if(storageMatch){
+    storage=`${storageMatch[1]}${storageMatch[2].toUpperCase()}${storageMatch[3]?` ${storageMatch[3].toUpperCase()}`:""}`;
   }
 
-  const qtyLabel=(name,qty)=>Number(qty)>1?`${name} x${Number(qty)}`:name;
-  const productParts=[...productCounts.entries()].map(([name,qty])=>qtyLabel(name,qty));
-  if(addonQtyTotal>0) productParts.push(addonQtyTotal>1?`Add-ons x${addonQtyTotal}`:"Add-ons");
-
-  // Variant format: model + "version pack" + storage, e.g. 90xxx + 2.0 Top Games + 128GB.
-  let pack=packRaw.replace(/^pack\s*[:\-]?\s*/i,"").trim();
-  if(/^top$/i.test(pack))pack="Top Games";
-  if(/^optional$/i.test(pack))pack="Optional Games";
-  const versionPack=[];
-  if(versions.length){
-    if(pack) versionPack.push(`${versions.join("/")} ${pack}`);
-    else versionPack.push(versions.join("/"));
-  }else if(pack){
-    versionPack.push(pack);
+  const hasFmcb=/FMCB|FUNTUNA/i.test(allText);
+  const hasUsb=/\bUSB\b/i.test(allText);
+  if(hasFmcb){
+    const fmcbName=/FUNTUNA/i.test(allText)&&!(/FMCB/i.test(allText))?"FunTuna":"FMCB";
+    addPart(model?`${fmcbName} ${model}`:fmcbName,1);
+  }
+  if(hasUsb){
+    addPart(storage?`USB ${storage}`:"USB",1);
   }
 
-  const variantParts=[...models,...versionPack,...storages];
-  // If nothing structured was detected, keep the original selected variant.
-  if(!variantParts.length&&domVariant) variantParts.push(domVariant);
+  const addonNames=Object.keys(GPZ_ADDON_WEIGHTS||{}).filter(n=>n!=="TRACKON.IN PRIME COURIER SERVICE");
+  items.forEach(i=>{
+    const raw=String(i.name||"").trim();
+    if(!raw)return;
+    const upper=raw.toUpperCase();
+    const q=Math.max(1,Number(i.quantity)||1);
+    const addon=addonNames.find(a=>upper===a.toUpperCase()||upper.startsWith(a.toUpperCase()+" —")||upper.startsWith(a.toUpperCase()+" -"));
+    if(addon){addPart(addon,q);return;}
+    if(/FMCB|FUNTUNA|\bUSB\b|\bCOMBO\b/i.test(raw))return;
+    // Preserve any other selected cart product/accessory by name.
+    const clean=raw.split(/\s+[—–]\s+/)[0].trim()||raw;
+    addPart(clean,q);
+  });
+
+  if(!productParts.length&&domProduct)addPart(domProduct,Math.max(1,Number(GPZ_PARAMS.get("quantity")||1)));
+
+  // Variant must contain only the selected games pack.
+  let variant="";
+  const packSource=[packRaw,domVariant,domProduct,...items.map(i=>i.name)].join(" | ");
+  if(/OPTIONAL/i.test(packSource)) variant="Optional Games";
+  else if(/\bTOP\b/i.test(packSource)) variant="Top Games";
 
   return {
-    product: productParts.join(" + ") || domProduct || "PS2 Product",
-    variant: variantParts.join(" + ")
+    product:productParts.join(" + ")||domProduct||"PS2 Product",
+    variant
   };
 }
+function gpzWaMoney(n){return "₹"+Math.ceil(Number(n)||0);}
 function buildWhatsAppTemplate(){
   const o=gpzCurrentOrder; if(!o) return "";
   const isCod=o.paymentMode==="cod";
@@ -1310,14 +1284,14 @@ function buildWhatsAppTemplate(){
   const postOffice=(document.getElementById("postoffice").value||"").trim();
   const pv=gpzMessageProductVariant();
 
-  // User rule: Base Price = Product(s) + Add-ons + Courier + VAS, before discount/GST.
-  // o.productTotal already includes the main product(s) + selected add-ons.
-  const baseOrderPrice=o.productTotal+o.courierCharge+o.vasCharge;
+  // User rule: Base Price = Product(s) + Add-ons + Courier only.
+  // VAS / GST stay separate and only affect the final payable total when applicable.
+  const baseOrderPrice=o.productTotal+o.courierCharge;
   const mainProductPrice=Math.max(0,o.productTotal-sumAddons());
   const addonsPrice=sumAddons();
 
   const gstLines=o.gstInvoiceIncluded?[
-    "GST Invoice: Included (18%)",`Product GST: ${gpzMoney(o.productGst)}`,"Seller GSTIN: 09DIDPS5066Q1ZB",
+    "GST Invoice: Included (18%)",`Product GST: ${gpzWaMoney(o.productGst)}`,"Seller GSTIN: 09DIDPS5066Q1ZB",
     `Customer / Business Name: ${document.getElementById("buyerBusinessName").value||""}`,
     `Customer GSTIN: ${document.getElementById("buyerGstin").value||""}`,
     `GST Billing Address: ${document.getElementById("buyerBillingAddress").value||""}`
@@ -1325,8 +1299,8 @@ function buildWhatsAppTemplate(){
   const itemLines=o.items.flatMap((i,n)=>[
     `${n+1}. ${i.name}${Number(i.quantity)>1?` x${i.quantity}`:""}`,
     `Quantity: ${i.quantity}`,
-    `Per Price: ${gpzMoney(i.unitPrice)}`,
-    `Product Total: ${gpzMoney(i.lineTotal)}`,
+    `Per Price: ${gpzWaMoney(i.unitPrice)}`,
+    `Product Total: ${gpzWaMoney(i.lineTotal)}`,
     `Weight: ${i.unitWeight}g × ${i.quantity} = ${i.lineWeight}g`,
     ""
   ]);
@@ -1345,25 +1319,25 @@ function buildWhatsAppTemplate(){
     ...addressLines,"",
     `Product: ${pv.product}`,
     `Variant: ${pv.variant}`,
-    `Base Price: ${gpzMoney(baseOrderPrice)}`,
+    `Base Price: ${gpzWaMoney(baseOrderPrice)}`,
+    `Discount: ${gpzWaMoney(o.discountApplied)}`,
+    `Amount Paid: ${gpzWaMoney(o.advanceAmount)}`,
+    ...(isCod?[`Rest on Delivery: ${gpzWaMoney(o.restAmount)}`]:[]),"",
     `Courier Company: ${o.courier}`,
-    `Courier Charges: ${gpzMoney(o.courierCharge)}`,
-    `VAS (2%): ${o.vasApplies?gpzMoney(o.vasCharge):"Not Applicable"}`,
-    `Discount: ${gpzMoney(o.discountApplied)}`,
-    `Amount Paid: ${gpzMoney(o.advanceAmount)}`,
-    ...(isCod?[`Rest on Delivery: ${gpzMoney(o.restAmount)}`]:[]),"",
+    `Courier Charges: ${gpzWaMoney(o.courierCharge)}`,
+    `VAS (2%): ${o.vasApplies?gpzWaMoney(o.vasCharge):"Not Applicable"}` ,"",
     `📏 Distance: ${document.getElementById("distance").value||""}`,
     `⏳ ${isCod?"COD":"Prepaid"} Order ETA: ${isCod?(document.getElementById("etaTextCod")?.value||""):(document.getElementById("etaText").value||"")}`,
     `📅 Estimated Delivery: ${isCod?(document.getElementById("dateRangeCOD")?.value||""):(document.getElementById("dateRange").value||"")}`,"",
     "📦 SELECTED PRODUCTS & COMPLETE BREAKDOWN","",...itemLines,
-    `Main Product Price: ${gpzMoney(mainProductPrice)}`,
-    `Add-ons Total: ${gpzMoney(addonsPrice)}`,
-    `Products + Add-ons Total: ${gpzMoney(o.productTotal)}`,
-    `Courier Charges: ${gpzMoney(o.courierCharge)}`,
-    `VAS (2%): ${o.vasApplies?gpzMoney(o.vasCharge):"Not Applicable"}`,
-    `Base Price (Product + Add-ons + Courier + VAS): ${gpzMoney(baseOrderPrice)}`,
+    `Main Product Price: ${gpzWaMoney(mainProductPrice)}`,
+    `Add-ons Total: ${gpzWaMoney(addonsPrice)}`,
+    `Products + Add-ons Total: ${gpzWaMoney(o.productTotal)}`,
+    `Courier Charges: ${gpzWaMoney(o.courierCharge)}`,
+    `VAS (2%): ${o.vasApplies?gpzWaMoney(o.vasCharge):"Not Applicable"}`,
+    `Base Price: ${gpzWaMoney(baseOrderPrice)}`,
     `Discount Coupon: ${o.discountCode||"Not used"}`,
-    `Discount Applied: ${o.discountApplied?"-"+gpzMoney(o.discountApplied):gpzMoney(0)}`,
+    `Discount Applied: ${o.discountApplied?"-"+gpzWaMoney(o.discountApplied):gpzWaMoney(0)}`,
     ...gstLines,
     `Total Quantity: ${o.totalQuantity}`,
     `Total Product Weight: ${o.totalWeight}g`,
@@ -1372,9 +1346,9 @@ function buildWhatsAppTemplate(){
     `Total Dimensions / Box Size: ${o.boxDimensions.join(" × ")} cm`,
     `Volumetric Weight: ${o.volumetricKg.toFixed(2)}kg`,
     `Chargeable Weight: ${o.chargeableKg.toFixed(2)}kg`,
-    `Final Total Amount: ${gpzMoney(o.grandTotal)}`,
-    `Total Amount Paid: ${gpzMoney(o.advanceAmount)}`,
-    ...(isCod?[`Total Rest on Delivery: ${gpzMoney(o.restAmount)}`]:[])
+    `Final Total Amount: ${gpzWaMoney(o.grandTotal)}`,
+    `Total Amount Paid: ${gpzWaMoney(o.advanceAmount)}`,
+    ...(isCod?[`Total Rest on Delivery: ${gpzWaMoney(o.restAmount)}`]:[])
   ].join("\n");
 }
 function submitOrder(){
@@ -1412,5 +1386,39 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
   window.addEventListener('load',()=>navigator.serviceWorker.register('./pincode-offline-sw.js').catch(()=>{}));
 }
 </script>
-<script>window.GPZ_PROJECT_KIND='fmcb';</script><script src="gpz-order-enhancements.js"></script></body>
+
+<!-- Preserve the tested FMCB checkout calculator before optional global enhancements load. -->
+<script>
+window.__GPZ_FMCB_FINAL__ = {
+  computeTotals,
+  setMode,
+  syncCourierOptions,
+  submitOrder,
+  buildWhatsAppTemplate,
+  getSubtotal,
+  recomputeAddons
+};
+window.GPZ_PROJECT_KIND='fmcb';
+</script>
+<script src="gpz-order-enhancements.js"></script>
+<script>
+// gpz-order-enhancements.js is optional and may define same global names.
+// Restore the FMCB-prefill versions so courier/Grand Total cannot be replaced.
+if(window.__GPZ_FMCB_FINAL__){
+  Object.assign(window, window.__GPZ_FMCB_FINAL__);
+}
+
+// Recalculate once more after all scripts load, and after any relevant selection change.
+window.addEventListener('load', function(){
+  try{ syncCourierOptions(); computeTotals(); }catch(err){ console.error('GPZ final calculator:', err); }
+});
+document.addEventListener('change', function(e){
+  if(e.target && e.target.matches('#courier, input[name="deliverySpeed"], input[name="paymentMode"], input[name="gstInvoice"]')){
+    setTimeout(function(){
+      try{ computeTotals(); }catch(err){ console.error('GPZ recalculation:', err); }
+    },0);
+  }
+});
+</script>
+</body>
 </html>
