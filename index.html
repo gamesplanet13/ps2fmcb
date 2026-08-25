@@ -2228,7 +2228,32 @@ document.addEventListener('DOMContentLoaded', function(){
 <div id="gpzCartToast" class="gpz-cart-toast">Added to cart</div>
 <script id="gpz-persistent-cart">
 const GPZ_CART_KEY="gpz_ps2_cart_v1";
-function gpzCartRead(){try{const v=JSON.parse(localStorage.getItem(GPZ_CART_KEY)||"[]");return Array.isArray(v)?v:[]}catch(e){return []}}
+function gpzCartIsPlaceholderProduct(v){return /^(?:PS2|Games Planet|Selected)\s+Product$/i.test(String(v||"").trim())}
+function gpzCartRecoverProduct(product,variant){
+  const p=String(product||"").trim(),v=String(variant||"").trim();
+  if(!gpzCartIsPlaceholderProduct(p)) return p;
+  if(/FMCB|FunTuna/i.test(v)&&/(?:\bUSB\b|\d+\s*(?:GB|TB))/i.test(v)) return "FMCB + USB Combo for PS2";
+  if(/FMCB|FunTuna/i.test(v)) return "Memory Card";
+  if(/(?:\bUSB\b|\d+\s*(?:GB|TB)|Top\s+\d*\s*Games|Optional Games)/i.test(v)) return "USB for PS2 (Game-Loaded)";
+  return "";
+}
+function gpzCartRead(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(GPZ_CART_KEY)||"[]");
+    if(!Array.isArray(raw))return [];
+    let changed=false;
+    const out=[];
+    raw.forEach(i=>{
+      if(!i||typeof i!=="object")return;
+      const recovered=gpzCartRecoverProduct(i.product,i.variant);
+      if(!recovered){changed=true;return;}
+      if(recovered!==i.product){i={...i,product:recovered};changed=true;}
+      out.push(i);
+    });
+    if(changed)localStorage.setItem(GPZ_CART_KEY,JSON.stringify(out));
+    return out;
+  }catch(e){return []}
+}
 function gpzCartSave(items){localStorage.setItem(GPZ_CART_KEY,JSON.stringify(items));gpzCartRender()}
 function gpzCartEsc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function gpzCartMoney(n){return "₹"+Math.round(Number(n)||0).toLocaleString("en-IN")}
@@ -2244,7 +2269,14 @@ function gpzCartAdd(item){
 function addPendingToCart(){
   if(!pendingBuyUrl)return;
   const u=new URL(pendingBuyUrl,location.href),p=u.searchParams;
-  const product=p.get("product")||"PS2 Product",variant=p.get("variant")||"PS2",unitPrice=Number(p.get("base")||0);
+  const variant=p.get("variant")||"PS2";
+  const product=gpzCartRecoverProduct(p.get("product")||"",variant);
+  const unitPrice=Number(p.get("base")||0);
+  if(!product){
+    closeBuyConfirmation();
+    alert("Product details sync nahi hui. Please product dubara select karein.");
+    return;
+  }
   gpzCartAdd({product,variant,unitPrice,unitWeight:gpzCartWeight(product,variant),size:gpzCartSize(product,variant),pack:p.get("pack")||""});
   closeBuyConfirmation();gpzCartOpen();
 }
@@ -2266,34 +2298,63 @@ function gpzCartReset(){if(!gpzCartRead().length)return;if(confirm("Reset cart a
 function gpzCartToast(){const el=document.getElementById("gpzCartToast");el.classList.add("show");clearTimeout(gpzCartToast.timer);gpzCartToast.timer=setTimeout(()=>el.classList.remove("show"),1600)}
 function gpzCartCheckoutSummary(items){
   const list=Array.isArray(items)?items:[];
-  const allText=list.map(i=>`${i.product||""} | ${i.variant||""} | ${i.name||""} | ${i.pack||""}`).join(" | ");
-
-  let model="";
-  if(/PS2\s*SLIM\s*(?:7XXXX|70000|70XXX|7\s*SERIES)/i.test(allText)) model="7xxxx";
-  else if(/PS2\s*SLIM\s*(?:9XXXX|90000|90XXX|9\s*SERIES)/i.test(allText)) model="9xxxx";
-  else if(/PS2\s*FAT/i.test(allText)) model="Fat";
-
-  const storageMatch=allText.match(/(64|128|256|500)\s*GB/i);
-  const storage=storageMatch?`${storageMatch[1]}GB`:"";
-  const hasUsb=list.some(i=>/USB for PS2|FMCB \+ USB Combo/i.test(`${i.product||""} ${i.name||""}`));
-  const hasFmcb=list.some(i=>/FMCB|FunTuna/i.test(`${i.product||""} ${i.variant||""} ${i.name||""}`));
-  const isFunTuna=/FunTuna/i.test(allText)&&!/\bFMCB\b/i.test(allText.replace(/FMCB \+ USB Combo for PS2/ig,""));
-
-  const parts=[];
-  if(hasFmcb) parts.push(`${isFunTuna?"FunTuna":"FMCB"}${model?" "+model:""}`);
-  if(hasUsb) parts.push(`USB${storage?" "+storage:""}`);
-
+  const parts=[],seen=new Set();
+  const add=(label,qty=1)=>{
+    label=String(label||"").trim(); if(!label)return;
+    const rendered=Number(qty)>1?`${label} x${Number(qty)}`:label;
+    const key=rendered.toLowerCase(); if(seen.has(key))return;
+    seen.add(key);parts.push(rendered);
+  };
+  const meaningful=[];
   list.forEach(i=>{
-    const product=String(i.product||"").trim();
-    const variant=String(i.variant||"").trim();
-    const core=(product==="Memory Card"&&/FMCB|FunTuna/i.test(variant)) || /USB for PS2|FMCB \+ USB Combo/i.test(product);
-    if(core||!product||/^PS2 Product$/i.test(product)) return;
-    const q=Math.max(1,Number(i.quantity)||1);
-    parts.push(product+(q>1?` x${q}`:""));
+    const product=gpzCartRecoverProduct(i?.product||"",i?.variant||"");
+    if(!product)return;
+    meaningful.push({...i,product});
   });
 
-  const packText=list.map(i=>`${i.pack||""} ${i.variant||""}`).join(" | ");
-  const variant=/OPTIONAL/i.test(packText)?"Optional Games":(/\bTOP\b/i.test(packText)?"Top Games":"");
+  const fmcbItems=meaningful.filter(i=>/FMCB|FunTuna/i.test(`${i.product||""} ${i.variant||""} ${i.name||""}`));
+  const fmcbLabels=[];
+  fmcbItems.forEach(i=>{
+    const t=`${i.product||""} ${i.variant||""} ${i.name||""}`;
+    let model="";
+    if(/(?:7XXXX|70XXX|7000\d|7000X|7\s*SERIES)/i.test(t))model="7xxxx";
+    else if(/(?:9XXXX|90XXX|9000\d|9000X|9\s*SERIES)/i.test(t))model="9xxxx";
+    else if(/PS2\s*FAT/i.test(t))model="Fat";
+    const type=/FunTuna/i.test(t)&&!/\bFMCB\b/i.test(t.replace(/FMCB \+ USB Combo for PS2/ig,""))?"FunTuna":"FMCB";
+    const label=model?`${type} ${model}`:type;
+    if(!fmcbLabels.some(x=>x.toLowerCase()===label.toLowerCase()))fmcbLabels.push(label);
+  });
+  fmcbLabels.forEach(x=>add(x));
+
+  meaningful.forEach(i=>{
+    const t=`${i.product||""} ${i.variant||""} ${i.name||""}`;
+    const isUsb=/USB for PS2|FMCB \+ USB Combo|\bUSB\b/i.test(t) && /(?:\d+\s*(?:GB|TB)|USB for PS2|FMCB \+ USB Combo)/i.test(t);
+    if(!isUsb)return;
+    const m=t.match(/(\d+)\s*(GB|TB)(?:\s*(SSD|HDD|PD\s*\d(?:\.\d)?))?/i);
+    let label="USB";
+    if(m){label+=` ${m[1]}${m[2].toUpperCase()}`; if(m[3]&&/SSD|HDD/i.test(m[3]))label+=` ${m[3].toUpperCase()}`;}
+    add(label,Math.max(1,Number(i.quantity)||1));
+  });
+
+  meaningful.forEach(i=>{
+    const product=String(i.product||"").trim();
+    const t=`${product} ${i.variant||""} ${i.name||""}`;
+    const isCore=(/^(?:Memory Card)$/i.test(product)&&/FMCB|FunTuna/i.test(t)) || /USB for PS2|FMCB \+ USB Combo/i.test(product);
+    if(isCore)return;
+    add(product,Math.max(1,Number(i.quantity)||1));
+  });
+
+  if(!parts.length){
+    meaningful.forEach(i=>{
+      let n=String(i.name||i.product||i.variant||"").trim();
+      n=n.replace(/\s+[—–]\s+(?:PS2)?$/i,"").trim();
+      if(n&&!gpzCartIsPlaceholderProduct(n)&&!/^PS2$/i.test(n))add(n,Math.max(1,Number(i.quantity)||1));
+    });
+  }
+
+  const packText=meaningful.map(i=>`${i.pack||""} ${i.variant||""} ${i.name||""}`).join(" | ");
+  const hasOptional=/OPTIONAL/i.test(packText),hasTop=/\bTOP\b/i.test(packText);
+  const variant=hasOptional&&hasTop?"Top Games + Optional Games":(hasOptional?"Optional Games":(hasTop?"Top Games":""));
   return {product:parts.join(" + "),variant};
 }
 function gpzCartCheckout(){
@@ -2301,6 +2362,7 @@ function gpzCartCheckout(){
   const items=cart.map(i=>({name:i.variant&&i.variant!=="PS2"?`${i.product} — ${i.variant}`:i.product,product:i.product,variant:i.variant||"PS2",pack:i.pack||"",quantity:Number(i.quantity)||1,unitPrice:Number(i.unitPrice)||0,lineTotal:(Number(i.unitPrice)||0)*(Number(i.quantity)||1),unitWeight:Number(i.unitWeight)||25,lineWeight:(Number(i.unitWeight)||25)*(Number(i.quantity)||1),size:i.size||gpzCartSize(i.product,i.variant)}));
   const productTotal=items.reduce((s,i)=>s+i.lineTotal,0),totalWeight=items.reduce((s,i)=>s+i.lineWeight,0),totalQuantity=items.reduce((s,i)=>s+i.quantity,0);
   const summary=gpzCartCheckoutSummary(items);
+  if(!summary.product){alert("Cart product details sync nahi hui. Please cart reset karke products dubara add karein.");return;}
   localStorage.setItem("gp_order_summary",JSON.stringify({source:"cart",items,productTotal,totalWeight,totalQuantity,paymentMode:"prepaid",product:summary.product,variant:summary.variant}));
   const q=new URLSearchParams({source:"cart",product:summary.product,variant:summary.variant,base:productTotal,quantity:totalQuantity,weight:totalWeight});
   location.href=`order-prefill.html?${q.toString()}`;
@@ -2331,7 +2393,7 @@ function gpzCatalogCard({key,product,variant,name,price,weight,size,image}){
     <img src="${image}" alt="${gpzCartEsc(name)}" loading="lazy" onclick="openImg(this.src)">
     <div class="accessory-name">${gpzCartEsc(name)}</div>
     <div class="accessory-meta"><span class="accessory-price">${gpzCartMoney(price)}</span><span>⚖️ ${weight}g</span></div>
-    <div class="gpz-product-specs"><span>Size ${size.join(" × ")} cm</span><span>PS2 Product</span></div>
+    <div class="gpz-product-specs"><span>Size ${size.join(" × ")} cm</span><span>Selected Item</span></div>
     <div class="accessory-actions">
       <div class="qty-control"><button type="button" onclick="gpzCatalogSetQty('${key}',-1)">−</button><output id="gpzCatalogQty${key}">${gpzCatalogQty[key]}</output><button type="button" onclick="gpzCatalogSetQty('${key}',1)">+</button></div>
       <button type="button" class="accessory-cart" onclick="gpzCatalogAdd(${args},false)">Add to Cart</button>
