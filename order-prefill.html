@@ -992,6 +992,97 @@ function gpzEscape(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","
 function gpzSelected(name,fallback){
   return document.querySelector(`input[name="${name}"]:checked`)?.value||fallback;
 }
+function gpzIsGenericProduct(value){
+  return /^(?:PS2|Games Planet|Selected)\s+Product$/i.test(String(value||"").trim());
+}
+function gpzStoredOrder(){
+  try{
+    const stored=JSON.parse(localStorage.getItem("gp_order_summary")||"null");
+    return stored&&typeof stored==="object"?stored:null;
+  }catch(e){return null;}
+}
+function gpzStoredItems(){
+  const stored=gpzStoredOrder();
+  const storedItems=stored&&Array.isArray(stored.items)?stored.items.filter(i=>i&&String(i.name||i.product||"").trim()):[];
+  if(storedItems.length) return storedItems;
+
+  // Direct fallback to the persistent cart used by the supplied main index page.
+  // This prevents the old generic "PS2 Product" URL placeholder from ever becoming the source of truth.
+  try{
+    const cart=JSON.parse(localStorage.getItem("gpz_ps2_cart_v1")||"[]");
+    if(Array.isArray(cart)&&cart.length){
+      return cart.filter(i=>i&&String(i.product||"").trim()).map(i=>({
+        name:i.variant&&i.variant!=="PS2"?`${i.product} — ${i.variant}`:i.product,
+        product:i.product,variant:i.variant||"PS2",pack:i.pack||"",
+        quantity:Math.max(1,Number(i.quantity)||1),
+        unitPrice:Number(i.unitPrice)||0,
+        lineTotal:(Number(i.unitPrice)||0)*Math.max(1,Number(i.quantity)||1),
+        unitWeight:Number(i.unitWeight)||25,
+        lineWeight:(Number(i.unitWeight)||25)*Math.max(1,Number(i.quantity)||1),
+        size:Array.isArray(i.size)?i.size:null
+      }));
+    }
+  }catch(e){}
+  return [];
+}
+function gpzCleanAddonName(item){
+  const product=String(item?.product||"").trim();
+  if(product && !gpzIsGenericProduct(product)) return product;
+  const raw=String(item?.name||"").trim();
+  if(!raw) return "";
+  return raw.split(/\s+[—–]\s+/)[0].trim()||raw;
+}
+function gpzSummarizeProductVariant(items,fallbackProduct="",fallbackVariant="",packHint=""){
+  const list=Array.isArray(items)?items:[];
+  const text=list.map(i=>[i?.product,i?.variant,i?.name,i?.pack].filter(Boolean).join(" | ")).join(" | ");
+  const allText=[text,packHint,fallbackVariant,(!gpzIsGenericProduct(fallbackProduct)?fallbackProduct:"")].filter(Boolean).join(" | ");
+
+  let model="";
+  if(/(?:PS2\s*SLIM\s*)?(?:7XXXX|70XXX|7000\d|7000X|7\s*SERIES)/i.test(allText)) model="7xxxx";
+  else if(/(?:PS2\s*SLIM\s*)?(?:9XXXX|90XXX|9000\d|9000X|9\s*SERIES)/i.test(allText)) model="9xxxx";
+  else if(/PS2\s*FAT/i.test(allText)) model="Fat";
+
+  let storage="";
+  const sm=allText.match(/(\d+)\s*(GB|TB)(?:\s*(SSD|HDD|PD\s*\d(?:\.\d)?))?/i);
+  if(sm){
+    storage=`${sm[1]}${sm[2].toUpperCase()}`;
+    if(sm[3]&&/SSD|HDD/i.test(sm[3])) storage+=` ${sm[3].toUpperCase()}`;
+  }
+
+  const hasFmcb=/\bFMCB\b|FUNTUNA/i.test(allText);
+  const hasUsb=/\bUSB\b/i.test(allText);
+  const parts=[],seen=new Set();
+  const add=(label,qty=1)=>{
+    const clean=String(label||"").trim(); if(!clean)return;
+    const rendered=Number(qty)>1?`${clean} x${Number(qty)}`:clean;
+    const key=rendered.toLowerCase(); if(seen.has(key))return;
+    seen.add(key);parts.push(rendered);
+  };
+
+  if(hasFmcb){
+    const fmcbLabel=/FUNTUNA/i.test(allText)&&!/\bFMCB\b/i.test(allText)?"FunTuna":"FMCB";
+    add(model?`${fmcbLabel} ${model}`:fmcbLabel);
+  }
+  if(hasUsb) add(storage?`USB ${storage}`:"USB");
+
+  list.forEach(i=>{
+    const raw=[i?.product,i?.variant,i?.name].filter(Boolean).join(" | ");
+    if(/\bFMCB\b|FUNTUNA|\bUSB\b|\bCOMBO\b/i.test(raw)) return;
+    const name=gpzCleanAddonName(i);
+    if(!name||gpzIsGenericProduct(name)||/^PS2$/i.test(name))return;
+    add(name,Math.max(1,Number(i?.quantity)||1));
+  });
+
+  if(!parts.length && fallbackProduct && !gpzIsGenericProduct(fallbackProduct)) add(fallbackProduct);
+
+  let variant="";
+  const packText=[packHint,fallbackVariant,...list.map(i=>`${i?.pack||""} ${i?.variant||""} ${i?.name||""}`)].join(" | ");
+  if(/OPTIONAL/i.test(packText)) variant="Optional Games";
+  else if(/\bTOP\b/i.test(packText)) variant="Top Games";
+  else if(fallbackVariant && !/^PS2$/i.test(fallbackVariant) && !/7xxxx|9xxxx|fat|\d+\s*(?:GB|TB)/i.test(fallbackVariant)) variant=fallbackVariant;
+
+  return {product:parts.join(" + "),variant};
+}
 function gpzInferWeight(product,variant){
   const text=`${product} ${variant}`.toUpperCase();
   let weight=25;
@@ -1005,22 +1096,38 @@ function gpzInferWeight(product,variant){
   return weight;
 }
 function gpzBaseItems(){
-  const product=GPZ_PARAMS.get("product")||document.getElementById("product").value||"PS2 Product";
-  const variant=GPZ_PARAMS.get("variant")||document.getElementById("variant").value||"";
+  const explicitProduct=(GPZ_PARAMS.get("product")||"").trim();
+  const fieldProduct=(document.getElementById("product").value||"").trim();
+  const product=(!gpzIsGenericProduct(explicitProduct)?explicitProduct:"")||(!gpzIsGenericProduct(fieldProduct)?fieldProduct:"");
+  const variant=(GPZ_PARAMS.get("variant")||document.getElementById("variant").value||"").trim();
   const base=Number(GPZ_PARAMS.get("base")||document.getElementById("basePrice").value||0);
   const quantity=Math.max(1,Number(GPZ_PARAMS.get("quantity")||1));
   const suppliedWeight=Number(GPZ_PARAMS.get("weight")||0);
-  let stored=null;
-  try{stored=JSON.parse(localStorage.getItem("gp_order_summary")||"null");}catch(e){}
-  const storedMatches=stored&&Array.isArray(stored.items)&&stored.items.length&&
-    (GPZ_PARAMS.get("source")==="cart"||!GPZ_PARAMS.get("product")||stored.items.some(i=>String(i.name).toLowerCase()===product.toLowerCase()));
-  if(storedMatches) return stored.items.map(i=>({
-    name:i.name,quantity:Number(i.quantity)||1,unitPrice:Number(i.unitPrice)||0,
-    lineTotal:Number(i.lineTotal)||0,unitWeight:Number(i.unitWeight)||0,lineWeight:Number(i.lineWeight)||0
+
+  const storedItems=gpzStoredItems();
+  const sourceIsCart=GPZ_PARAMS.get("source")==="cart" || gpzStoredOrder()?.source==="cart";
+  const explicitIsGeneric=gpzIsGenericProduct(explicitProduct);
+  const storedMatches=storedItems.length&&(
+    sourceIsCart || !explicitProduct || explicitIsGeneric ||
+    storedItems.some(i=>`${i.product||""} ${i.name||""}`.toLowerCase().includes(explicitProduct.toLowerCase()))
+  );
+  if(storedMatches) return storedItems.map(i=>({
+    name:String(i.name||i.product||"").trim(),
+    product:String(i.product||"").trim(),
+    variant:String(i.variant||"").trim(),
+    pack:String(i.pack||"").trim(),
+    quantity:Number(i.quantity)||1,
+    unitPrice:Number(i.unitPrice)||0,
+    lineTotal:Number(i.lineTotal)||((Number(i.unitPrice)||0)*(Number(i.quantity)||1)),
+    unitWeight:Number(i.unitWeight)||gpzInferWeight(i.product||i.name||"",i.variant||""),
+    lineWeight:Number(i.lineWeight)||((Number(i.unitWeight)||gpzInferWeight(i.product||i.name||"",i.variant||""))*(Number(i.quantity)||1)),
+    size:Array.isArray(i.size)?i.size:null
   }));
+
+  if(!product) return [];
   const unitPrice=quantity?base/quantity:base;
   const unitWeight=suppliedWeight?suppliedWeight/quantity:gpzInferWeight(product,variant);
-  return [{name:variant?`${product} — ${variant}`:product,quantity,unitPrice,lineTotal:base,unitWeight,lineWeight:unitWeight*quantity}];
+  return [{name:variant?`${product} — ${variant}`:product,product,variant,quantity,unitPrice,lineTotal:base,unitWeight,lineWeight:unitWeight*quantity}];
 }
 function gpzAllItems(){
   const items=gpzBaseItems();
@@ -1171,7 +1278,15 @@ function computeTotals(){
     discountApplied:appliedDiscount,discountCode:appliedDiscount?(document.getElementById("couponCode").value||"").trim():"",
     discountedProducts,vasApplies,vasCharge,baseOrderPrice:productTotal+courierCharge,grandTotal,
     advanceAmount,restAmount,hasBatteryItem:items.some(i=>/BATTER/i.test(i.name))};
+  // Keep the visible Product/Variant fields synced with the real order, including add-ons.
+  const syncedPV=gpzSummarizeProductVariant(items,document.getElementById("product").value,document.getElementById("variant").value,GPZ_PARAMS.get("pack")||"");
+  if(syncedPV.product) document.getElementById("product").value=syncedPV.product;
+  if(syncedPV.variant) document.getElementById("variant").value=syncedPV.variant;
   localStorage.setItem("gp_order_summary",JSON.stringify(gpzCurrentOrder));
+  const livePv=gpzSummarizeProductVariant(items,GPZ_PARAMS.get("product")||"",GPZ_PARAMS.get("variant")||"",GPZ_PARAMS.get("pack")||"");
+  if(livePv.product) document.getElementById("product").value=livePv.product;
+  document.getElementById("variant").value=livePv.variant||"";
+  if(livePv.variant) setPackBadge(livePv.variant);
   document.getElementById("basePrice").value=Number(GPZ_PARAMS.get("base")||document.getElementById("basePrice").value||0);
   document.getElementById("addonsTotal").value=sumAddons();
   document.getElementById("subtotal").value=productTotal;
@@ -1208,72 +1323,12 @@ function gpzOrderVariant(){
   return "PS2";
 }
 function gpzMessageProductVariant(){
-  const items=(gpzCurrentOrder&&Array.isArray(gpzCurrentOrder.items))?gpzCurrentOrder.items:[];
+  const items=(gpzCurrentOrder&&Array.isArray(gpzCurrentOrder.items))?gpzCurrentOrder.items:gpzAllItems();
   const domProduct=(GPZ_PARAMS.get("product")||document.getElementById("product").value||"").trim();
   const domVariant=(GPZ_PARAMS.get("variant")||document.getElementById("variant").value||"").trim();
   const packRaw=(GPZ_PARAMS.get("pack")||"").trim();
-  const allText=[domProduct,domVariant,packRaw,...items.map(i=>i.name)].join(" | ");
-
-  const qtyLabel=(label,qty)=>Number(qty)>1?`${label} x${Number(qty)}`:label;
-  const productParts=[];
-  const seen=new Set();
-  const addPart=(label,qty=1)=>{
-    const clean=String(label||"").trim();
-    if(!clean)return;
-    const rendered=qtyLabel(clean,qty);
-    const key=rendered.toLowerCase();
-    if(!seen.has(key)){seen.add(key);productParts.push(rendered);}
-  };
-
-  // Model belongs in Product, not Variant.
-  let model="";
-  if(/(?:PS2\s*SLIM\s*)?(?:7XXXX|70XXX|7000\d|7000X|7\s*SERIES)/i.test(allText)) model="7xxxx";
-  else if(/(?:PS2\s*SLIM\s*)?(?:9XXXX|90XXX|9000\d|9000X|9\s*SERIES)/i.test(allText)) model="9xxxx";
-  else if(/PS2\s*FAT/i.test(allText)) model="Fat";
-
-  // Storage belongs in Product, e.g. USB 64GB / USB 256GB SSD.
-  let storage="";
-  const storageMatch=allText.match(/(\d+)\s*(GB|TB)(?:\s*(SSD|HDD))?/i);
-  if(storageMatch){
-    storage=`${storageMatch[1]}${storageMatch[2].toUpperCase()}${storageMatch[3]?` ${storageMatch[3].toUpperCase()}`:""}`;
-  }
-
-  const hasFmcb=/FMCB|FUNTUNA/i.test(allText);
-  const hasUsb=/\bUSB\b/i.test(allText);
-  if(hasFmcb){
-    const fmcbName=/FUNTUNA/i.test(allText)&&!(/FMCB/i.test(allText))?"FunTuna":"FMCB";
-    addPart(model?`${fmcbName} ${model}`:fmcbName,1);
-  }
-  if(hasUsb){
-    addPart(storage?`USB ${storage}`:"USB",1);
-  }
-
-  const addonNames=Object.keys(GPZ_ADDON_WEIGHTS||{}).filter(n=>n!=="TRACKON.IN PRIME COURIER SERVICE");
-  items.forEach(i=>{
-    const raw=String(i.name||"").trim();
-    if(!raw)return;
-    const upper=raw.toUpperCase();
-    const q=Math.max(1,Number(i.quantity)||1);
-    const addon=addonNames.find(a=>upper===a.toUpperCase()||upper.startsWith(a.toUpperCase()+" —")||upper.startsWith(a.toUpperCase()+" -"));
-    if(addon){addPart(addon,q);return;}
-    if(/FMCB|FUNTUNA|\bUSB\b|\bCOMBO\b/i.test(raw))return;
-    // Preserve any other selected cart product/accessory by name.
-    const clean=raw.split(/\s+[—–]\s+/)[0].trim()||raw;
-    addPart(clean,q);
-  });
-
-  if(!productParts.length&&domProduct)addPart(domProduct,Math.max(1,Number(GPZ_PARAMS.get("quantity")||1)));
-
-  // Variant must contain only the selected games pack.
-  let variant="";
-  const packSource=[packRaw,domVariant,domProduct,...items.map(i=>i.name)].join(" | ");
-  if(/OPTIONAL/i.test(packSource)) variant="Optional Games";
-  else if(/\bTOP\b/i.test(packSource)) variant="Top Games";
-
-  return {
-    product:productParts.join(" + ")||domProduct||"PS2 Product",
-    variant
-  };
+  const pv=gpzSummarizeProductVariant(items,domProduct,domVariant,packRaw);
+  return {product:pv.product||(!gpzIsGenericProduct(domProduct)?domProduct:""),variant:pv.variant};
 }
 function gpzWaMoney(n){return "₹"+Math.ceil(Number(n)||0);}
 function buildWhatsAppTemplate(){
@@ -1367,13 +1422,31 @@ function submitOrder(){
   window.open(`https://wa.me/917983624797?text=${encodeURIComponent(buildWhatsAppTemplate())}`,"_blank","noopener,noreferrer");
 }
 function gpzInitialize(){
-  const product=GPZ_PARAMS.get("product")||"PS2 Product";
-  const variant=GPZ_PARAMS.get("variant")||"";
-  const base=Number(GPZ_PARAMS.get("base")||0);
-  document.getElementById("product").value=product;
-  document.getElementById("variant").value=variant;
-  document.getElementById("basePrice").value=base;
-  setPackBadge(GPZ_PARAMS.get("pack")||"");
+  const stored=gpzStoredOrder();
+  const cartItems=gpzStoredItems();
+  const explicitProduct=(GPZ_PARAMS.get("product")||"").trim();
+  const explicitVariant=(GPZ_PARAMS.get("variant")||"").trim();
+  const sourceIsCart=GPZ_PARAMS.get("source")==="cart" || stored?.source==="cart";
+  const shouldUseCart=cartItems.length && (sourceIsCart || !explicitProduct || gpzIsGenericProduct(explicitProduct));
+
+  let product=gpzIsGenericProduct(explicitProduct)?String(stored?.product||"").trim():explicitProduct;
+  let variant=/^PS2$/i.test(explicitVariant)?String(stored?.variant||"").trim():explicitVariant;
+  let base=Number(GPZ_PARAMS.get("base")||stored?.productTotal||0);
+  let pack=(GPZ_PARAMS.get("pack")||"").trim();
+
+  if(shouldUseCart){
+    const pv=gpzSummarizeProductVariant(cartItems,explicitProduct,explicitVariant,pack);
+    product=pv.product;
+    variant=pv.variant;
+    base=cartItems.reduce((sum,i)=>sum+(Number(i.lineTotal)||((Number(i.unitPrice)||0)*(Number(i.quantity)||1))),0);
+    if(!pack) pack=variant;
+  }
+
+  // Never show the old generic placeholder when real cart data exists.
+  document.getElementById("product").value=product||"";
+  document.getElementById("variant").value=variant||"";
+  document.getElementById("basePrice").value=base||0;
+  setPackBadge(pack||"");
   document.getElementById("orderId").value=orderIdNow();
   mode="prepaid";
   document.querySelector('input[name="paymentMode"][value="prepaid"]').checked=true;
