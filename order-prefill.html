@@ -710,116 +710,377 @@ function submitOrder(){
   updatePrimeCourierAvailability();
 })();
 
-/* ====== ETA / PINCODE ====== */
+/* ====== ETA / PINCODE — OFFLINE FIRST ====== */
 let pincodeLatLng={};
 let pincodeDB={};
+let pincodeLookupToken=0;
+let pincodeTimer=0;
 
-fetch('pincode_merged_final.json')
-.then(r=>r.json())
-.then(data=>{
-  pincodeLatLng=data;
-  pincodeDB=data;
-});
+const PINCODE_DB_FILES=['pincode_merged_final.json','pincode_data.json'];
+const INDIA_POST_API='https://api.postalpincode.in/pincode/';
+const ORIGIN_PINCODE='244901'; // Games Planet, Rampur
 
-/* Haversine distance (km) */
-function haversine(lat1,lon1,lat2,lon2){
-  const R=6371;
-  const dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
-  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-  return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
-/* ETA buckets by distance (Prepaid) */
-function etaByDist(d){
-  if(d<=30)return"1 day";
-  if(d<=60)return"1-2 days";
-  if(d<=100)return"2-3 days";
-  if(d<=200)return"3-4 days";
-  if(d<=500)return"4-5 days";
-  if(d<=1000)return"4-6 days";
-  if(d<=1500)return"5–7 days";
-  if(d<=2000)return"6–8 days";
-  if(d<=3000)return"6–10 days";
-  return"8–12 days";
-}
-/* Parse ETA → min/max days */
-function parseEta(eta){
-  const n=(eta.match(/\d+/g)||[]).map(Number);
-  if(!n.length) return {min:0,max:0};
-  if(n.length===1) return {min:n[0],max:n[0]};
-  return {min:Math.min(...n), max:Math.max(...n)};
-}
-/* After 7 PM (Mon–Fri) → start from next day */
-function dayStartOffset(){
-  const now=new Date();
-  const dow=now.getDay(); // 0=Sun
-  const after7 = now.getHours()>=19;
-  const weekday = dow>=1 && dow<=5;
-  return (weekday && after7) ? 1 : 0;
-}
-/* Full formatted date range with weekday, month, year */
-function formatDateRange(minDays,maxDays){
-  const offs=dayStartOffset();
-  const s=new Date(), e=new Date();
-  s.setDate(s.getDate()+minDays+offs);
-  e.setDate(e.getDate()+maxDays+offs);
-  const opts={weekday:"long", day:"2-digit", month:"long", year:"numeric"};
-  return `${s.toLocaleDateString("en-IN",opts)} – ${e.toLocaleDateString("en-IN",opts)}`;
+function setPincodeStatus(message,type='info'){
+  const el=document.getElementById('pincodeStatus');
+  if(!el)return;
+  el.textContent=message;
+  el.className='status'+(type==='ok'?' ok':type==='error'?' error':'');
 }
 
-document.getElementById("pincode").addEventListener("input",function(){
-  const pin=this.value.trim();
-  if(pin.length===6){
-    const rec=pincodeDB[pin];
+function normalizeText(value){
+  return String(value||'').trim();
+}
 
-    if(rec){
-      document.getElementById("state").value=rec.state||"";
-      document.getElementById("city").value=rec.city||"";
+function uniqueText(values){
+  const out=[];
+  const seen=new Set();
+  (values||[]).forEach(value=>{
+    const text=normalizeText(value);
+    const key=text.toUpperCase();
+    if(text&&!seen.has(key)){
+      seen.add(key);
+      out.push(text);
+    }
+  });
+  return out.sort((a,b)=>a.localeCompare(b,'en-IN'));
+}
 
-      const sel=document.getElementById("postoffice");
-      sel.innerHTML='<option value="">Select Post Office</option>';
+function validIndiaCoordinate(lat,lng){
+  return Number.isFinite(lat)&&Number.isFinite(lng)&&lat>=6&&lat<=38&&lng>=68&&lng<=98;
+}
 
-      (rec.postoffices||[]).forEach(po=>{
-        const o=document.createElement("option");
-        o.value=po;
-        o.text=po;
-        sel.appendChild(o);
-      });
+/* If a pincode record has bad/missing coordinates, use median coordinates
+   of another record from the same city/state. */
+function cityCoordinateFallback(city,state){
+  const wantedCity=normalizeText(city).toUpperCase();
+  const wantedState=normalizeText(state).toUpperCase();
+  if(!wantedCity)return null;
 
-      if(rec.lat && rec.lng){
-        const baseLat=28.8,baseLng=79.0;
-        const d=Math.round(haversine(baseLat,baseLng,rec.lat,rec.lng));
-        const eta=etaByDist(d);
-        const pre=parseEta(eta);
-        const preRangeFull=formatDateRange(pre.min,pre.max);
+  const points=Object.values(pincodeDB||{}).filter(record=>{
+    const lat=Number(record?.lat);
+    const lng=Number(record?.lng);
+    return normalizeText(record?.city).toUpperCase()===wantedCity&&
+      (!wantedState||normalizeText(record?.state).toUpperCase()===wantedState)&&
+      validIndiaCoordinate(lat,lng);
+  }).map(record=>({lat:Number(record.lat),lng:Number(record.lng)}));
 
-        const cod={min:pre.min+2,max:pre.max+3};
-        const codEtaText=(cod.min===cod.max)?`${cod.min} days`:`${cod.min}–${cod.max} days`;
-        const codRangeFull=formatDateRange(cod.min,cod.max);
+  if(!points.length)return null;
 
-        document.getElementById("distance").value=`${d} km`;
-        document.getElementById("etaText").value=eta;
-        document.getElementById("dateRange").value=preRangeFull;
+  points.sort((a,b)=>a.lat-b.lat);
+  const lat=points[Math.floor(points.length/2)].lat;
+  points.sort((a,b)=>a.lng-b.lng);
+  const lng=points[Math.floor(points.length/2)].lng;
+  return {lat,lng};
+}
 
-        if(!document.getElementById("etaTextCod")){
-          const h1=document.createElement("input"); h1.type="hidden"; h1.id="etaTextCod";
-          const h2=document.createElement("input"); h2.type="hidden"; h2.id="dateRangeCOD";
-          document.body.appendChild(h1); document.body.appendChild(h2);
-        }
+function normalizeLocalRecord(record){
+  if(!record)return null;
 
-        document.getElementById("etaTextCod").value=codEtaText;
-        document.getElementById("dateRangeCOD").value=codRangeFull;
+  let lat=Number(record.lat);
+  let lng=Number(record.lng);
 
-        document.getElementById("deliveryEstimate").innerText=`📍 Distance: ${d} km`;
-        document.getElementById("preEta").textContent=eta;
-        document.getElementById("preRange").textContent=preRangeFull;
-        document.getElementById("codEta").textContent=codEtaText;
-        document.getElementById("codRange").textContent=codRangeFull;
-        document.getElementById("miniPreview").style.display="block";
-        updatePrimeCourierAvailability();
-      }
+  if(!validIndiaCoordinate(lat,lng)){
+    const fallback=cityCoordinateFallback(record.city,record.state);
+    lat=fallback?.lat;
+    lng=fallback?.lng;
+  }
+
+  return {
+    lat,
+    lng,
+    city:normalizeText(record.city),
+    state:normalizeText(record.state),
+    postoffices:uniqueText(record.postoffices||[]),
+    source:'offline'
+  };
+}
+
+/* India Post is only a fallback/verification layer.
+   Offline result is shown immediately when local JSON has the pincode. */
+function normalizeApiRecord(payload){
+  const block=Array.isArray(payload)?payload[0]:null;
+  const offices=block&&Array.isArray(block.PostOffice)?block.PostOffice:[];
+  if(!offices.length)return null;
+
+  return {
+    city:normalizeText(offices[0].District||offices[0].Division||offices[0].Region),
+    state:normalizeText(offices[0].State),
+    postoffices:uniqueText(offices.map(office=>office.Name)),
+    source:'India Post API'
+  };
+}
+
+function mergePincodeRecords(local,online){
+  if(!local&&!online)return null;
+  return {
+    lat:local?.lat,
+    lng:local?.lng,
+    city:online?.city||local?.city||'',
+    state:online?.state||local?.state||'',
+    postoffices:uniqueText([...(local?.postoffices||[]),...(online?.postoffices||[])]),
+    source:local&&online?'offline + India Post':online?'India Post API':'offline'
+  };
+}
+
+async function loadLocalPincodeDB(){
+  for(const file of PINCODE_DB_FILES){
+    try{
+      const response=await fetch(file,{cache:'force-cache'});
+      if(!response.ok)throw new Error(`HTTP ${response.status}`);
+
+      const data=await response.json();
+      if(!data||!Object.keys(data).length)throw new Error('Empty database');
+
+      pincodeLatLng=data;
+      pincodeDB=data;
+
+      setPincodeStatus(
+        `✓ Offline pincode database ready (${Object.keys(data).length.toLocaleString('en-IN')} pincodes)`,
+        'ok'
+      );
+
+      const currentPin=(document.getElementById('pincode')?.value||'').trim();
+      if(/^\d{6}$/.test(currentPin))lookupPincode(currentPin);
+      return;
+    }catch(error){
+      console.warn(`Could not load ${file}`,error);
     }
   }
+
+  setPincodeStatus(
+    'Offline pincode database could not load. Keep pincode_merged_final.json or pincode_data.json beside this HTML.',
+    'error'
+  );
+}
+
+async function getIndiaPostRecord(pin){
+  const cacheKey=`gpz-post-${pin}`;
+
+  try{
+    const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');
+    if(cached&&Date.now()-cached.savedAt<7*86400000)return cached.record;
+  }catch(_error){}
+
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),4500);
+
+  try{
+    const response=await fetch(`${INDIA_POST_API}${pin}`,{
+      signal:controller.signal,
+      cache:'no-store'
+    });
+
+    if(!response.ok)throw new Error(`HTTP ${response.status}`);
+
+    const record=normalizeApiRecord(await response.json());
+    if(record){
+      try{
+        localStorage.setItem(cacheKey,JSON.stringify({savedAt:Date.now(),record}));
+      }catch(_error){}
+    }
+    return record;
+  }catch(error){
+    console.info('India Post unavailable; offline data retained.',error);
+    return null;
+  }finally{
+    clearTimeout(timeout);
+  }
+}
+
+function haversine(lat1,lon1,lat2,lon2){
+  const R=6371;
+  const dLat=(lat2-lat1)*Math.PI/180;
+  const dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+
+    Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function etaByDist(d){
+  if(d<=30)return '1 day';
+  if(d<=60)return '1-2 days';
+  if(d<=100)return '2-3 days';
+  if(d<=200)return '3-4 days';
+  if(d<=500)return '4-5 days';
+  if(d<=1000)return '4-6 days';
+  if(d<=1500)return '5–7 days';
+  if(d<=2000)return '6–8 days';
+  if(d<=3000)return '6–10 days';
+  return '8–12 days';
+}
+
+function parseEta(eta){
+  const n=(eta.match(/\d+/g)||[]).map(Number);
+  if(!n.length)return {min:0,max:0};
+  if(n.length===1)return {min:n[0],max:n[0]};
+  return {min:Math.min(...n),max:Math.max(...n)};
+}
+
+function dayStartOffset(){
+  const now=new Date();
+  const dow=now.getDay();
+  const after7=now.getHours()>=19;
+  const weekday=dow>=1&&dow<=5;
+  return weekday&&after7?1:0;
+}
+
+function formatDateRange(minDays,maxDays){
+  const offs=dayStartOffset();
+  const s=new Date();
+  const e=new Date();
+
+  s.setDate(s.getDate()+minDays+offs);
+  e.setDate(e.getDate()+maxDays+offs);
+
+  const opts={weekday:'long',day:'2-digit',month:'long',year:'numeric'};
+  return `${s.toLocaleDateString('en-IN',opts)} – ${e.toLocaleDateString('en-IN',opts)}`;
+}
+
+function ensurePincodeMetaFields(){
+  if(!document.getElementById('etaTextCod')){
+    const el=document.createElement('input'); el.type='hidden'; el.id='etaTextCod'; document.body.appendChild(el);
+  }
+  if(!document.getElementById('dateRangeCOD')){
+    const el=document.createElement('input'); el.type='hidden'; el.id='dateRangeCOD'; document.body.appendChild(el);
+  }
+}
+
+function clearPincodeResult(){
+  ensurePincodeMetaFields();
+  document.getElementById('state').value='';
+  document.getElementById('city').value='';
+  document.getElementById('postoffice').innerHTML='<option value="">Select Post Office</option>';
+  document.getElementById('distance').value='';
+  document.getElementById('etaText').value='';
+  document.getElementById('dateRange').value='';
+  document.getElementById('etaTextCod').value='';
+  document.getElementById('dateRangeCOD').value='';
+  document.getElementById('deliveryEstimate').textContent='';
+  document.getElementById('preEta').textContent='—';
+  document.getElementById('preRange').textContent='—';
+  document.getElementById('codEta').textContent='—';
+  document.getElementById('codRange').textContent='—';
+  document.getElementById('miniPreview').style.display='none';
+  if(typeof updatePrimeCourierAvailability==='function') updatePrimeCourierAvailability();
+  if(typeof syncCourierOptions==='function') syncCourierOptions();
+}
+
+function renderPincodeRecord(pin,rec,verification='offline'){
+  if(!rec)return false;
+  ensurePincodeMetaFields();
+
+  document.getElementById('state').value=rec.state||'';
+  document.getElementById('city').value=rec.city||'';
+
+  const sel=document.getElementById('postoffice');
+  const previous=sel.value;
+  sel.innerHTML='<option value="">Select Post Office</option>';
+
+  (rec.postoffices||[]).forEach(po=>{
+    const option=document.createElement('option');
+    option.value=po;
+    option.textContent=po;
+    sel.appendChild(option);
+  });
+
+  if([...sel.options].some(option=>option.value===previous)){
+    sel.value=previous;
+  }
+
+  if(validIndiaCoordinate(rec.lat,rec.lng)){
+    const origin=normalizeLocalRecord(pincodeDB[ORIGIN_PINCODE]);
+    const baseLat=Number.isFinite(origin?.lat)?origin.lat:28.8154;
+    const baseLng=Number.isFinite(origin?.lng)?origin.lng:79.0250;
+
+    const d=Math.round(haversine(baseLat,baseLng,rec.lat,rec.lng));
+    const eta=etaByDist(d);
+    const prepaid=parseEta(eta);
+    const prepaidRange=formatDateRange(prepaid.min,prepaid.max);
+
+    const cod={min:prepaid.min+2,max:prepaid.max+3};
+    const codEta=cod.min===cod.max?`${cod.min} days`:`${cod.min}–${cod.max} days`;
+    const codRange=formatDateRange(cod.min,cod.max);
+
+    document.getElementById('distance').value=`${d} km`;
+    document.getElementById('etaText').value=eta;
+    document.getElementById('dateRange').value=prepaidRange;
+    document.getElementById('etaTextCod').value=codEta;
+    document.getElementById('dateRangeCOD').value=codRange;
+
+    document.getElementById('deliveryEstimate').textContent=`📍 Distance: ${d} km`;
+    document.getElementById('preEta').textContent=eta;
+    document.getElementById('preRange').textContent=prepaidRange;
+    document.getElementById('codEta').textContent=codEta;
+    document.getElementById('codRange').textContent=codRange;
+    document.getElementById('miniPreview').style.display='block';
+  }
+
+  const officeCount=(rec.postoffices||[]).length;
+  const label=verification==='verified'?'Offline + India Post matched':
+    verification==='online'?'India Post data':'Offline data';
+
+  setPincodeStatus(
+    `✓ ${pin}: ${label} • ${officeCount} post office${officeCount===1?'':'s'}`,
+    'ok'
+  );
+
+  if(typeof updatePrimeCourierAvailability==='function') updatePrimeCourierAvailability();
+  if(typeof syncCourierOptions==='function') syncCourierOptions();
+  return true;
+}
+
+async function lookupPincode(pin){
+  const token=++pincodeLookupToken;
+  const local=normalizeLocalRecord(pincodeDB[pin]);
+
+  if(local){
+    renderPincodeRecord(pin,local,'offline');
+    setPincodeStatus(`✓ ${pin}: Offline result shown • checking India Post…`,'ok');
+  }else{
+    clearPincodeResult();
+    setPincodeStatus(`Checking ${pin} with India Post…`);
+  }
+
+  const online=await getIndiaPostRecord(pin);
+  if(token!==pincodeLookupToken)return;
+
+  const merged=mergePincodeRecords(local,online);
+
+  if(merged){
+    renderPincodeRecord(
+      pin,
+      merged,
+      local&&online?'verified':local?'offline':'online'
+    );
+
+    if(local&&!online){
+      setPincodeStatus(`✓ ${pin}: Offline data active (India Post server unavailable)`,'ok');
+    }else if(!local&&online){
+      setPincodeStatus(`✓ ${pin}: India Post result active; offline coordinates unavailable`,'ok');
+    }
+  }else{
+    clearPincodeResult();
+    setPincodeStatus(`Pincode ${pin} was not found in offline data or India Post.`,'error');
+  }
+}
+
+document.getElementById('pincode').addEventListener('input',function(){
+  this.value=this.value.replace(/\D/g,'').slice(0,6);
+  clearTimeout(pincodeTimer);
+
+  const pin=this.value.trim();
+
+  if(pin.length!==6){
+    ++pincodeLookupToken;
+    clearPincodeResult();
+    setPincodeStatus('Enter a valid 6-digit pincode.');
+    return;
+  }
+
+  pincodeTimer=setTimeout(()=>lookupPincode(pin),180);
 });
+
+loadLocalPincodeDB();
 
 /* Live updates that might affect totals/eligibility */
 ["name","mobile","altMobile","email","address","landmark","pincode","state","city","product","variant","basePrice","house"]
