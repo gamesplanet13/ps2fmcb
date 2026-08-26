@@ -105,6 +105,7 @@
       </div>
     </div>
 
+    <div id="pincodeStatus" class="hint" role="status" aria-live="polite">Local/online pincode lookup ready.</div>
     <div id="deliveryEstimate" class="hint"></div>
 
     <!-- Mini Preview under pincode -->
@@ -115,16 +116,19 @@
 
     <div class="grid3" style="margin-top:8px">
       <div>
-        <div class="label">State</div>
-        <input id="state" placeholder="State" readonly>
+        <div class="label">State <span style="font-weight:400;color:var(--muted)">(Auto / Manual)</span></div>
+        <input id="state" placeholder="State" autocomplete="address-level1" list="stateSuggestions">
+        <datalist id="stateSuggestions"></datalist>
       </div>
       <div>
-        <div class="label">District/City</div>
-        <input id="city" placeholder="District/City" readonly>
+        <div class="label">District/City <span style="font-weight:400;color:var(--muted)">(Auto / Manual)</span></div>
+        <input id="city" placeholder="District/City" autocomplete="address-level2" list="citySuggestions">
+        <datalist id="citySuggestions"></datalist>
       </div>
       <div>
-        <div class="label">Post Office</div>
-        <select id="postoffice"><option value="">Select Post Office</option></select>
+        <div class="label">Post Office <span style="font-weight:400;color:var(--muted)">(Auto / Manual)</span></div>
+        <select id="postoffice"><option value="">Select Post Office</option><option value="__manual__">Other / Enter manually</option></select>
+        <input id="postofficeManual" placeholder="Type Post Office" style="display:none;margin-top:7px">
       </div>
     </div>
   </div>
@@ -389,7 +393,7 @@ function isRuralDeliveryAddress(){
     document.getElementById("address")?.value,
     document.getElementById("landmark")?.value,
     document.getElementById("city")?.value,
-    document.getElementById("postoffice")?.value
+    getPostOfficeValue()
   ].filter(Boolean).join(" ").toLowerCase();
 
   // Common rural-address words used in Indian addresses.
@@ -642,7 +646,7 @@ function buildWhatsAppTemplate(forMode){
     `Pincode: ${document.getElementById("pincode").value || ""}`,
     `State: ${document.getElementById("state").value || ""}`,
     `District/City: ${document.getElementById("city").value || ""}`,
-    `Post office: ${document.getElementById("postoffice").value || ""}`,
+    `Post office: ${getPostOfficeValue() || ""}`,
     `Product: ${productWithAddons()}`,
     `Variant: ${document.getElementById("variant").value || ""}`,
     `Base Price: ${rs(basePrice)}`
@@ -715,6 +719,11 @@ let pincodeLatLng={};
 let pincodeDB={};
 let pincodeLookupToken=0;
 let pincodeTimer=0;
+let pincodeAutoWriting=false;
+let pincodeManualState=false;
+let pincodeManualCity=false;
+let pincodeManualPostOffice=false;
+let pincodeLastAuto={state:'',city:'',postoffice:''};
 
 const PINCODE_DB_FILES=['pincode_merged_final.json','pincode_data.json'];
 const INDIA_POST_API='https://api.postalpincode.in/pincode/';
@@ -743,6 +752,51 @@ function uniqueText(values){
     }
   });
   return out.sort((a,b)=>a.localeCompare(b,'en-IN'));
+}
+
+function fillDatalist(id,values){
+  const list=document.getElementById(id);
+  if(!list)return;
+  list.innerHTML=uniqueText(values).map(v=>`<option value="${String(v).replace(/"/g,'&quot;')}"></option>`).join('');
+}
+
+function getPostOfficeValue(){
+  const sel=document.getElementById('postoffice');
+  const manual=document.getElementById('postofficeManual');
+  if(!sel)return '';
+  return sel.value==='__manual__' ? normalizeText(manual?.value) : normalizeText(sel.value);
+}
+
+function setPostOfficeOptions(postoffices,preferred=''){
+  const sel=document.getElementById('postoffice');
+  if(!sel)return;
+  const manual=document.getElementById('postofficeManual');
+  const current=getPostOfficeValue();
+  const offices=uniqueText(postoffices||[]);
+  sel.innerHTML='<option value="">Select Post Office</option>'+
+    offices.map(po=>`<option value="${String(po).replace(/"/g,'&quot;')}">${po}</option>`).join('')+
+    '<option value="__manual__">Other / Enter manually</option>';
+
+  if(pincodeManualPostOffice && current){
+    const exact=[...sel.options].find(o=>o.value===current);
+    if(exact){ sel.value=current; if(manual)manual.style.display='none'; }
+    else { sel.value='__manual__'; if(manual){manual.style.display='block';manual.value=current;} }
+    return;
+  }
+
+  const wanted=preferred||pincodeLastAuto.postoffice;
+  if(wanted && [...sel.options].some(o=>o.value===wanted)) sel.value=wanted;
+  else if(offices.length) sel.value=offices[0];
+  else sel.value='';
+  pincodeLastAuto.postoffice=getPostOfficeValue();
+  if(manual){manual.style.display=sel.value==='__manual__'?'block':'none'; if(sel.value!=='__manual__')manual.value='';}
+}
+
+function resetPincodeManualFlags(){
+  pincodeManualState=false;
+  pincodeManualCity=false;
+  pincodeManualPostOffice=false;
+  pincodeLastAuto={state:'',city:'',postoffice:''};
 }
 
 function validIndiaCoordinate(lat,lng){
@@ -812,11 +866,14 @@ function normalizeApiRecord(payload){
 
 function mergePincodeRecords(local,online){
   if(!local&&!online)return null;
+  const city=online?.city||local?.city||'';
+  const state=online?.state||local?.state||'';
+  const fallback=(!validIndiaCoordinate(Number(local?.lat),Number(local?.lng))) ? cityCoordinateFallback(city,state) : null;
   return {
-    lat:local?.lat,
-    lng:local?.lng,
-    city:online?.city||local?.city||'',
-    state:online?.state||local?.state||'',
+    lat:validIndiaCoordinate(Number(local?.lat),Number(local?.lng))?Number(local.lat):fallback?.lat,
+    lng:validIndiaCoordinate(Number(local?.lat),Number(local?.lng))?Number(local.lng):fallback?.lng,
+    city,
+    state,
     postoffices:uniqueText([...(local?.postoffices||[]),...(online?.postoffices||[])]),
     source:local&&online?'offline + India Post':online?'India Post API':'offline'
   };
@@ -947,9 +1004,15 @@ function ensurePincodeMetaFields(){
 
 function clearPincodeResult(){
   ensurePincodeMetaFields();
+  pincodeAutoWriting=true;
   document.getElementById('state').value='';
   document.getElementById('city').value='';
-  document.getElementById('postoffice').innerHTML='<option value="">Select Post Office</option>';
+  fillDatalist('stateSuggestions',[]);
+  fillDatalist('citySuggestions',[]);
+  const manual=document.getElementById('postofficeManual');
+  if(manual){manual.value='';manual.style.display='none';}
+  setPostOfficeOptions([], '');
+  pincodeAutoWriting=false;
   document.getElementById('distance').value='';
   document.getElementById('etaText').value='';
   document.getElementById('dateRange').value='';
@@ -969,23 +1032,15 @@ function renderPincodeRecord(pin,rec,verification='offline'){
   if(!rec)return false;
   ensurePincodeMetaFields();
 
-  document.getElementById('state').value=rec.state||'';
-  document.getElementById('city').value=rec.city||'';
-
-  const sel=document.getElementById('postoffice');
-  const previous=sel.value;
-  sel.innerHTML='<option value="">Select Post Office</option>';
-
-  (rec.postoffices||[]).forEach(po=>{
-    const option=document.createElement('option');
-    option.value=po;
-    option.textContent=po;
-    sel.appendChild(option);
-  });
-
-  if([...sel.options].some(option=>option.value===previous)){
-    sel.value=previous;
-  }
+  const stateEl=document.getElementById('state');
+  const cityEl=document.getElementById('city');
+  pincodeAutoWriting=true;
+  fillDatalist('stateSuggestions',[rec.state,stateEl.value]);
+  fillDatalist('citySuggestions',[rec.city,cityEl.value]);
+  if(!pincodeManualState){ stateEl.value=rec.state||''; pincodeLastAuto.state=stateEl.value; }
+  if(!pincodeManualCity){ cityEl.value=rec.city||''; pincodeLastAuto.city=cityEl.value; }
+  setPostOfficeOptions(rec.postoffices||[], getPostOfficeValue());
+  pincodeAutoWriting=false;
 
   if(validIndiaCoordinate(rec.lat,rec.lng)){
     const origin=normalizeLocalRecord(pincodeDB[ORIGIN_PINCODE]);
@@ -1072,15 +1127,33 @@ document.getElementById('pincode').addEventListener('input',function(){
 
   if(pin.length!==6){
     ++pincodeLookupToken;
+    resetPincodeManualFlags();
     clearPincodeResult();
     setPincodeStatus('Enter a valid 6-digit pincode.');
     return;
   }
 
+  resetPincodeManualFlags();
   pincodeTimer=setTimeout(()=>lookupPincode(pin),180);
 });
 
 loadLocalPincodeDB();
+
+/* Allow manual correction without later online/offline refresh overwriting it. */
+const stateManualEl=document.getElementById('state');
+const cityManualEl=document.getElementById('city');
+const postOfficeEl=document.getElementById('postoffice');
+const postOfficeManualEl=document.getElementById('postofficeManual');
+stateManualEl?.addEventListener('input',()=>{if(!pincodeAutoWriting)pincodeManualState=true;});
+cityManualEl?.addEventListener('input',()=>{if(!pincodeAutoWriting)pincodeManualCity=true;});
+postOfficeEl?.addEventListener('change',()=>{
+  if(!pincodeAutoWriting)pincodeManualPostOffice=true;
+  if(postOfficeManualEl){
+    postOfficeManualEl.style.display=postOfficeEl.value==='__manual__'?'block':'none';
+    if(postOfficeEl.value==='__manual__')postOfficeManualEl.focus();
+  }
+});
+postOfficeManualEl?.addEventListener('input',()=>{if(!pincodeAutoWriting)pincodeManualPostOffice=true;});
 
 /* Live updates that might affect totals/eligibility */
 ["name","mobile","altMobile","email","address","landmark","pincode","state","city","product","variant","basePrice","house"]
@@ -1458,7 +1531,7 @@ function buildWhatsAppTemplate(){
     `Alt Mobile: ${document.getElementById("altMobile").value}`,`Email: ${document.getElementById("email").value}`,
     `Address: ${address}`,`Landmark: ${document.getElementById("landmark").value}`,
     `Pincode: ${document.getElementById("pincode").value}`,`State: ${document.getElementById("state").value}`,
-    `District/City: ${document.getElementById("city").value}`,`Post office: ${document.getElementById("postoffice").value}`,"",
+    `District/City: ${document.getElementById("city").value}`,`Post office: ${getPostOfficeValue()}`,"",
     `Product: ${simpleProducts}`,
     `Variant: ${simpleVariants}`,
     `Base Price: ${gpzMoney(o.basePriceDisplay||0)}`,
