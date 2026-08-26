@@ -145,7 +145,7 @@
     </div>
     <div class="grid3" style="margin-top:8px">
       <div>
-        <div class="label">Base Price (only product)</div>
+        <div class="label">Base Price (All Products + Add-ons + Courier + VAS)</div>
         <input id="basePrice" type="number" placeholder="₹" readonly>
       </div>
       <div>
@@ -153,7 +153,7 @@
         <input id="addonsTotal" type="number" placeholder="₹" readonly>
       </div>
       <div>
-        <div class="label">Subtotal (Base + Add-ons)</div>
+        <div class="label">Products + Add-ons Subtotal</div>
         <input id="subtotal" type="number" placeholder="₹" readonly>
       </div>
     </div>
@@ -308,7 +308,7 @@
   <!-- Actions -->
   <div class="btns">
     <button class="alt" onclick="submitOrder()">Submit this order</button>
-    <button id="payNow" class="btn act" type="button" onclick="launchUpiPayment()">Pay Now</button>
+    <a id="payNow" class="btn act" href="#" onclick="return launchUpiPayment(event)">Pay Now</a>
   </div>
 
   <!-- QR Code Section -->
@@ -840,6 +840,11 @@ const GPZ_AIR=["Trackon.in","ShreeMaruti.com"];
 const GPZ_PRIME=["Trackon.in","ShreeMaruti.com"];
 const GPZ_COD=["Delhivery.com","BlueDart"];
 const GPZ_VAS_COURIERS=["Delhivery.com","BlueDart","Ecom Express","XpressBees"];
+// Payment accounts: Non-GST and GST MUST remain separate.
+const GPZ_NON_GST_UPI_ID="paytmqr5hyx5o@ptys";
+const GPZ_NON_GST_UPI_NAME="Surender Kaur";
+const GPZ_GST_UPI_ID="gnsl.khalsa@okhdfcbank";
+const GPZ_GST_UPI_NAME="GAMES PLANET ZONE";
 const GPZ_ADDON_WEIGHTS={
   "Wire Gamepad":250,"Wireless Gamepad":250,"PS2 Slim Sticker/Skin":0,
   "PS2 AV Cable":70,"HDMI Converter":80,"HDMI Cable":99,"Best HDMI Cable":120,
@@ -848,6 +853,7 @@ const GPZ_ADDON_WEIGHTS={
   "AAA 4 BATTERIES AND 4 PORT CHARGER COMBO":370,"TRACKON.IN PRIME COURIER SERVICE":0
 };
 let gpzCurrentOrder=null;
+let gpzDirectBasePrice=0;
 
 /* Read the cart that belongs to THIS checkout.
    URL payload is primary so checkout still works when localStorage is blocked,
@@ -925,7 +931,7 @@ function gpzBaseItems(){
 
   const product=GPZ_PARAMS.get("product")||document.getElementById("product").value||"PS2 Product";
   const variant=GPZ_PARAMS.get("variant")||document.getElementById("variant").value||"";
-  const base=Number(GPZ_PARAMS.get("base")||document.getElementById("basePrice").value||0);
+  const base=Number(GPZ_PARAMS.get("base")||gpzDirectBasePrice||0);
   const quantity=Math.max(1,Number(GPZ_PARAMS.get("quantity")||1));
   const suppliedWeight=Number(GPZ_PARAMS.get("weight")||0);
   const unitPrice=quantity?base/quantity:base;
@@ -1083,9 +1089,12 @@ function computeTotals(){
     courierBaseCharge,courierGst,courierCharge,gstInvoiceIncluded:invoiceIncluded,productGst,
     discountApplied:appliedDiscount,discountCode:appliedDiscount?(document.getElementById("couponCode").value||"").trim():"",
     discountedProducts,amountBeforeGst,totalBeforeVas,vasApplies,vasCharge,grandTotal,
+    // User-facing Base Price is deliberately GST-exclusive and follows:
+    // all products + add-ons + courier + VAS. Discount/GST are shown separately.
+    basePriceDisplay:productTotal+courierCharge+vasCharge,
     advanceAmount,restAmount,hasBatteryItem:items.some(i=>/BATTER/i.test(i.name))};
   localStorage.setItem("gp_order_summary",JSON.stringify(gpzCurrentOrder));
-  document.getElementById("basePrice").value=Number(GPZ_PARAMS.get("base")||document.getElementById("basePrice").value||0);
+  document.getElementById("basePrice").value=Math.ceil(gpzCurrentOrder.basePriceDisplay);
   document.getElementById("addonsTotal").value=sumAddons();
   document.getElementById("subtotal").value=productTotal;
   document.getElementById("gstDetails").style.display=invoiceIncluded?"block":"none";
@@ -1103,24 +1112,35 @@ function computeTotals(){
   document.getElementById("sumRest").style.display=payment==="cod"?"":"none";
   document.getElementById("modeBadge").textContent=payment==="cod"?"Mode: COD":"Mode: Prepaid";
   document.getElementById("modeBadge").className="badge right "+(payment==="cod"?"mode-cod":"mode-pre");
-  document.getElementById("payNow").dataset.upi=gpzUpiLink(advanceAmount,payment==="cod"?"COD Payment":"Prepaid Order");
+  const paymentNote=payment==="cod"?"COD Payment":(invoiceIncluded?"GST Invoice Payment":"Prepaid Order");
+  const payNow=document.getElementById("payNow");
+  const paymentUpi=gpzUpiLink(advanceAmount,paymentNote,invoiceIncluded);
+  payNow.href=paymentUpi;
+  payNow.dataset.upi=paymentUpi;
   gpzRenderRateGuide(chargeableKg);
 }
-function gpzUpiLink(amount,note){
-  return "upi://pay?"+new URLSearchParams({pa:"gnsl.khalsa@okhdfcbank",pn:"GAMES PLANET ZONE",am:String(amount),cu:"INR",tn:note}).toString();
+function gpzUpiLink(amount,note,invoiceIncluded=gpzInvoice()){
+  const isGst=Boolean(invoiceIncluded);
+  const pa=isGst?GPZ_GST_UPI_ID:GPZ_NON_GST_UPI_ID;
+  const pn=isGst?GPZ_GST_UPI_NAME:GPZ_NON_GST_UPI_NAME;
+  return "upi://pay?"+new URLSearchParams({pa,pn,am:String(Number(amount)||0),cu:"INR",tn:note}).toString();
 }
-function launchUpiPayment(){
+function launchUpiPayment(event){
   computeTotals();
   const o=gpzCurrentOrder;
   if(!o||!Number(o.advanceAmount)){
+    if(event) event.preventDefault();
     alert("Payment amount is not ready. Please complete the order details first.");
-    return;
+    return false;
   }
-  const note=o.paymentMode==="cod"?"COD Payment":"Prepaid Order";
-  const upiUrl=gpzUpiLink(o.advanceAmount,note);
-  // Direct navigation to the UPI scheme opens the installed UPI-app chooser
-  // on Android instead of opening another website/prefill tab.
-  window.location.assign(upiUrl);
+  const note=o.paymentMode==="cod"?"COD Payment":(o.gstInvoiceIncluded?"GST Invoice Payment":"Prepaid Order");
+  const upiUrl=gpzUpiLink(o.advanceAmount,note,o.gstInvoiceIncluded);
+  const payNow=document.getElementById("payNow");
+  // Keep a real anchor href so Android/Chrome can open the installed UPI app natively.
+  // Returning true lets the browser follow the upi:// link from the user's click gesture.
+  payNow.href=upiUrl;
+  payNow.dataset.upi=upiUrl;
+  return true;
 }
 function productWithAddons(){return gpzCurrentOrder?gpzCurrentOrder.items.map(i=>`${i.name} x${i.quantity}`).join(", "):document.getElementById("product").value;}
 function gpzOrderVariant(){
@@ -1177,7 +1197,7 @@ function buildWhatsAppTemplate(){
     `District/City: ${document.getElementById("city").value}`,`Post office: ${document.getElementById("postoffice").value}`,"",
     `Product: ${simpleProducts}`,
     `Variant: ${simpleVariants}`,
-    `Base Price: ${gpzMoney(o.items[0]?.lineTotal||0)}`,
+    `Base Price: ${gpzMoney(o.basePriceDisplay||0)}`,
     `Courier Company: ${o.courier}`,
     `Discount Applied: ${o.discountApplied?gpzMoney(o.discountApplied):""}`,
     gstTop,
@@ -1256,6 +1276,7 @@ function gpzInitialize(){
   const base=cartItems.length
     ? cartItems.reduce((sum,i)=>sum+i.lineTotal,0)
     : Number(GPZ_PARAMS.get("base")||0);
+  gpzDirectBasePrice=base;
 
   document.getElementById("product").value=product;
   document.getElementById("variant").value=variant;
