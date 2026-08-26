@@ -2268,8 +2268,17 @@ function gpzCartCheckout(){
   const cart=gpzCartRead();if(!cart.length){alert("Cart is empty.");return}
   const items=cart.map(i=>({name:i.variant&&i.variant!=="PS2"?`${i.product} — ${i.variant}`:i.product,product:i.product,variant:i.variant||"PS2",quantity:Number(i.quantity)||1,unitPrice:Number(i.unitPrice)||0,lineTotal:(Number(i.unitPrice)||0)*(Number(i.quantity)||1),unitWeight:Number(i.unitWeight)||25,lineWeight:(Number(i.unitWeight)||25)*(Number(i.quantity)||1),size:i.size||gpzCartSize(i.product,i.variant)}));
   const productTotal=items.reduce((s,i)=>s+i.lineTotal,0),totalWeight=items.reduce((s,i)=>s+i.lineWeight,0),totalQuantity=items.reduce((s,i)=>s+i.quantity,0);
-  localStorage.setItem("gp_order_summary",JSON.stringify({source:"cart",items,productTotal,totalWeight,totalQuantity,paymentMode:"prepaid"}));
-  const q=new URLSearchParams({source:"cart",product:"PS2 Product",variant:"PS2",base:productTotal,quantity:totalQuantity,weight:totalWeight});
+  const orderSummary={source:"cart",items,productTotal,totalWeight,totalQuantity,paymentMode:"prepaid",savedAt:Date.now()};
+  try{localStorage.setItem("gp_order_summary",JSON.stringify(orderSummary));}catch(e){console.warn("Cart storage unavailable; using URL payload.",e)}
+  const q=new URLSearchParams({
+    source:"cart",
+    product:"PS2 Product",
+    variant:"Multiple selected products",
+    base:String(productTotal),
+    quantity:String(totalQuantity),
+    weight:String(totalWeight),
+    cart:JSON.stringify(items)
+  });
   location.href=`order-prefill.html?${q.toString()}`;
 }
 function gpzEnhanceProductCards(){

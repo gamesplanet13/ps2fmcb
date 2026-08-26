@@ -51,9 +51,6 @@
   .grand-row{margin:10px -5px 0;padding:10px 5px;border-radius:10px;background:#e7f5ff;color:#073b63;font-size:16px;font-weight:900}
   .gst-details{display:none;margin-top:10px;padding:10px;border-radius:12px;background:#fff7ed;border:1px solid #fed7aa}
   .warning{padding:9px;border-radius:10px;background:#fff7ed;color:#9a3412;font-size:13px;margin-top:9px}
-  .status{margin-top:8px;font-size:12px;color:var(--muted);line-height:1.45}
-  .status.ok{color:#15803d}
-  .status.error{color:#dc2626}
 
   /* Hide info lines on UI (as requested) */
   #ruleNote,
@@ -66,7 +63,7 @@
 <body>
 <div class="wrap">
   <h1>Games Planet — Quick Order</h1>
-  <div class="sub">Prefilled from main page • Offline-first pincode autofill • Payment rules applied here</div>
+  <div class="sub">Prefilled from main page • India Post pincode autofill • Payment rules applied here</div>
 
   <!-- Customer -->
   <div class="card">
@@ -109,7 +106,6 @@
     </div>
 
     <div id="deliveryEstimate" class="hint"></div>
-    <div id="pincodeStatus" class="status" role="status" aria-live="polite">Local pincode database loading…</div>
 
     <!-- Mini Preview under pincode -->
     <div id="miniPreview" class="hint" style="margin-top:8px; display:none">
@@ -307,8 +303,6 @@
     <input id="distance" type="text" />
     <input id="etaText" type="text" />
     <input id="dateRange" type="text" />
-    <input id="etaTextCod" type="text" />
-    <input id="dateRangeCOD" type="text" />
   </div>
 
   <!-- Actions -->
@@ -714,388 +708,115 @@ function submitOrder(){
 })();
 
 /* ====== ETA / PINCODE ====== */
-/* =========================================================
-   GAMES PLANET — PINCODE AUTOFILL MODULE
-   Required local file beside this HTML:
-   1) pincode_merged_final.json   (preferred)
-   OR
-   2) pincode_data.json           (fallback)
-
-   Expected record format:
-   {
-     "244901": {
-       "city": "Rampur",
-       "state": "Uttar Pradesh",
-       "postoffices": ["Rampur", "..."],
-       "lat": 28.8,
-       "lng": 79.0
-     }
-   }
-   ========================================================= */
-
 let pincodeLatLng={};
 let pincodeDB={};
-let pincodeLookupToken=0;
-let pincodeTimer=0;
 
-const PINCODE_DB_FILES=['pincode_merged_final.json','pincode_data.json'];
-const INDIA_POST_API='https://api.postalpincode.in/pincode/';
-const ORIGIN_PINCODE='244901'; // Games Planet, Rampur
-
-function setPincodeStatus(message,type='info'){
-  const el=document.getElementById('pincodeStatus');
-  if(!el)return;
-  el.textContent=message;
-  el.className='status'+(type==='ok'?' ok':type==='error'?' error':'');
-}
-
-function normalizeText(value){
-  return String(value||'').trim();
-}
-
-function uniqueText(values){
-  const out=[];
-  const seen=new Set();
-  (values||[]).forEach(value=>{
-    const text=normalizeText(value);
-    const key=text.toUpperCase();
-    if(text&&!seen.has(key)){
-      seen.add(key);
-      out.push(text);
-    }
-  });
-  return out.sort((a,b)=>a.localeCompare(b,'en-IN'));
-}
-
-function validIndiaCoordinate(lat,lng){
-  return Number.isFinite(lat)&&Number.isFinite(lng)&&lat>=6&&lat<=38&&lng>=68&&lng<=98;
-}
-
-/* If a pincode record has bad/missing coordinates, use median coordinates
-   of another record from the same city/state. */
-function cityCoordinateFallback(city,state){
-  const wantedCity=normalizeText(city).toUpperCase();
-  const wantedState=normalizeText(state).toUpperCase();
-  if(!wantedCity)return null;
-
-  const points=Object.values(pincodeDB||{}).filter(record=>{
-    const lat=Number(record?.lat);
-    const lng=Number(record?.lng);
-    return normalizeText(record?.city).toUpperCase()===wantedCity&&
-      (!wantedState||normalizeText(record?.state).toUpperCase()===wantedState)&&
-      validIndiaCoordinate(lat,lng);
-  }).map(record=>({lat:Number(record.lat),lng:Number(record.lng)}));
-
-  if(!points.length)return null;
-
-  points.sort((a,b)=>a.lat-b.lat);
-  const lat=points[Math.floor(points.length/2)].lat;
-  points.sort((a,b)=>a.lng-b.lng);
-  const lng=points[Math.floor(points.length/2)].lng;
-  return {lat,lng};
-}
-
-function normalizeLocalRecord(record){
-  if(!record)return null;
-
-  let lat=Number(record.lat);
-  let lng=Number(record.lng);
-
-  if(!validIndiaCoordinate(lat,lng)){
-    const fallback=cityCoordinateFallback(record.city,record.state);
-    lat=fallback?.lat;
-    lng=fallback?.lng;
-  }
-
-  return {
-    lat,
-    lng,
-    city:normalizeText(record.city),
-    state:normalizeText(record.state),
-    postoffices:uniqueText(record.postoffices||[]),
-    source:'offline'
-  };
-}
-
-/* India Post is only a fallback/verification layer.
-   Offline result is shown immediately when local JSON has the pincode. */
-function normalizeApiRecord(payload){
-  const block=Array.isArray(payload)?payload[0]:null;
-  const offices=block&&Array.isArray(block.PostOffice)?block.PostOffice:[];
-  if(!offices.length)return null;
-
-  return {
-    city:normalizeText(offices[0].District||offices[0].Division||offices[0].Region),
-    state:normalizeText(offices[0].State),
-    postoffices:uniqueText(offices.map(office=>office.Name)),
-    source:'India Post API'
-  };
-}
-
-function mergePincodeRecords(local,online){
-  if(!local&&!online)return null;
-  return {
-    lat:local?.lat,
-    lng:local?.lng,
-    city:online?.city||local?.city||'',
-    state:online?.state||local?.state||'',
-    postoffices:uniqueText([...(local?.postoffices||[]),...(online?.postoffices||[])]),
-    source:local&&online?'offline + India Post':online?'India Post API':'offline'
-  };
-}
-
-async function loadLocalPincodeDB(){
-  for(const file of PINCODE_DB_FILES){
-    try{
-      const response=await fetch(file,{cache:'force-cache'});
-      if(!response.ok)throw new Error(`HTTP ${response.status}`);
-
-      const data=await response.json();
-      if(!data||!Object.keys(data).length)throw new Error('Empty database');
-
-      pincodeLatLng=data;
-      pincodeDB=data;
-
-      setPincodeStatus(
-        `✓ Offline pincode database ready (${Object.keys(data).length.toLocaleString('en-IN')} pincodes)`,
-        'ok'
-      );
-
-      const currentPin=(document.getElementById('pincode')?.value||'').trim();
-      if(/^\d{6}$/.test(currentPin))lookupPincode(currentPin);
-      return;
-    }catch(error){
-      console.warn(`Could not load ${file}`,error);
-    }
-  }
-
-  setPincodeStatus(
-    'Offline pincode database could not load. Keep pincode_merged_final.json or pincode_data.json beside this HTML.',
-    'error'
-  );
-}
-
-async function getIndiaPostRecord(pin){
-  const cacheKey=`gpz-post-${pin}`;
-
-  try{
-    const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');
-    if(cached&&Date.now()-cached.savedAt<7*86400000)return cached.record;
-  }catch(_error){}
-
-  const controller=new AbortController();
-  const timeout=setTimeout(()=>controller.abort(),4500);
-
-  try{
-    const response=await fetch(`${INDIA_POST_API}${pin}`,{
-      signal:controller.signal,
-      cache:'no-store'
-    });
-
-    if(!response.ok)throw new Error(`HTTP ${response.status}`);
-
-    const record=normalizeApiRecord(await response.json());
-    if(record){
-      try{
-        localStorage.setItem(cacheKey,JSON.stringify({savedAt:Date.now(),record}));
-      }catch(_error){}
-    }
-    return record;
-  }catch(error){
-    console.info('India Post unavailable; offline data retained.',error);
-    return null;
-  }finally{
-    clearTimeout(timeout);
-  }
-}
-
-function haversine(lat1,lon1,lat2,lon2){
-  const R=6371;
-  const dLat=(lat2-lat1)*Math.PI/180;
-  const dLon=(lon2-lon1)*Math.PI/180;
-  const a=Math.sin(dLat/2)**2+
-    Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-  return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
-
-function etaByDist(d){
-  if(d<=30)return '1 day';
-  if(d<=60)return '1-2 days';
-  if(d<=100)return '2-3 days';
-  if(d<=200)return '3-4 days';
-  if(d<=500)return '4-5 days';
-  if(d<=1000)return '4-6 days';
-  if(d<=1500)return '5–7 days';
-  if(d<=2000)return '6–8 days';
-  if(d<=3000)return '6–10 days';
-  return '8–12 days';
-}
-
-function parseEta(eta){
-  const n=(eta.match(/\d+/g)||[]).map(Number);
-  if(!n.length)return {min:0,max:0};
-  if(n.length===1)return {min:n[0],max:n[0]};
-  return {min:Math.min(...n),max:Math.max(...n)};
-}
-
-function dayStartOffset(){
-  const now=new Date();
-  const dow=now.getDay();
-  const after7=now.getHours()>=19;
-  const weekday=dow>=1&&dow<=5;
-  return weekday&&after7?1:0;
-}
-
-function formatDateRange(minDays,maxDays){
-  const offs=dayStartOffset();
-  const s=new Date();
-  const e=new Date();
-
-  s.setDate(s.getDate()+minDays+offs);
-  e.setDate(e.getDate()+maxDays+offs);
-
-  const opts={weekday:'long',day:'2-digit',month:'long',year:'numeric'};
-  return `${s.toLocaleDateString('en-IN',opts)} – ${e.toLocaleDateString('en-IN',opts)}`;
-}
-
-
-function refreshPincodeDependents(){
-  if(typeof updatePrimeCourierAvailability==='function') updatePrimeCourierAvailability();
-  if(typeof syncCourierOptions==='function') syncCourierOptions();
-}
-
-function clearPincodeResult(){
-  document.getElementById('state').value='';
-  document.getElementById('city').value='';
-  document.getElementById('postoffice').innerHTML='<option value="">Select Post Office</option>';
-  document.getElementById('distance').value='';
-  document.getElementById('etaText').value='';
-  document.getElementById('dateRange').value='';
-  document.getElementById('etaTextCod').value='';
-  document.getElementById('dateRangeCOD').value='';
-  document.getElementById('deliveryEstimate').textContent='';
-  document.getElementById('preEta').textContent='—';
-  document.getElementById('preRange').textContent='—';
-  document.getElementById('codEta').textContent='—';
-  document.getElementById('codRange').textContent='—';
-  document.getElementById('miniPreview').style.display='none';
-  refreshPincodeDependents();
-}
-
-function renderPincodeRecord(pin,rec,verification='offline'){
-  if(!rec)return false;
-
-  document.getElementById('state').value=rec.state||'';
-  document.getElementById('city').value=rec.city||'';
-
-  const sel=document.getElementById('postoffice');
-  const previous=sel.value;
-  sel.innerHTML='<option value="">Select Post Office</option>';
-
-  (rec.postoffices||[]).forEach(po=>{
-    const option=document.createElement('option');
-    option.value=po;
-    option.textContent=po;
-    sel.appendChild(option);
-  });
-
-  if([...sel.options].some(option=>option.value===previous)){
-    sel.value=previous;
-  }
-
-  if(validIndiaCoordinate(rec.lat,rec.lng)){
-    const origin=normalizeLocalRecord(pincodeDB[ORIGIN_PINCODE]);
-    const baseLat=Number.isFinite(origin?.lat)?origin.lat:28.8154;
-    const baseLng=Number.isFinite(origin?.lng)?origin.lng:79.0250;
-
-    const d=Math.round(haversine(baseLat,baseLng,rec.lat,rec.lng));
-    const eta=etaByDist(d);
-    const prepaid=parseEta(eta);
-    const prepaidRange=formatDateRange(prepaid.min,prepaid.max);
-
-    const cod={min:prepaid.min+2,max:prepaid.max+3};
-    const codEta=cod.min===cod.max?`${cod.min} days`:`${cod.min}–${cod.max} days`;
-    const codRange=formatDateRange(cod.min,cod.max);
-
-    document.getElementById('distance').value=`${d} km`;
-    document.getElementById('etaText').value=eta;
-    document.getElementById('dateRange').value=prepaidRange;
-    document.getElementById('etaTextCod').value=codEta;
-    document.getElementById('dateRangeCOD').value=codRange;
-
-    document.getElementById('deliveryEstimate').textContent=`📍 Distance: ${d} km`;
-    document.getElementById('preEta').textContent=eta;
-    document.getElementById('preRange').textContent=prepaidRange;
-    document.getElementById('codEta').textContent=codEta;
-    document.getElementById('codRange').textContent=codRange;
-    document.getElementById('miniPreview').style.display='block';
-  }
-
-  const officeCount=(rec.postoffices||[]).length;
-  const label=verification==='verified'?'Offline + India Post matched':
-    verification==='online'?'India Post data':'Offline data';
-
-  setPincodeStatus(
-    `✓ ${pin}: ${label} • ${officeCount} post office${officeCount===1?'':'s'}`,
-    'ok'
-  );
-  refreshPincodeDependents();
-
-  return true;
-}
-
-async function lookupPincode(pin){
-  const token=++pincodeLookupToken;
-  const local=normalizeLocalRecord(pincodeDB[pin]);
-
-  if(local){
-    renderPincodeRecord(pin,local,'offline');
-    setPincodeStatus(`✓ ${pin}: Offline result shown • checking India Post…`,'ok');
-  }else{
-    clearPincodeResult();
-    setPincodeStatus(`Checking ${pin} with India Post…`);
-  }
-
-  const online=await getIndiaPostRecord(pin);
-  if(token!==pincodeLookupToken)return;
-
-  const merged=mergePincodeRecords(local,online);
-
-  if(merged){
-    renderPincodeRecord(
-      pin,
-      merged,
-      local&&online?'verified':local?'offline':'online'
-    );
-
-    if(local&&!online){
-      setPincodeStatus(`✓ ${pin}: Offline data active (India Post server unavailable)`,'ok');
-    }else if(!local&&online){
-      setPincodeStatus(`✓ ${pin}: India Post result active; offline coordinates unavailable`,'ok');
-    }
-  }else{
-    clearPincodeResult();
-    setPincodeStatus(`Pincode ${pin} was not found in offline data or India Post.`,'error');
-  }
-}
-
-document.getElementById('pincode').addEventListener('input',function(){
-  this.value=this.value.replace(/\D/g,'').slice(0,6);
-  clearTimeout(pincodeTimer);
-
-  const pin=this.value.trim();
-
-  if(pin.length!==6){
-    ++pincodeLookupToken;
-    clearPincodeResult();
-    setPincodeStatus('Enter a valid 6-digit pincode.');
-    return;
-  }
-
-  pincodeTimer=setTimeout(()=>lookupPincode(pin),180);
+fetch('pincode_merged_final.json')
+.then(r=>r.json())
+.then(data=>{
+  pincodeLatLng=data;
+  pincodeDB=data;
 });
 
-loadLocalPincodeDB();
+/* Haversine distance (km) */
+function haversine(lat1,lon1,lat2,lon2){
+  const R=6371;
+  const dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+/* ETA buckets by distance (Prepaid) */
+function etaByDist(d){
+  if(d<=30)return"1 day";
+  if(d<=60)return"1-2 days";
+  if(d<=100)return"2-3 days";
+  if(d<=200)return"3-4 days";
+  if(d<=500)return"4-5 days";
+  if(d<=1000)return"4-6 days";
+  if(d<=1500)return"5–7 days";
+  if(d<=2000)return"6–8 days";
+  if(d<=3000)return"6–10 days";
+  return"8–12 days";
+}
+/* Parse ETA → min/max days */
+function parseEta(eta){
+  const n=(eta.match(/\d+/g)||[]).map(Number);
+  if(!n.length) return {min:0,max:0};
+  if(n.length===1) return {min:n[0],max:n[0]};
+  return {min:Math.min(...n), max:Math.max(...n)};
+}
+/* After 7 PM (Mon–Fri) → start from next day */
+function dayStartOffset(){
+  const now=new Date();
+  const dow=now.getDay(); // 0=Sun
+  const after7 = now.getHours()>=19;
+  const weekday = dow>=1 && dow<=5;
+  return (weekday && after7) ? 1 : 0;
+}
+/* Full formatted date range with weekday, month, year */
+function formatDateRange(minDays,maxDays){
+  const offs=dayStartOffset();
+  const s=new Date(), e=new Date();
+  s.setDate(s.getDate()+minDays+offs);
+  e.setDate(e.getDate()+maxDays+offs);
+  const opts={weekday:"long", day:"2-digit", month:"long", year:"numeric"};
+  return `${s.toLocaleDateString("en-IN",opts)} – ${e.toLocaleDateString("en-IN",opts)}`;
+}
+
+document.getElementById("pincode").addEventListener("input",function(){
+  const pin=this.value.trim();
+  if(pin.length===6){
+    const rec=pincodeDB[pin];
+
+    if(rec){
+      document.getElementById("state").value=rec.state||"";
+      document.getElementById("city").value=rec.city||"";
+
+      const sel=document.getElementById("postoffice");
+      sel.innerHTML='<option value="">Select Post Office</option>';
+
+      (rec.postoffices||[]).forEach(po=>{
+        const o=document.createElement("option");
+        o.value=po;
+        o.text=po;
+        sel.appendChild(o);
+      });
+
+      if(rec.lat && rec.lng){
+        const baseLat=28.8,baseLng=79.0;
+        const d=Math.round(haversine(baseLat,baseLng,rec.lat,rec.lng));
+        const eta=etaByDist(d);
+        const pre=parseEta(eta);
+        const preRangeFull=formatDateRange(pre.min,pre.max);
+
+        const cod={min:pre.min+2,max:pre.max+3};
+        const codEtaText=(cod.min===cod.max)?`${cod.min} days`:`${cod.min}–${cod.max} days`;
+        const codRangeFull=formatDateRange(cod.min,cod.max);
+
+        document.getElementById("distance").value=`${d} km`;
+        document.getElementById("etaText").value=eta;
+        document.getElementById("dateRange").value=preRangeFull;
+
+        if(!document.getElementById("etaTextCod")){
+          const h1=document.createElement("input"); h1.type="hidden"; h1.id="etaTextCod";
+          const h2=document.createElement("input"); h2.type="hidden"; h2.id="dateRangeCOD";
+          document.body.appendChild(h1); document.body.appendChild(h2);
+        }
+
+        document.getElementById("etaTextCod").value=codEtaText;
+        document.getElementById("dateRangeCOD").value=codRangeFull;
+
+        document.getElementById("deliveryEstimate").innerText=`📍 Distance: ${d} km`;
+        document.getElementById("preEta").textContent=eta;
+        document.getElementById("preRange").textContent=preRangeFull;
+        document.getElementById("codEta").textContent=codEtaText;
+        document.getElementById("codRange").textContent=codRangeFull;
+        document.getElementById("miniPreview").style.display="block";
+        updatePrimeCourierAvailability();
+      }
+    }
+  }
+});
 
 /* Live updates that might affect totals/eligibility */
 ["name","mobile","altMobile","email","address","landmark","pincode","state","city","product","variant","basePrice","house"]
@@ -1128,6 +849,46 @@ const GPZ_ADDON_WEIGHTS={
 };
 let gpzCurrentOrder=null;
 
+/* Read the cart that belongs to THIS checkout.
+   URL payload is primary so checkout still works when localStorage is blocked,
+   cleared, or a stale cart exists from an older order. */
+function gpzIncomingCartItems(){
+  if(GPZ_PARAMS.get("source")!=="cart") return [];
+
+  const urlCart=GPZ_PARAMS.get("cart");
+  if(urlCart){
+    try{
+      const parsed=JSON.parse(urlCart);
+      if(Array.isArray(parsed)&&parsed.length) return parsed;
+    }catch(e){
+      console.warn("Could not parse cart from checkout URL.",e);
+    }
+  }
+
+  try{
+    const stored=JSON.parse(localStorage.getItem("gp_order_summary")||"null");
+    if(stored&&stored.source==="cart"&&Array.isArray(stored.items)&&stored.items.length) return stored.items;
+  }catch(e){
+    console.warn("Could not read saved checkout cart.",e);
+  }
+  return [];
+}
+
+function gpzNormalizeIncomingItem(i){
+  const quantity=Math.max(1,Number(i?.quantity)||1);
+  const unitPrice=Number(i?.unitPrice)||0;
+  const unitWeight=Number(i?.unitWeight)||gpzInferWeight(i?.product||i?.name||"",i?.variant||"");
+  const product=String(i?.product||"").trim();
+  const variant=String(i?.variant||"").trim();
+  const name=String(i?.name||((variant&&variant!=="PS2")?`${product} — ${variant}`:product)||"PS2 Product");
+  return {
+    name,product,variant,pack:String(i?.pack||""),quantity,unitPrice,
+    lineTotal:Number(i?.lineTotal)||(unitPrice*quantity),
+    unitWeight,lineWeight:Number(i?.lineWeight)||(unitWeight*quantity),
+    dimensions:i?.dimensions||i?.unitDimensions||i?.size||""
+  };
+}
+
 function gpzMoney(n){return "₹"+Math.ceil(Number(n)||0).toLocaleString("en-IN");}
 function gpzEscape(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function gpzSelected(name,fallback){
@@ -1159,23 +920,17 @@ function gpzItemDimensions(item){
   return "32 × 26 × 18 cm";
 }
 function gpzBaseItems(){
+  const incomingCart=gpzIncomingCartItems();
+  if(incomingCart.length) return incomingCart.map(gpzNormalizeIncomingItem);
+
   const product=GPZ_PARAMS.get("product")||document.getElementById("product").value||"PS2 Product";
   const variant=GPZ_PARAMS.get("variant")||document.getElementById("variant").value||"";
   const base=Number(GPZ_PARAMS.get("base")||document.getElementById("basePrice").value||0);
   const quantity=Math.max(1,Number(GPZ_PARAMS.get("quantity")||1));
   const suppliedWeight=Number(GPZ_PARAMS.get("weight")||0);
-  let stored=null;
-  try{stored=JSON.parse(localStorage.getItem("gp_order_summary")||"null");}catch(e){}
-  const storedMatches=stored&&Array.isArray(stored.items)&&stored.items.length&&
-    (GPZ_PARAMS.get("source")==="cart"||!GPZ_PARAMS.get("product")||stored.items.some(i=>String(i.name).toLowerCase()===product.toLowerCase()));
-  if(storedMatches) return stored.items.map(i=>({
-    name:i.name,quantity:Number(i.quantity)||1,unitPrice:Number(i.unitPrice)||0,
-    lineTotal:Number(i.lineTotal)||0,unitWeight:Number(i.unitWeight)||0,lineWeight:Number(i.lineWeight)||0,
-    dimensions:i.dimensions||i.unitDimensions||""
-  }));
   const unitPrice=quantity?base/quantity:base;
   const unitWeight=suppliedWeight?suppliedWeight/quantity:gpzInferWeight(product,variant);
-  return [{name:variant?`${product} — ${variant}`:product,quantity,unitPrice,lineTotal:base,unitWeight,lineWeight:unitWeight*quantity,dimensions:GPZ_PARAMS.get("dimensions")||""}];
+  return [{name:variant?`${product} — ${variant}`:product,product,variant,quantity,unitPrice,lineTotal:base,unitWeight,lineWeight:unitWeight*quantity,dimensions:GPZ_PARAMS.get("dimensions")||""}];
 }
 function gpzAllItems(){
   const items=gpzBaseItems();
@@ -1323,7 +1078,7 @@ function computeTotals(){
   const grandTotal=totalBeforeVas+vasCharge;
   const advanceAmount=payment==="cod"?Math.min(grandTotal,Math.max(500,Math.ceil(grandTotal*.10))):grandTotal;
   const restAmount=payment==="cod"?Math.max(0,grandTotal-advanceAmount):0;
-  gpzCurrentOrder={items,productTotal,totalWeight,totalQuantity:items.reduce((s,i)=>s+i.quantity,0),packingWeight,packedWeight,
+  gpzCurrentOrder={source:GPZ_PARAMS.get("source")==="cart"?"cart":"direct",items,productTotal,totalWeight,totalQuantity:items.reduce((s,i)=>s+i.quantity,0),packingWeight,packedWeight,
     boxDimensions,actualKg,volumetricKg,chargeableKg,paymentMode:payment,deliverySpeed:speed,courier,
     courierBaseCharge,courierGst,courierCharge,gstInvoiceIncluded:invoiceIncluded,productGst,
     discountApplied:appliedDiscount,discountCode:appliedDiscount?(document.getElementById("couponCode").value||"").trim():"",
@@ -1491,20 +1246,28 @@ function submitOrder(){
   setTimeout(()=>location.href="orders.html",450);
 }
 function gpzInitialize(){
-  let stored=null;
-  try{stored=JSON.parse(localStorage.getItem("gp_order_summary")||"null");}catch(e){}
-  const cartItems=stored&&Array.isArray(stored.items)?stored.items:[];
-  const product=cartItems.length?cartItems.map(i=>`${i.name} × ${Number(i.quantity)||1}`).join(" | "):(GPZ_PARAMS.get("product")||"Games Planet Product");
-  const variant=cartItems.length>1?"Multiple selected products":(GPZ_PARAMS.get("variant")||"As selected");
-  const base=cartItems.length?cartItems.reduce((s,i)=>s+(Number(i.lineTotal)||0),0):Number(GPZ_PARAMS.get("base")||0);
+  const cartItems=gpzIncomingCartItems().map(gpzNormalizeIncomingItem);
+  const product=cartItems.length
+    ? cartItems.map(i=>`${i.name} × ${i.quantity}`).join(" | ")
+    : (GPZ_PARAMS.get("product")||"Games Planet Product");
+  const variant=cartItems.length
+    ? (cartItems.length>1?"Multiple selected products":(cartItems[0].variant||GPZ_PARAMS.get("variant")||"As selected"))
+    : (GPZ_PARAMS.get("variant")||"As selected");
+  const base=cartItems.length
+    ? cartItems.reduce((sum,i)=>sum+i.lineTotal,0)
+    : Number(GPZ_PARAMS.get("base")||0);
+
   document.getElementById("product").value=product;
   document.getElementById("variant").value=variant;
   document.getElementById("basePrice").value=base;
-  setPackBadge(GPZ_PARAMS.get("pack")||"");
+  document.getElementById("addonsTotal").value=0;
+  document.getElementById("subtotal").value=base;
+  setPackBadge(GPZ_PARAMS.get("pack")||(cartItems.length===1?(cartItems[0].pack||""):""));
   document.getElementById("orderId").value=orderIdNow();
   mode="prepaid";
   document.querySelector('input[name="paymentMode"][value="prepaid"]').checked=true;
   syncCourierOptions();
+  computeTotals();
 }
 document.getElementById("pincode").addEventListener("input",()=>setTimeout(syncCourierOptions,0));
 document.querySelectorAll('input[name="gstInvoice"]').forEach(el=>el.addEventListener("change",computeTotals));
