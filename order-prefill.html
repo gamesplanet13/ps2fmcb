@@ -71,11 +71,11 @@
     <div class="grid2">
       <div>
         <div class="label">Name</div>
-        <input id="name" placeholder="Name" autocomplete="name">
+        <input id="name" placeholder="Name" autocomplete="name" required>
       </div>
       <div>
         <div class="label">Mobile</div>
-        <input id="mobile" placeholder="Mobile" autocomplete="tel">
+        <input id="mobile" placeholder="Mobile" autocomplete="tel" required>
       </div>
     </div>
     <div class="grid2">
@@ -89,7 +89,7 @@
       </div>
     </div>
     <div class="label">Address</div>
-    <textarea id="address" placeholder="Address (Area/Village/Street)" rows="2"></textarea>
+    <textarea id="address" placeholder="Address (Area/Village/Street)" rows="2" required></textarea>
     <div class="grid3" style="margin-top:8px">
       <div>
         <div class="label">House number</div>
@@ -101,7 +101,7 @@
       </div>
       <div>
         <div class="label">Pincode</div>
-        <input id="pincode" placeholder="Pincode" inputmode="numeric" maxlength="6" autocomplete="postal-code">
+        <input id="pincode" placeholder="Pincode" inputmode="numeric" maxlength="6" autocomplete="postal-code" required>
       </div>
     </div>
 
@@ -682,9 +682,12 @@ function buildWhatsAppTemplate(forMode){
 
 /* ===== Single action: Submit this order ===== */
 function submitOrder(){
-  if(mode==="prepaid" && !document.getElementById("prepaidCourier").value){
-    alert("Please choose a prepaid courier company.");
-    document.getElementById("prepaidCourier").focus();
+  const required=["name","mobile","address","pincode"];
+  const missing=required.find(id=>!String(document.getElementById(id)?.value||"").trim());
+  if(missing){
+    const labels={name:"Name",mobile:"Mobile Number",address:"Address",pincode:"Pincode"};
+    alert(`${labels[missing]} is required.`);
+    document.getElementById(missing)?.focus();
     return;
   }
   const text = buildWhatsAppTemplate(mode === "cod" ? "cod" : "prepaid");
@@ -1241,10 +1244,15 @@ function buildWhatsAppTemplate(){
   ].join("\n");
 }
 function submitOrder(){
-  const required=["name","mobile","address","pincode","state","city","postoffice"];
-  const missing=required.filter(id=>!String(document.getElementById(id).value||"").trim());
-  if(missing.length){alert("Please fill all required customer and delivery details.");document.getElementById(missing[0]).focus();return;}
-  if(gpzInvoice()&&!document.getElementById("buyerBusinessName").value.trim()){alert("Please enter Customer / Business Name for GST invoice.");return;}
+  // Only these four customer fields are compulsory. Everything else is optional.
+  const required=["name","mobile","address","pincode"];
+  const labels={name:"Name",mobile:"Mobile Number",address:"Address",pincode:"Pincode"};
+  const missing=required.find(id=>!String(document.getElementById(id)?.value||"").trim());
+  if(missing){
+    alert(`${labels[missing]} is required.`);
+    document.getElementById(missing)?.focus();
+    return;
+  }
   const message=buildWhatsAppTemplate();
   const saved={
     orderId:document.getElementById("orderId").value,
@@ -1290,8 +1298,36 @@ function gpzInitialize(){
   syncCourierOptions();
   computeTotals();
 }
+function gpzSyncOptionalGstCustomerName(force=false){
+  const gstIncluded=gpzInvoice();
+  const customerName=document.getElementById("name");
+  const businessName=document.getElementById("buyerBusinessName");
+  if(!gstIncluded||!customerName||!businessName)return;
+
+  const currentCustomer=String(customerName.value||"").trim();
+  const currentBusiness=String(businessName.value||"").trim();
+  const stillAuto=businessName.dataset.gpzAutoName==="1";
+
+  // Auto-fill only when empty/auto-managed. A customer's manual business name is never overwritten.
+  if(force||!currentBusiness||stillAuto){
+    businessName.value=currentCustomer;
+    businessName.dataset.gpzAutoName="1";
+  }
+}
+
+document.getElementById("name").addEventListener("input",()=>{
+  const businessName=document.getElementById("buyerBusinessName");
+  if(gpzInvoice()&&businessName?.dataset.gpzAutoName==="1") gpzSyncOptionalGstCustomerName(true);
+});
+document.getElementById("buyerBusinessName").addEventListener("input",function(){
+  // Once the customer edits this field themselves, keep their custom value.
+  this.dataset.gpzAutoName="0";
+});
 document.getElementById("pincode").addEventListener("input",()=>setTimeout(syncCourierOptions,0));
-document.querySelectorAll('input[name="gstInvoice"]').forEach(el=>el.addEventListener("change",computeTotals));
+document.querySelectorAll('input[name="gstInvoice"]').forEach(el=>el.addEventListener("change",()=>{
+  if(el.checked&&el.value==="included") gpzSyncOptionalGstCustomerName(false);
+  computeTotals();
+}));
 gpzInitialize();
 </script>
 </body>
