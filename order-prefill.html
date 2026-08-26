@@ -1214,6 +1214,28 @@ function gpzIncomingCartItems(){
   }catch(e){
     console.warn("Could not read saved checkout cart.",e);
   }
+
+  // Last-resort fallback: read the original persistent cart used by index.html / Simple.html.
+  // This prevents a generic “PS2 Product” label if checkout-summary storage was cleared or overwritten.
+  try{
+    const rawCart=JSON.parse(localStorage.getItem("gpz_ps2_cart_v1")||"[]");
+    if(Array.isArray(rawCart)&&rawCart.length){
+      return rawCart.map(i=>({
+        name:(i.variant&&i.variant!=="PS2")?`${i.product} — ${i.variant}`:i.product,
+        product:i.product,
+        variant:i.variant||"PS2",
+        pack:i.pack||"",
+        quantity:Number(i.quantity)||1,
+        unitPrice:Number(i.unitPrice)||0,
+        lineTotal:(Number(i.unitPrice)||0)*(Number(i.quantity)||1),
+        unitWeight:Number(i.unitWeight)||25,
+        lineWeight:(Number(i.unitWeight)||25)*(Number(i.quantity)||1),
+        size:i.size||""
+      }));
+    }
+  }catch(e){
+    console.warn("Could not read persistent PS2 cart.",e);
+  }
   return [];
 }
 
@@ -1609,9 +1631,10 @@ function submitOrder(){
 }
 function gpzInitialize(){
   const cartItems=gpzIncomingCartItems().map(gpzNormalizeIncomingItem);
+  const queryProduct=String(GPZ_PARAMS.get("product")||"").trim();
   const product=cartItems.length
     ? cartItems.map(i=>`${i.name} × ${i.quantity}`).join(" | ")
-    : (GPZ_PARAMS.get("product")||"Games Planet Product");
+    : ((queryProduct && queryProduct.toLowerCase()!=="ps2 product")?queryProduct:"Games Planet Product");
   const variant=cartItems.length
     ? (cartItems.length>1?"Multiple selected products":(cartItems[0].variant||GPZ_PARAMS.get("variant")||"As selected"))
     : (GPZ_PARAMS.get("variant")||"As selected");
