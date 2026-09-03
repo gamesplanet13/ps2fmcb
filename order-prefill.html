@@ -63,7 +63,7 @@
 <body>
 <div class="wrap">
   <h1>Games Planet — Quick Order</h1>
-  <div class="sub">Prefilled from main page • India Post pincode autofill • Payment rules applied here</div>
+  <div class="sub">Prefilled from main page • Offline India pincode autofill • Payment rules applied here</div>
 
   <!-- Customer -->
   <div class="card">
@@ -105,7 +105,8 @@
       </div>
     </div>
 
-    <div id="pincodeStatus" class="hint" role="status" aria-live="polite">Local/online pincode lookup ready.</div>
+    <div id="pincodeStatus" class="hint" role="status" aria-live="polite">Offline pincode lookup ready.</div>
+    <div id="areaTypeStatus" class="hint" role="status" aria-live="polite" style="display:none"></div>
     <div id="deliveryEstimate" class="hint"></div>
 
     <!-- Mini Preview under pincode -->
@@ -177,6 +178,9 @@
     </div>
     <div class="hint" id="couponNote">Coupon discount लागू होने पर total में अपने आप घट जाएगा।</div>
   </div>
+  <div class="card" id="couponCodNotice" style="display:none">
+    <b>Coupon is only valid for prepaid orders, not for COD.</b>
+  </div>
 
   <!-- Add-ons -->
   <div class="card">
@@ -204,7 +208,7 @@
 
 <option value="Blank Memory Card 8MB" data-price="369">Blank Memory Card 8MB — ₹369</option>
 
-<option value="AAA Batteries of duaracel PACK OF 4" data-price="88">AAA Batteries of duaracel PACK OF 4 — ₹99</option>
+<option value="AAA Batteries of duaracel PACK OF 4" data-price="99">AAA Batteries of duaracel PACK OF 4 — ₹99</option>
 
 <option value="AAA RECHARGEABLE BATTERIES PACK OF 4" data-price="599">AAA RECHARGEABLE BATTERIES PACK OF 4 — ₹599</option>
 
@@ -330,10 +334,8 @@ const WHATSAPP_PHONE="917983624797";
 const UPI_ID="paytmqr5hyx5o@ptys";
 const UPI_NAME="Surender Kaur";
 
-/* === COD RULES === */
-const COD_ALLOW_MIN = 1399;      // below this → No COD
-const COD_FREE_THRESHOLD = 1899;  // ≥ this → COD charges 199
-const COD_MID_CHARGE = 99;        // between 1399 and 1898 → ₹199
+/* Current checkout rules */
+const GPZ_COD_MIN=1300;
 
 let discountValue=0,mode="prepaid";
 
@@ -436,34 +438,27 @@ function updatePrimeCourierAvailability(){
 /* ===== Coupon helpers & logic ===== */
 function norm(s){return (s||"").toString().trim().toUpperCase();}
 function getBaseProduct(){ return norm(document.getElementById("product").value); }
-function getVariantGB(){
-  const v = norm(document.getElementById("variant").value) || getBaseProduct();
-  const m = v.match(/(\d+)\s*GB/);
-  return m ? Number(m[1]) : null;
-}
-function isFMCBorUSBCombo(){
-  if(new URLSearchParams(location.search).get("source")==="cart"){
-    return gpzAllItems().some(i=>/FMCB|FUNTUNA|USB|COMBO/i.test(i.name));
-  }
-  const p=getBaseProduct();
-  const hasFMCB = p.includes("FMCB");
-  const hasUSB  = p.includes("USB");
-  const hasCOMBO= p.includes("COMBO") || p.includes(" + ");
-  return hasFMCB || hasUSB || hasCOMBO; // any FMCB/USB/Combo qualifies for 5%
+function couponDiscountCap(){
+  const items=(typeof gpzAllItems==="function")?gpzAllItems():[];
+  const description=items.length
+    ? items.map(i=>`${i.name||""} ${i.product||""} ${i.variant||""}`).join(" ")
+    : `${document.getElementById("product").value||""} ${document.getElementById("variant").value||""}`;
+  const caps=[];
+  if(/500\s*GB/i.test(description)) caps.push(100);
+  if(/256\s*GB/i.test(description)) caps.push(60);
+  if(/128\s*GB/i.test(description)) caps.push(50);
+  if(/64\s*GB/i.test(description)) caps.push(30);
+  if(/32\s*GB/i.test(description)) caps.push(20);
+  if(/FMCB|FUNTUNA/i.test(description)) caps.push(20);
+  return caps.length?Math.max(...caps):0;
 }
 function computeCouponDiscount(subtotal){
-  if(isFMCBorUSBCombo()){
-    return Math.round(subtotal * 0.05);
-  }
-  const gb=getVariantGB();
-  if(gb===64)  return 200;
-  if(gb===128) return 300;
-  if(gb===256) return 500;
-  return 0;
+  const cap=couponDiscountCap();
+  return cap?Math.min(Math.round(subtotal*.05),cap):0;
 }
 function applyCoupon(){
-  const code=(document.getElementById("couponCode").value||"").trim().toLowerCase();
-  if(code!=="gpz2025"){
+  const code=(document.getElementById("couponCode").value||"").trim().toUpperCase();
+  if(code!=="GPZ2026"){
     discountValue=0;
     document.getElementById("couponNote").innerText="❌ Invalid coupon";
     computeTotals(); return;
@@ -476,15 +471,9 @@ function applyCoupon(){
   const subtotal=getSubtotal();
   const d=computeCouponDiscount(subtotal);
   discountValue=Math.max(0, Math.min(d, subtotal));
-  if(isFMCBorUSBCombo()){
-    document.getElementById("couponNote").innerText=`✅ Coupon applied: -₹${discountValue} (5% on FMCB/USB/Combo)`;
-  }else{
-    const gb=getVariantGB();
-    const slab=(gb===64?200:gb===128?300:gb===256?500:0);
-    document.getElementById("couponNote").innerText = slab>0
-      ? `✅ Coupon applied: -₹${slab} (GB slab: ${gb}GB)`
-      : `ℹ️ Coupon applied: ₹0 (no GB slab matched)`;
-  }
+  document.getElementById("couponNote").innerText=discountValue>0
+    ? `✅ Coupon applied: -₹${discountValue}`
+    : "ℹ️ Coupon is not applicable to the selected product.";
   computeTotals();
 }
 
@@ -505,94 +494,6 @@ function getSubtotal(){
 function recomputeAddons(){
   document.getElementById("addonsTotal").value = sumAddons();
   computeTotals();
-}
-
-/* ===== COD gating & charges ===== */
-function codEligible(){
-  const sub=getSubtotal();
-  return sub >= COD_ALLOW_MIN;
-}
-function currentCodCharge(sub){
-  if(sub >= COD_FREE_THRESHOLD) return 0;
-  if(sub >= COD_ALLOW_MIN) return COD_MID_CHARGE;
-  return null; // not allowed
-}
-function updateCodButton(){
-  const codBtn=document.getElementById("btn-cod");
-  const sub=getSubtotal();
-  const eligible=codEligible();
-  const charge=currentCodCharge(sub);
-
-  if(!eligible){
-    codBtn.setAttribute("disabled","disabled");
-    document.getElementById("codNote").textContent="COD not available below ₹1399";
-    if(mode==="cod"){ mode="prepaid"; setModeBadge(); document.getElementById("prepaidBlock").style.display="block"; document.getElementById("codBlock").style.display="none"; }
-  }else{
-    codBtn.removeAttribute("disabled");
-    document.getElementById("codNote").textContent = (charge===0)
-      ? "COD charges: ₹0 (Subtotal ≥ ₹1899)"
-      : "COD charges: ₹99 (Subtotal ₹1399–₹1898)";
-  }
-}
-
-/* ===== Mode toggle ===== */
-function setMode(m){
-  if(m==="cod" && !codEligible()){
-    alert("Subtotal ₹1399 se niche hai — COD allowed nahi.");
-    return;
-  }
-  mode=m;
-  document.getElementById("btn-prepaid").className=(m==="prepaid"?"ghost act":"ghost");
-  document.getElementById("btn-cod").className=(m==="cod"?"ghost act":"ghost");
-  document.getElementById("couponCard").style.display=(m==="prepaid")?"block":"none";
-  document.getElementById("prepaidCourierCard").style.display=(m==="prepaid")?"block":"none";
-  document.getElementById("prepaidBlock").style.display=(m==="prepaid")?"block":"none";
-  document.getElementById("codBlock").style.display=(m==="cod")?"block":"none";
-  setModeBadge();
-  computeTotals();
-}
-
-/* ===== Totals ===== */
-function computeTotals(){
-  const base = +document.getElementById("basePrice").value||0;
-  const addons = sumAddons();
-  const subtotal = base + addons;
-  document.getElementById("addonsTotal").value = addons;
-  document.getElementById("subtotal").value = subtotal;
-
-  // Hidden info text (reference only; not visible)
-  document.getElementById("ruleNote").innerText =
-    "COD rules: ≥ ₹1899 → ₹0 • ₹1399–₹1898 → ₹99 • < ₹1399 → No COD. Coupon (prepaid): FMCB/USB/Combo 5% OR 64GB ₹200 • 128GB ₹300 • 256GB ₹500.";
-
-  updateCodButton();
-
-  let codC=0, paid=0, rest=0;
-  if(mode==="prepaid"){
-    document.getElementById("prepaidBlock").style.display="block";
-    document.getElementById("codBlock").style.display="none";
-    if(discountValue>0){
-      document.getElementById("discountAmount").value = discountValue;
-      paid = Math.max(0, subtotal - discountValue);
-    }else{
-      document.getElementById("discountAmount").value = 0;
-      paid = subtotal;
-    }
-    document.getElementById("amountPaid_pre").value = paid;
-  }else{
-    document.getElementById("prepaidBlock").style.display="none";
-    document.getElementById("codBlock").style.display="block";
-    const charge = currentCodCharge(subtotal);
-    codC = (charge===null)?0:charge;
-    document.getElementById("codCharges").value = codC;
-    // Advance: max(₹500, 10% of (subtotal+codC))
-    paid = Math.max(500, Math.ceil((subtotal + codC) * 0.10));
-    rest = Math.max(0, subtotal + codC - paid);
-    document.getElementById("amountPaid_cod").value = paid;
-    document.getElementById("restAmount").value = rest;
-  }
-
-  const note=(mode==="prepaid")?"Prepaid for Games Planet Order":"Advance for Games Planet Order";
-  document.getElementById("payNow").href = upiLink(paid, note);
 }
 
 /* ===== Utils ===== */
@@ -724,9 +625,9 @@ let pincodeManualState=false;
 let pincodeManualCity=false;
 let pincodeManualPostOffice=false;
 let pincodeLastAuto={state:'',city:'',postoffice:''};
+let pincodeCurrentRecord=null;
 
-const PINCODE_DB_FILES=['pincode_merged_final.json','pincode_data.json'];
-const INDIA_POST_API='https://api.postalpincode.in/pincode/';
+const PINCODE_DB_FILES=['pincode_merged_final.json'];
 const ORIGIN_PINCODE='244901'; // Games Planet, Rampur
 
 function setPincodeStatus(message,type='info'){
@@ -767,6 +668,51 @@ function getPostOfficeValue(){
   return sel.value==='__manual__' ? normalizeText(manual?.value) : normalizeText(sel.value);
 }
 
+function officeMatchKey(value){
+  return normalizeText(value).toUpperCase()
+    .replace(/\b(B\.?O\.?|S\.?O\.?|H\.?O\.?)\b/g,'')
+    .replace(/[^A-Z0-9]/g,'');
+}
+
+function selectedOfficeDetail(){
+  const details=pincodeCurrentRecord?.officeDetails||[];
+  const selected=officeMatchKey(getPostOfficeValue());
+  if(selected){
+    const exact=details.find(item=>officeMatchKey(item.name)===selected);
+    if(exact)return exact;
+  }
+  return details.length&&details.every(item=>String(item.type||'').toUpperCase()==='BO')
+    ? details[0]
+    : null;
+}
+
+function gpzIsRuralDestination(){
+  const office=selectedOfficeDetail();
+  if(office)return String(office.type||'').toUpperCase()==='BO';
+  return isRuralDeliveryAddress();
+}
+
+function updateAreaTypeStatus(){
+  const el=document.getElementById('areaTypeStatus');
+  if(!el)return;
+  const office=selectedOfficeDetail();
+  const rural=gpzIsRuralDestination();
+  el.style.display='block';
+  if(office){
+    const delivery=String(office.delivery||'').toLowerCase().includes('non')?'Non-Delivery office':'Delivery office';
+    const productValue=typeof getSubtotal==='function'?getSubtotal():0;
+    el.textContent=rural
+      ? (productValue>3000
+        ? `🌾 Rural area detected (Branch Office • ${delivery}). Order above ₹3,000: only Delhivery is available.`
+        : `🌾 Rural area detected (Branch Office • ${delivery}). Delhivery and Speed Post are available up to ₹3,000.`)
+      : `🏙️ Urban area detected (${office.type||'PO'} • ${delivery}).`;
+  }else{
+    el.textContent=rural
+      ? '🌾 Rural address detected. Only Delhivery and Speed Post are available.'
+      : 'ℹ️ Select the exact Post Office to confirm Rural/Urban serviceability.';
+  }
+}
+
 function setPostOfficeOptions(postoffices,preferred=''){
   const sel=document.getElementById('postoffice');
   if(!sel)return;
@@ -786,7 +732,7 @@ function setPostOfficeOptions(postoffices,preferred=''){
 
   const wanted=preferred||pincodeLastAuto.postoffice;
   if(wanted && [...sel.options].some(o=>o.value===wanted)) sel.value=wanted;
-  else if(offices.length) sel.value=offices[0];
+  else if(offices.length===1) sel.value=offices[0];
   else sel.value='';
   pincodeLastAuto.postoffice=getPostOfficeValue();
   if(manual){manual.style.display=sel.value==='__manual__'?'block':'none'; if(sel.value!=='__manual__')manual.value='';}
@@ -845,40 +791,12 @@ function normalizeLocalRecord(record){
     city:normalizeText(record.city),
     state:normalizeText(record.state),
     postoffices:uniqueText(record.postoffices||[]),
+    officeDetails:Array.isArray(record.officeDetails)?record.officeDetails:[],
     source:'offline'
   };
 }
 
-/* India Post is only a fallback/verification layer.
-   Offline result is shown immediately when local JSON has the pincode. */
-function normalizeApiRecord(payload){
-  const block=Array.isArray(payload)?payload[0]:null;
-  const offices=block&&Array.isArray(block.PostOffice)?block.PostOffice:[];
-  if(!offices.length)return null;
-
-  return {
-    city:normalizeText(offices[0].District||offices[0].Division||offices[0].Region),
-    state:normalizeText(offices[0].State),
-    postoffices:uniqueText(offices.map(office=>office.Name)),
-    source:'India Post API'
-  };
-}
-
-function mergePincodeRecords(local,online){
-  if(!local&&!online)return null;
-  const city=online?.city||local?.city||'';
-  const state=online?.state||local?.state||'';
-  const fallback=(!validIndiaCoordinate(Number(local?.lat),Number(local?.lng))) ? cityCoordinateFallback(city,state) : null;
-  return {
-    lat:validIndiaCoordinate(Number(local?.lat),Number(local?.lng))?Number(local.lat):fallback?.lat,
-    lng:validIndiaCoordinate(Number(local?.lat),Number(local?.lng))?Number(local.lng):fallback?.lng,
-    city,
-    state,
-    postoffices:uniqueText([...(local?.postoffices||[]),...(online?.postoffices||[])]),
-    source:local&&online?'offline + India Post':online?'India Post API':'offline'
-  };
-}
-
+/* All address and post-office data is loaded from the local database. */
 async function loadLocalPincodeDB(){
   for(const file of PINCODE_DB_FILES){
     try{
@@ -905,43 +823,9 @@ async function loadLocalPincodeDB(){
   }
 
   setPincodeStatus(
-    'Offline pincode database could not load. Keep pincode_merged_final.json or pincode_data.json beside this HTML.',
+    'Offline pincode database could not load. Keep pincode_merged_final.json beside this HTML.',
     'error'
   );
-}
-
-async function getIndiaPostRecord(pin){
-  const cacheKey=`gpz-post-${pin}`;
-
-  try{
-    const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');
-    if(cached&&Date.now()-cached.savedAt<7*86400000)return cached.record;
-  }catch(_error){}
-
-  const controller=new AbortController();
-  const timeout=setTimeout(()=>controller.abort(),4500);
-
-  try{
-    const response=await fetch(`${INDIA_POST_API}${pin}`,{
-      signal:controller.signal,
-      cache:'no-store'
-    });
-
-    if(!response.ok)throw new Error(`HTTP ${response.status}`);
-
-    const record=normalizeApiRecord(await response.json());
-    if(record){
-      try{
-        localStorage.setItem(cacheKey,JSON.stringify({savedAt:Date.now(),record}));
-      }catch(_error){}
-    }
-    return record;
-  }catch(error){
-    console.info('India Post unavailable; offline data retained.',error);
-    return null;
-  }finally{
-    clearTimeout(timeout);
-  }
 }
 
 function haversine(lat1,lon1,lat2,lon2){
@@ -1003,6 +887,7 @@ function ensurePincodeMetaFields(){
 }
 
 function clearPincodeResult(){
+  pincodeCurrentRecord=null;
   ensurePincodeMetaFields();
   pincodeAutoWriting=true;
   document.getElementById('state').value='';
@@ -1024,6 +909,8 @@ function clearPincodeResult(){
   document.getElementById('codEta').textContent='—';
   document.getElementById('codRange').textContent='—';
   document.getElementById('miniPreview').style.display='none';
+  const areaStatus=document.getElementById('areaTypeStatus');
+  if(areaStatus){areaStatus.style.display='none';areaStatus.textContent='';}
   if(typeof updatePrimeCourierAvailability==='function') updatePrimeCourierAvailability();
   if(typeof syncCourierOptions==='function') syncCourierOptions();
 }
@@ -1031,6 +918,7 @@ function clearPincodeResult(){
 function renderPincodeRecord(pin,rec,verification='offline'){
   if(!rec)return false;
   ensurePincodeMetaFields();
+  pincodeCurrentRecord=rec;
 
   const stateEl=document.getElementById('state');
   const cityEl=document.getElementById('city');
@@ -1071,51 +959,30 @@ function renderPincodeRecord(pin,rec,verification='offline'){
   }
 
   const officeCount=(rec.postoffices||[]).length;
-  const label=verification==='verified'?'Offline + India Post matched':
-    verification==='online'?'India Post data':'Offline data';
+  const label='Offline data';
 
   setPincodeStatus(
     `✓ ${pin}: ${label} • ${officeCount} post office${officeCount===1?'':'s'}`,
     'ok'
   );
 
+  updateAreaTypeStatus();
+
   if(typeof updatePrimeCourierAvailability==='function') updatePrimeCourierAvailability();
   if(typeof syncCourierOptions==='function') syncCourierOptions();
   return true;
 }
 
-async function lookupPincode(pin){
-  const token=++pincodeLookupToken;
+function lookupPincode(pin){
+  ++pincodeLookupToken;
   const local=normalizeLocalRecord(pincodeDB[pin]);
 
   if(local){
     renderPincodeRecord(pin,local,'offline');
-    setPincodeStatus(`✓ ${pin}: Offline result shown • checking India Post…`,'ok');
+    setPincodeStatus(`✓ ${pin}: Offline database result • ${(local.postoffices||[]).length} post office(s)`,'ok');
   }else{
     clearPincodeResult();
-    setPincodeStatus(`Checking ${pin} with India Post…`);
-  }
-
-  const online=await getIndiaPostRecord(pin);
-  if(token!==pincodeLookupToken)return;
-
-  const merged=mergePincodeRecords(local,online);
-
-  if(merged){
-    renderPincodeRecord(
-      pin,
-      merged,
-      local&&online?'verified':local?'offline':'online'
-    );
-
-    if(local&&!online){
-      setPincodeStatus(`✓ ${pin}: Offline data active (India Post server unavailable)`,'ok');
-    }else if(!local&&online){
-      setPincodeStatus(`✓ ${pin}: India Post result active; offline coordinates unavailable`,'ok');
-    }
-  }else{
-    clearPincodeResult();
-    setPincodeStatus(`Pincode ${pin} was not found in offline data or India Post.`,'error');
+    setPincodeStatus(`Pincode ${pin} was not found in the offline database.`,'error');
   }
 }
 
@@ -1139,7 +1006,7 @@ document.getElementById('pincode').addEventListener('input',function(){
 
 loadLocalPincodeDB();
 
-/* Allow manual correction without later online/offline refresh overwriting it. */
+/* Allow manual correction without a later offline refresh overwriting it. */
 const stateManualEl=document.getElementById('state');
 const cityManualEl=document.getElementById('city');
 const postOfficeEl=document.getElementById('postoffice');
@@ -1152,8 +1019,14 @@ postOfficeEl?.addEventListener('change',()=>{
     postOfficeManualEl.style.display=postOfficeEl.value==='__manual__'?'block':'none';
     if(postOfficeEl.value==='__manual__')postOfficeManualEl.focus();
   }
+  updateAreaTypeStatus();
+  syncCourierOptions();
 });
-postOfficeManualEl?.addEventListener('input',()=>{if(!pincodeAutoWriting)pincodeManualPostOffice=true;});
+postOfficeManualEl?.addEventListener('input',()=>{
+  if(!pincodeAutoWriting)pincodeManualPostOffice=true;
+  updateAreaTypeStatus();
+  syncCourierOptions();
+});
 
 /* Live updates that might affect totals/eligibility */
 ["name","mobile","altMobile","email","address","landmark","pincode","state","city","product","variant","basePrice","house"]
@@ -1350,11 +1223,14 @@ function gpzCourierRate(courier,speed,payment,kg){
 function getSubtotal(){return gpzAllItems().reduce((s,i)=>s+i.lineTotal,0);}
 function recomputeAddons(){
   document.getElementById("addonsTotal").value=sumAddons();
-  computeTotals();
+  updateAreaTypeStatus();
+  syncCourierOptions();
 }
 function syncCourierOptions(){
   const payment=gpzMode();
-  if(payment==="cod"){
+  const rural=gpzIsRuralDestination();
+  const productValue=getSubtotal();
+  if(payment==="cod"||rural){
     document.querySelector('input[name="deliverySpeed"][value="surface"]').checked=true;
     document.getElementById("airChoice").style.display="none";
     document.getElementById("primeChoice").style.display="none";
@@ -1363,20 +1239,26 @@ function syncCourierOptions(){
     document.getElementById("primeChoice").style.display="";
   }
   const speed=gpzSpeed();
-  const allowed=payment==="cod"?GPZ_COD:(speed==="air"?GPZ_AIR:(speed==="prime"?GPZ_PRIME:GPZ_SURFACE));
+  const allowed=rural
+    ? (productValue>3000?["Delhivery.com"]:["Delhivery.com","Speed Post"])
+    : (payment==="cod"?GPZ_COD:(speed==="air"?GPZ_AIR:(speed==="prime"?GPZ_PRIME:GPZ_SURFACE)));
   const select=document.getElementById("courier");
   const old=select.value;
   select.innerHTML=allowed.map(c=>`<option value="${c}">${c}</option>`).join("");
   select.value=allowed.includes(old)?old:allowed[0];
   const pin=(document.getElementById("pincode").value||"").trim();
   document.getElementById("courierServiceNote").textContent=/^\d{6}$/.test(pin)
-    ? `Pincode ${pin}: mode के अनुसार courier list दिखाई गई है। Final serviceability courier booking के समय confirm होगी।`
+    ? (rural
+      ? (productValue>3000
+        ? `Rural PIN ${pin}: ₹3,000 से ऊपर केवल Delhivery उपलब्ध है।`
+        : `Rural PIN ${pin}: Delhivery और Speed Post उपलब्ध हैं।`)
+      : `Pincode ${pin}: mode के अनुसार courier list दिखाई गई है। Final serviceability courier booking के समय confirm होगी।`)
     : "पहले valid 6-digit pincode भरें। Final courier serviceability destination pincode पर depend करेगी।";
   computeTotals();
 }
 function setMode(nextMode){
   const productValue=getSubtotal();
-  if(nextMode==="cod"&&productValue<1300){
+  if(nextMode==="cod"&&productValue<GPZ_COD_MIN){
     alert("COD is available only when product value is ₹1,300 or more.");
     document.querySelector('input[name="paymentMode"][value="prepaid"]').checked=true;
     mode="prepaid";
@@ -1384,6 +1266,7 @@ function setMode(nextMode){
     mode=nextMode;
   }
   document.getElementById("couponCard").style.display=mode==="prepaid"?"block":"none";
+  document.getElementById("couponCodNotice").style.display=mode==="cod"?"block":"none";
   if(mode==="cod"){
     discountValue=0;
     document.getElementById("couponCode").value="";
@@ -1418,7 +1301,7 @@ function computeTotals(){
   const volumetricKg=(boxDimensions[0]*boxDimensions[1]*boxDimensions[2])/5000;
   const chargeableKg=Math.max(.5,Math.max(actualKg,volumetricKg));
   let payment=gpzMode();
-  if(payment==="cod"&&productTotal<1300){
+  if(payment==="cod"&&productTotal<GPZ_COD_MIN){
     document.querySelector('input[name="paymentMode"][value="prepaid"]').checked=true;
     payment="prepaid"; mode="prepaid";
   }
@@ -1457,9 +1340,14 @@ function computeTotals(){
   document.getElementById("addonsTotal").value=sumAddons();
   document.getElementById("subtotal").value=productTotal;
   document.getElementById("gstDetails").style.display=invoiceIncluded?"block":"none";
-  document.getElementById("codChoice").style.display=productTotal<1300?"none":"";
-  document.querySelector('input[name="paymentMode"][value="cod"]').disabled=productTotal<1300;
+  const codAvailable=productTotal>=GPZ_COD_MIN;
+  document.getElementById("codChoice").style.display=codAvailable?"":"none";
+  document.querySelector('input[name="paymentMode"][value="cod"]').disabled=!codAvailable;
+  document.getElementById("codNote").textContent=codAvailable
+    ? "COD available. Courier charges will be added separately."
+    : "COD is available when products + add-ons total is ₹1,300 or more.";
   document.getElementById("couponCard").style.display=payment==="prepaid"?"block":"none";
+  document.getElementById("couponCodNotice").style.display=payment==="cod"?"block":"none";
   document.getElementById("itemBreakdown").innerHTML=items.map((i,n)=>`<div class="breakdown-item"><b>${n+1}. ${gpzEscape(i.name)}</b><br>${gpzMoney(i.unitPrice)} × ${i.quantity} = <b>${gpzMoney(i.lineTotal)}</b><br>${i.unitWeight}g × ${i.quantity} = <b>${i.lineWeight}g</b></div>`).join("");
   const values={sumProducts:gpzMoney(productTotal),sumDiscount:"-"+gpzMoney(appliedDiscount),sumProductGst:gpzMoney(productGst),sumWeight:totalWeight+"g",sumPacked:packedWeight+"g",
     sumBox:boxDimensions.join(" × ")+" cm",sumActual:actualKg.toFixed(2)+"kg",sumVolumetric:volumetricKg.toFixed(2)+"kg",
