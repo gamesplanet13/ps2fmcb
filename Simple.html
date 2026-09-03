@@ -1269,29 +1269,42 @@ body.wizard-popup-open{
 
 <style id="ps2-image-viewer-fix">
 #imagePopup{
-  z-index:20000 !important;
-  padding:64px 14px 18px;
+  z-index:30000 !important;
+  padding:14px !important;
 }
-#imagePopup img{
-  max-width:min(94vw,900px) !important;
-  max-height:calc(100vh - 90px) !important;
+#imagePopup .image-popup-frame{
+  position:relative;
+  display:inline-flex;
+  max-width:calc(100vw - 28px);
+  max-height:calc(100vh - 28px);
+}
+#imagePopup .image-popup-frame img{
+  display:block;
+  max-width:100% !important;
+  max-height:calc(100vh - 28px) !important;
   object-fit:contain;
 }
-#imagePopup .close{
+#imagePopup .image-popup-frame .close{
   appearance:none;
-  border:1px solid rgba(255,255,255,.45);
-  width:auto !important;
-  min-width:92px;
+  position:absolute !important;
+  top:8px !important;
+  right:8px !important;
+  border:2px solid #fff !important;
+  width:42px !important;
   height:42px !important;
-  padding:0 14px;
-  border-radius:999px !important;
-  background:#fff !important;
-  color:#0f172a !important;
-  font-size:.9rem !important;
+  min-width:0;
+  padding:0;
+  border-radius:50% !important;
+  background:#dc2626 !important;
+  color:#fff !important;
+  font-size:24px !important;
   font-weight:900;
   line-height:1;
   cursor:pointer;
-  z-index:2;
+  z-index:5;
+  display:grid !important;
+  place-items:center;
+  box-shadow:0 4px 14px rgba(0,0,0,.45);
 }
 </style>
 
@@ -1659,8 +1672,9 @@ body.wizard-popup-open{
   <div class="section">
     <h3>💡 Warranty</h3>
     <ul class="list">
-      <li>64GB / 128GB / 128GB SSD – 1 Year</li>
-      <li>256GB / 500GB SSD – 1 Year</li>
+      <li>32GB Generic Card Reader USB – 1 Month Hardware Warranty</li>
+      <li>64GB / 128GB – 1 Year</li>
+      <li>256GB SSD – 1 Year</li>
       <li>500GB HDD – 6 Months</li>
       <li>USB Enclosure – ❌ No Warranty</li>
     </ul>
@@ -1672,7 +1686,9 @@ body.wizard-popup-open{
     <ul class="list">
       <li>❌ No Return • ❌ No Replacement</li>
       <li>✔️ Confirm OPL compatibility before ordering</li>
-      <li>🛠️ 1 Month Free Software Reinstallation (Courier both sides by customer)</li>
+      <li>⚠️ Games और software पर कोई warranty नहीं है।</li>
+      <li>🛠️ Purchase के 1 महीने के अंदर FMCB software या games corrupt होने पर same software/games free reload किए जाएंगे।</li>
+      <li>🚚 Reinstallation, reload या warranty claim में दोनों तरफ का courier customer को देना होगा।</li>
     </ul>
   </div>
 
@@ -1706,28 +1722,38 @@ body.wizard-popup-open{
 // ===== Updated Product Data =====
 
 const usbVariants = [
-  { v:'64GB PD 2.0', top:1051, opt:1101, count:21 },
-  { v:'64GB PD 3.0', top:1151, opt:1201, count:21 },
-  { v:'128GB PD 3.0', top:2101, opt:2201, count:41 },
-  { v:'128GB SSD', top:3701, opt:3801, count:41 },
-  { v:'256GB SSD', top:5201, opt:5401, count:71 },
-  { v:'500GB HDD', top:7001, opt:7401, count:175 },
-  { v:'500GB SSD', top:11001, opt:11401, count:175 },
+  { v:'32GB Generic Card Reader USB', top:625, opt:650, count:13 },
+  { v:'64GB PD 2.0', top:1050, opt:1100, count:23 },
+  { v:'64GB PD 3.0', top:1150, opt:1200, count:23 },
+  { v:'128GB PD 3.0', top:2100, opt:2200, count:44 },
+  { v:'256GB SSD', top:5200, opt:5400, count:75 },
+  { v:'500GB HDD', top:5250, opt:5650, count:180 },
 ];
 
 const comboVariants = [
-  { v:'64GB PD 2.0', top:1650, opt:1700, count:21 },
-  { v:'64GB PD 3.0', top:1750, opt:1800, count:21 },
-  { v:'128GB PD 3.0', top:2700, opt:2800, count:41 },
-  { v:'128GB SSD',   top:4300, opt:4400, count:41 },
-  { v:'256GB SSD',   top:5800, opt:6000, count:71 },
-  { v:'500GB HDD',   top:7600, opt:8000, count:175 },
-  { v:'500GB SSD',   top:11600, opt:12000, count:175 },
+  { v:'32GB Generic Card Reader USB', top:1225, opt:1250, count:13 },
+  { v:'64GB PD 2.0', top:1650, opt:1700, count:23 },
+  { v:'64GB PD 3.0', top:1750, opt:1800, count:23 },
+  { v:'128GB PD 3.0', top:2700, opt:2800, count:44 },
+  { v:'256GB SSD',   top:5800, opt:6000, count:75 },
+  { v:'500GB HDD',   top:5850, opt:6250, count:180 },
 ];
 
 function fmt(n){return `₹${Number(n).toLocaleString('en-IN')}`;}
 const topGamesVideoUrl='https://youtu.be/xGR0vUM1-Jw';
 const optionalGamesSelectorUrl='https://gamesplanet13.github.io/ps2gameselector/';
+const topGamesByCapacity={"32GB":["Snow Bros - Nick And Tom2","Cadillacs and Dinosaurs","Bloody Roar 4","Crash Tag Team Racing","Metal Slug Anthology","Street Fighter Alpha Anthology","TEKKEN 3 T5","Tekken 4","Tekken 5","Tekken Tag Tournament","The King of Fighters XI","WWE SmackDown! Here Comes the Pa","tekken3J"],"64GB":["Snow Bros - Nick And Tom2","Ben 10 - Protector of Earth","Burnout Revenge","Cricket 07","Devil May Cry 3 - Dante's Awaken","DragonBall Z - Budokai Tenkaichi","FIFA 14","God Hand","God of War II","Grand Theft Auto San Andreas","Max Payne 2 - The Fall of Max Pa","Medal of Honor - Vanguard","Metal Slug Anthology","Prince of Persia - The Two Thron","Resident Evil 4","Rumble Racing","Spider-Man 3","Tekken Tag Tournament","Tomb Raider - Underworld","Urban Reign","WWE SmackDown! Here Comes the Pa","WWE SVR 2011","tekken3J"],"128GB":["Snow Bros - Nick And Tom2","Batman Begins","Ben 10 - Protector of Earth","Ben 10 - Ultimate Alien - Cosmic","Black","Bloody Roar 4","Burnout Revenge","Contra - Shattered Soldier (Euro","Crash Tag Team Racing","Cricket 07","Devil May Cry 3 - Dante's Awaken","Downhill Domination","DragonBall Z - Budokai Tenkaichi","Evil Dead - Regeneration","FIFA 14","God Hand","God of War DVD5 (NTSC) PS2","God of War II","Grand Theft Auto - Vice City Sto","Grand Theft Auto San Andreas","Harley-Davidson Motorcycles - Ra","Harry Potter and the Order of th","Hitman - Blood Money","Indiana Jones and the Emperor's","Jet Li - Rise to Honor","Max Payne 2 - The Fall of Max Pa","Medal of Honor - Vanguard","Metal Slug Anthology","Mortal Kombat - Armageddon","MX vs. ATV Unleashed","Need for Speed - Most Wanted","Prince of Persia - The Two Thron","Resident Evil 4","Rumble Racing","Silent Hill Origins","Spider-Man 3","SSX 3","Tekken 5","Tekken Tag Tournament","Tomb Raider - Underworld","Urban Reign","WWE SmackDown! Here Comes the Pa","WWE SVR 2011","tekken3J"],"256GB":["Snow Bros - Nick And Tom2","Cadillacs and Dinosaurs","Ben 10 - Protector of Earth","Ben 10 - Ultimate Alien - Cosmic","Black","Bloody Roar 4","Burnout Revenge","Call of Duty 3","Contra - Shattered Soldier (Euro","Crash Bandicoot The Wrath of Cor","Crash Tag Team Racing","Cricket 07 (Europe)","Dead to Rights II","Def Jam - Fight for NY","Despicable Me - The Game","Devil May Cry 3 - Dante's Awaken","Disney-Pixar Cars - Race-O-Rama","Disney-Pixar Toy Story 3","Disney's Chicken Little - Ace in","Disneys Donald Duck Goin Quacker","Disney's Tarzan - Untamed","DOA2 - Hardcore","Downhill Domination","DragonBall Z - Budokai Tenkaichi","Driv3r","Enter the Matrix","Evil Dead - Regeneration","Fantastic 4","FIFA 14","Final Fantasy XII","G.I. Joe - The Rise of Cobra","God Hand","God of War DVD5 (NTSC) PS2","Gran Turismo 4","Grand Theft Auto - San Andreas","Grand Theft Auto - Vice City Sto","Harley-Davidson Motorcycles - Ra","Harry Potter and the Goblet of F","Harry Potter and the Order of th","Hitman - Blood Money","Hot Wheels - Velocity X - Maximu","Indiana Jones and the Emperor's","Jet Li - Rise to Honor","Justice League Heroes","Mafia","Max Payne 2 - The Fall of Max Pa","Medal of Honor - Vanguard","Metal Gear Solid 3 - Snake Eater","Metal Slug Anthology","Midnight Club 3 - DUB Edition","Mortal Kombat - Armageddon","Mortal Kombat - Shaolin Monks","MotoGP 08","Mummy, The - Tomb of the Dragon","MX vs. ATV Unleashed","Naruto Shippuden - Ultimate Ninj","NBA 2K12","Need for Speed - Hot Pursuit 2","Need for Speed - Most Wanted - B","Prince of Persia - The Two Thron","Prince of Persia - Warrior Withi","Resident Evil 4","Rumble Racing","Shadow of the Colossus","Silent Hill Origins","Spider-Man 3","Tekken 5","Tekken Tag Tournament","The Chronicles of Narnia - The L","Tomb Raider - Underworld","Urban Reign","WWE SmackDown! Here Comes the Pa","WWE SVR 2011","God of War II","tekken3J"],"500GB":["Snow Bros - Nick And Tom2","Cadillacs and Dinosaurs","007 - From Russia with Love","007 - Quantum of Solace","24 - The Game","50 Cent - Bulletproof","Ace Combat 5 - The Unsung War","Activision Anthology","Area 51","Army Men - Sarge's Heroes 2","Atari Anthology","ATV Offroad Fury 4","Backyard Wrestling 2 - There Goe","Bad Boys - Miami Takedown","Ball Billiards Master","Barbie as The Island Princess","Batman - Vengeance","Batman Begins","Battle Engine Aquila","Battlefield 2 - Modern Combat","Ben 10 - Alien Force","Ben 10 - Alien Force - Vilgax At","Ben 10 - Protector of Earth","Ben 10 - Ultimate Alien - Cosmic","Biker Mice from Mars","Bionicle Heroes","Black","Blade II","BloodRayne","Bloody Roar 4","BMX XXX","Bombastic","Brave - The Search for Spirit Da","Brian Lara International Cricket","Brothers in Arms - Earned in Blo","Brothers in Arms - Road to Hill","Bully","Burnout Dominator","Burnout Revenge","Cabela's Big Game Hunter 2008","Cadilacs & Dinosours - Mustafa","Call of Duty - Finest Hour","Call of Duty - World at War - Fi","Call of Duty 3","Capcom Classics Collection Vol.","Capcom vs. SNK 2 - Mark of the M","Catwoman","Chaos Wars","Codename - Kids Next Door - Oper","Commandos 2 - Men of Courage","Conflict - Desert Storm II - Bac","Contra - Shattered Soldier (Euro","Crash Bandicoot The Wrath of Cor","Crash Nitro Kart","Crash of the Titans","Crash Tag Team Racing","Crash Twinsanity","Cricket 07","Dead to Rights II","Def Jam - Vendetta","Delta Force - Black Hawk Down -","Despicable Me - The Game","Destroy All Humans! 2","Devil May Cry 3 - Dante's Awaken","Disney G-Force","Disney Pirates of the Caribbean","Disney-Pixar The Incredibles","DOA2 - Hardcore","Downhill Domination","DragonBall Z - Budokai Tenkaichi","Driv3r","Enter the Matrix","Evil Dead - Regeneration","Fantastic 4","FIFA 14","Final Fantasy XII","FlatOut 2","Freedom Fighters","Ghost Rider","God Hand","God of War DVD5 (NTSC) PS2","God of War II","God of War II (Feb 2, 2007 Proto","Grand Theft Auto - Liberty City","Grand Theft Auto - Vice City Sto","Grand Theft Auto III","Grand Theft Auto San Andreas","Harley-Davidson Motorcycles - Ra","Harry Potter and the Goblet of F","Harry Potter and the Order of th","Hitman - Blood Money","Hot Wheels - Velocity X - Maximu","Hulk","Ice Age 2 - The Meltdown","Indiana Jones and the Emperor's","Iron Man","Jet Li - Rise to Honor","Just Cause","Justice League Heroes","Killzone","Lara Croft Tomb Raider - Anniver","Mafia","Manhunt 2","Marvel - Ultimate Alliance 2","Marvel Nemesis - Rise of the Imp","Marvel Super Hero Squad","Max Payne 2 - The Fall of Max Pa","Medal of Honor - Vanguard","Men in Black II - Alien Escape","Metal Slug Anthology","Midnight Club 3 - DUB Edition","Mission - Impossible - Operation","Monster Jam - Urban Assault","Monster Rancher 4","Mortal Kombat - Armageddon","Mortal Kombat - Shaolin Monks","Motocross Mania 3","MotoGP 08","Mummy Returns, The (USA)","MX vs. ATV Unleashed","Need for Speed - Carbon","Need for Speed - Hot Pursuit 2","Need for Speed - Most Wanted","Need for Speed - ProStreet","Onimusha - Blade Warriors","PES 2013 - Pro Evolution Soccer","Pirates of the Caribbean - The L","Prince of Persia - The Two Thron","Prince of Persia - Warrior Withi","Ratchet & Clank - Size Matters","Rayman 3 - Hoodlum Havoc","Resident Evil 4","Rumble Racing","Samurai Warriors 2","SBK - Superbike World Championsh","Scooby-Doo! and the Spooky Swamp","Scooby-Doo! First Frights","Shadow of the Colossus","Silent Hill Origins","Sly 3 - Honor Among Thieves","Sonic Unleashed","Soulcalibur III","Spider-Man 3","SSX Tricky","Street Fighter Anniversary Colle","Superman Returns","Syphon Filter - Logan's Shadow","Teenage Mutant Ninja Turtles 3 -","Tekken 5","Tekken Tag Tournament","Terminator 3 - Rise of the Machi","The Chronicles of Narnia - Princ","The King of Fighters Collection","The Mummy - Tomb of the Dragon E","The Punisher","Time Crisis 3","TNA Impact! Total Nonstop Action","Tom Clancy's Ghost Recon - Advan","Tom Clancy's Splinter Cell - Cha","Tomb Raider - Underworld","Tony Hawk's Downhill Jam","Tony Hawk's Underground 2","Total Overdose - A Gunslinger's","Toy Story 3","Transformers - Revenge of the Fa","Twisted Metal - Black","UEFA Euro 2008 - Austria-Switzer","UFC - Ultimate Fighting Champion","Ultimate Spider-Man - Limited Ed","Urban Reign","Van Helsing","Virtua Fighter 4 - Evolution","WWE 2020","WWE All Stars","WWE SmackDown! Here Comes the Pa","WWE SVR 2011","X-Men Legends II - Rise of Apoca","X-Men Origins - Wolverine","Yakuza 2","tekken3J"]};
+function topGamesCapacity(value){const match=String(value||'').match(/(32|64|128|256|500)GB/i);return match?match[1]+'GB':'';}
+function closeTopGamesList(){const popup=document.getElementById('topGamesListPopup');if(popup)popup.remove();document.body.style.overflow='';}
+function openTopGamesList(value){
+  const capacity=topGamesCapacity(value),games=topGamesByCapacity[capacity]||[];
+  closeTopGamesList();
+  const popup=document.createElement('div');popup.id='topGamesListPopup';popup.setAttribute('role','dialog');popup.setAttribute('aria-modal','true');
+  popup.style.cssText='position:fixed;inset:0;z-index:31000;background:rgba(2,6,23,.86);padding:14px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)';
+  popup.innerHTML=`<section style="position:relative;width:min(760px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;padding:20px;box-shadow:0 25px 80px rgba(0,0,0,.5)"><button type="button" onclick="closeTopGamesList()" aria-label="Close games list" style="position:sticky;float:right;top:0;width:42px;height:42px;border:2px solid #fff;border-radius:50%;background:#dc2626;color:#fff;font-size:24px;font-weight:900;cursor:pointer;z-index:2">✕</button><h2 style="margin:4px 52px 5px 0;color:#0f4c81">${capacity} — Top ${games.length} Games</h2><p style="margin:0 0 15px;color:#64748b">CSV के अनुसार पूरी Top Games list</p><ol style="clear:both;columns:2;column-gap:32px;padding-left:28px;line-height:1.65">${games.map(game=>`<li style="break-inside:avoid;padding:2px 0">${gpzCartEsc(game)}</li>`).join('')}</ol></section>`;
+  popup.onclick=event=>{if(event.target===popup)closeTopGamesList();};document.body.appendChild(popup);document.body.style.overflow='hidden';
+}
+document.addEventListener('keydown',event=>{if(event.key==='Escape')closeTopGamesList();});
 function usbDisplayName(v){ return String(v).replace(/^(\d+GB)\s+/, '$1 USB '); }
 function makeVariantBuyCard(label,top,opt,count,onTopBuy,onOptionalBuy){
   const card=document.createElement('div');
@@ -1740,6 +1766,7 @@ function makeVariantBuyCard(label,top,opt,count,onTopBuy,onOptionalBuy){
           Buy ${label} with Top ${count} Games
           <span class="pack-price">${fmt(top)}</span>
         </button>
+        <button type="button" class="variant-pack-link" onclick="openTopGamesList('${label.replace(/'/g,"\\'")}')">📋 View Top ${count} Games List</button>
         <a class="variant-pack-link" href="${topGamesVideoUrl}" target="_blank" rel="noopener">🎞️ Watch Top ${count} Games List Video</a>
       </div>
       <div class="variant-pack-option">
@@ -2374,15 +2401,17 @@ document.addEventListener('DOMContentLoaded', function(){
   </div>
 </div>
 
-<div id="imagePopup" role="dialog" aria-modal="true" aria-label="Product image" onclick="if(event.target===this)closeImg()"><button type="button" class="close" onclick="closeImg()" aria-label="Close image">✕ Close</button><img id="popupImg" alt="Full product image"></div>
+<div id="imagePopup" role="dialog" aria-modal="true" aria-label="Product image" onclick="if(event.target===this)closeImg()"><div class="image-popup-frame"><img id="popupImg" alt="Full product image"><button type="button" class="close" onclick="closeImg()" aria-label="Close image">✕</button></div></div>
 <script>
 function openImg(s){
   document.getElementById('imagePopup').style.display='flex';
   document.getElementById('popupImg').src=s;
+  document.body.style.overflow='hidden';
 }
 function closeImg(){
   document.getElementById('imagePopup').style.display='none';
   document.getElementById('popupImg').src='';
+  document.body.style.overflow='';
 }
 document.addEventListener('keydown',function(event){
   if(event.key==='Escape') closeImg();
@@ -2550,6 +2579,7 @@ function gpzCatalogCard({key,product,variant,name,price,weight,size,image}){
     <div class="accessory-name">${gpzCartEsc(name)}</div>
     <div class="accessory-meta"><span class="accessory-price">${gpzCartMoney(price)}</span><span>⚖️ ${weight}g</span></div>
     <div class="gpz-product-specs"><span>Size ${size.join(" × ")} cm</span><span>PS2 Product</span></div>
+    ${/Top/i.test(variant)?`<button type="button" class="variant-pack-link" onclick="openTopGamesList('${variant.replace(/'/g,"\\'")}')">📋 View Top Games List</button>`:""}
     <div class="accessory-actions">
       <div class="qty-control"><button type="button" onclick="gpzCatalogSetQty('${key}',-1)">−</button><output id="gpzCatalogQty${key}">${gpzCatalogQty[key]}</output><button type="button" onclick="gpzCatalogSetQty('${key}',1)">+</button></div>
       <button type="button" class="accessory-cart" onclick="gpzCatalogAdd(${args},false)">Add to Cart</button>
@@ -2567,7 +2597,7 @@ function gpzRenderOpenProductCatalog(){
   const usb=[];
   usbVariants.forEach((v,index)=>{
     const weight=gpzCartWeight("USB for PS2",v.v),size=[12,8,3];
-    const image=/HDD|SSD/i.test(v.v)?"Usbhdd.jpeg":(/3\.0/i.test(v.v)?"Sandiscultra.png":"Usb.jpg");
+    const image=/^32GB/i.test(v.v)?"32gb.jpg":(/HDD|SSD/i.test(v.v)?"Usbhdd.jpeg":(/3\.0/i.test(v.v)?"Sandiscultra.png":"Usb.jpg"));
     usb.push({key:`ut${index}`,product:"USB for PS2 (Game-Loaded)",variant:`${v.v} — Top ${v.count} Games`,name:`${usbDisplayName(v.v)} — Top ${v.count} Games`,price:v.top,weight,size,image});
     usb.push({key:`uo${index}`,product:"USB for PS2 (Game-Loaded)",variant:`${v.v} — Optional Games`,name:`${usbDisplayName(v.v)} — Optional Games`,price:v.opt,weight,size,image});
   });
