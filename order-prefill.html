@@ -1403,6 +1403,9 @@ function gpzOrderVariant(){
 function buildWhatsAppTemplate(){
   const o=gpzCurrentOrder; if(!o) return "";
   const isCod=o.paymentMode==="cod";
+  const courierDisplay=o.deliverySpeed==="air"
+    ? `${o.courier} (By Air)`
+    : (o.deliverySpeed==="prime"?`${o.courier} (Prime)`:o.courier);
   const house=(document.getElementById("house").value||"").trim();
   const address=((house?house+", ":"")+(document.getElementById("address").value||"")).trim();
   const simpleProducts=o.items.map(i=>{
@@ -1445,7 +1448,7 @@ function buildWhatsAppTemplate(){
     `Product: ${simpleProducts}`,
     `Variant: ${simpleVariants}`,
     `Base Price: ${gpzMoney(o.basePriceDisplay||0)}`,
-    `Courier Company: ${o.courier}`,
+    `Courier Company: ${courierDisplay}`,
     `Discount Applied: ${o.discountApplied?gpzMoney(o.discountApplied):""}`,
     gstTop,
     `Amount Paid: ${gpzMoney(o.advanceAmount)}`,
