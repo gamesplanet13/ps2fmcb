@@ -1,4 +1,4 @@
-const CACHE_NAME="games-planet-live-v10";
+const CACHE_NAME="games-planet-live-v11";
 const APP_SHELL=[
   "./","./index.html","./Simple.html","./order-prefill.html","./invoice.html","./manifest.webmanifest",
   "./assets/html2canvas.min.js","./assets/jspdf.umd.min.js",
@@ -16,12 +16,12 @@ self.addEventListener("activate",event=>{
 });
 self.addEventListener("fetch",event=>{
   if(event.request.mode==="navigate"){
-    event.respondWith(fetch(event.request).then(response=>{
+    event.respondWith(fetch(new Request(event.request,{cache:"reload"})).then(response=>{
       const copy=response.clone();
       caches.open(CACHE_NAME).then(cache=>cache.put(event.request,copy));
       return response;
     }).catch(()=>caches.match(event.request).then(cached=>cached||caches.match("./index.html"))));
     return;
   }
-  event.respondWith(fetch(event.request).catch(()=>caches.match(event.request)));
+  event.respondWith(fetch(new Request(event.request,{cache:"no-store"})).catch(()=>caches.match(event.request)));
 });
