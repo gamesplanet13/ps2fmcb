@@ -1065,6 +1065,22 @@ const GPZ_ADDON_WEIGHTS={
 let gpzCurrentOrder=null;
 let gpzDirectBasePrice=0;
 
+function gpzUpgradeUnavailableUsbItem(item){
+  const next={...(item||{})};
+  const text=`${next.product||""} ${next.variant||""} ${next.name||""}`;
+  if(!(/64\s*GB.*(?:PD|USB).*2[.]0|(?:PD|USB).*2[.]0.*64\s*GB/i.test(text))) return next;
+  next.product=String(next.product||"").replace(/2[.]0/gi,"3.0");
+  next.variant=String(next.variant||"").replace(/2[.]0/gi,"3.0");
+  next.name=String(next.name||"").replace(/2[.]0/gi,"3.0");
+  const prices={800:900,1050:1150,1100:1200,1650:1750,1700:1800};
+  const oldPrice=Number(next.unitPrice)||0;
+  next.unitPrice=prices[oldPrice]||oldPrice;
+  const quantity=Math.max(1,Number(next.quantity)||1);
+  next.lineTotal=next.unitPrice*quantity;
+  return next;
+}
+function gpzUpgradeUnavailableUsbItems(items){return (Array.isArray(items)?items:[]).map(gpzUpgradeUnavailableUsbItem);}
+
 /* Read the cart that belongs to THIS checkout.
    URL payload is primary so checkout still works when localStorage is blocked,
    cleared, or a stale cart exists from an older order. */
@@ -1075,7 +1091,7 @@ function gpzIncomingCartItems(){
   if(urlCart){
     try{
       const parsed=JSON.parse(urlCart);
-      if(Array.isArray(parsed)&&parsed.length) return parsed;
+      if(Array.isArray(parsed)&&parsed.length) return gpzUpgradeUnavailableUsbItems(parsed);
     }catch(e){
       console.warn("Could not parse cart from checkout URL.",e);
     }
@@ -1083,7 +1099,7 @@ function gpzIncomingCartItems(){
 
   try{
     const stored=JSON.parse(localStorage.getItem("gp_order_summary")||"null");
-    if(stored&&stored.source==="cart"&&Array.isArray(stored.items)&&stored.items.length) return stored.items;
+    if(stored&&stored.source==="cart"&&Array.isArray(stored.items)&&stored.items.length) return gpzUpgradeUnavailableUsbItems(stored.items);
   }catch(e){
     console.warn("Could not read saved checkout cart.",e);
   }
@@ -1093,7 +1109,7 @@ function gpzIncomingCartItems(){
   try{
     const rawCart=JSON.parse(localStorage.getItem("gpz_ps2_cart_v1")||"[]");
     if(Array.isArray(rawCart)&&rawCart.length){
-      return rawCart.map(i=>({
+      return gpzUpgradeUnavailableUsbItems(rawCart.map(i=>({
         name:(i.variant&&i.variant!=="PS2")?`${i.product} — ${i.variant}`:i.product,
         product:i.product,
         variant:i.variant||"PS2",
@@ -1104,7 +1120,7 @@ function gpzIncomingCartItems(){
         unitWeight:Number(i.unitWeight)||25,
         lineWeight:(Number(i.unitWeight)||25)*(Number(i.quantity)||1),
         size:i.size||""
-      }));
+      })));
     }
   }catch(e){
     console.warn("Could not read persistent PS2 cart.",e);
@@ -1168,7 +1184,7 @@ function gpzBaseItems(){
   const suppliedWeight=Number(GPZ_PARAMS.get("weight")||0);
   const unitPrice=quantity?base/quantity:base;
   const unitWeight=suppliedWeight?suppliedWeight/quantity:gpzInferWeight(product,variant);
-  return [{name:variant?`${product} — ${variant}`:product,product,variant,quantity,unitPrice,lineTotal:base,unitWeight,lineWeight:unitWeight*quantity,dimensions:GPZ_PARAMS.get("dimensions")||""}];
+  return [gpzUpgradeUnavailableUsbItem({name:variant?`${product} — ${variant}`:product,product,variant,quantity,unitPrice,lineTotal:base,unitWeight,lineWeight:unitWeight*quantity,dimensions:GPZ_PARAMS.get("dimensions")||""})];
 }
 function gpzAllItems(){
   const items=gpzBaseItems();

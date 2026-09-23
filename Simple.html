@@ -2479,6 +2479,7 @@ document.addEventListener('DOMContentLoaded', function(){
 <div class="gpz-cart-fixed" aria-label="Shopping cart controls">
   <button type="button" onclick="gpzCartOpen()">🛒 Cart <span id="gpzCartCount">0</span></button>
   <button type="button" class="gpz-reset-tiny" onclick="gpzCartReset()">Reset</button>
+  <button type="button" class="gpz-reset-tiny" onclick="gpzClearCacheAndCart()">Clear Cache</button>
 </div>
 <div id="gpzCartDrawer" class="gpz-cart-drawer" onclick="if(event.target===this)gpzCartClose()">
   <aside class="gpz-cart-panel" role="dialog" aria-modal="true" aria-labelledby="gpzCartTitle">
@@ -2493,13 +2494,28 @@ document.addEventListener('DOMContentLoaded', function(){
 <div id="gpzCartToast" class="gpz-cart-toast">Added to cart</div>
 <script id="gpz-persistent-cart">
 const GPZ_CART_KEY="gpz_ps2_cart_v1";
-function gpzCartRead(){try{const v=JSON.parse(localStorage.getItem(GPZ_CART_KEY)||"[]");return Array.isArray(v)?v:[]}catch(e){return []}}
+function gpzSanitizeCartItem(item){
+  const next={...(item||{})};
+  const text=`${next.product||""} ${next.variant||""} ${next.name||""}`;
+  if(/64\s*GB.*(?:PD|USB).*2[.]0|(?:PD|USB).*2[.]0.*64\s*GB/i.test(text)){
+    next.product=String(next.product||"").replace(/2[.]0/gi,"3.0");
+    next.variant=String(next.variant||"").replace(/2[.]0/gi,"3.0");
+    next.name=String(next.name||"").replace(/2[.]0/gi,"3.0");
+    const prices={800:900,1050:1150,1100:1200,1650:1750,1700:1800};
+    const oldPrice=Number(next.unitPrice)||0;
+    next.unitPrice=prices[oldPrice]||oldPrice;
+    next.key=`${next.product||""}|${next.variant||""}|${next.unitPrice}`.toLowerCase();
+  }
+  return next;
+}
+function gpzCartRead(){try{const v=JSON.parse(localStorage.getItem(GPZ_CART_KEY)||"[]");if(!Array.isArray(v))return[];const clean=v.map(gpzSanitizeCartItem);if(JSON.stringify(clean)!==JSON.stringify(v))localStorage.setItem(GPZ_CART_KEY,JSON.stringify(clean));return clean}catch(e){return []}}
 function gpzCartSave(items){localStorage.setItem(GPZ_CART_KEY,JSON.stringify(items));gpzCartRender()}
 function gpzCartEsc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function gpzCartMoney(n){return "₹"+Math.round(Number(n)||0).toLocaleString("en-IN")}
 function gpzCartWeight(product,variant){const t=`${product} ${variant}`.toUpperCase();let w=25;if(t.includes("500GB"))w=175;else if(t.includes("256GB"))w=71;else if(t.includes("128GB"))w=41;else if(t.includes("64GB"))w=21;if(t.includes("COMBO"))w+=25;return w}
 function gpzCartSize(product,variant){const t=`${product} ${variant}`.toUpperCase();if(t.includes("COMBO"))return [15,12,4];if(t.includes("USB"))return [12,8,3];if(t.includes("MEMORY")||t.includes("FMCB")||t.includes("FUNTUNA"))return [12,9,2];return [15,12,5]}
 function gpzCartAdd(item){
+  item=gpzSanitizeCartItem(item);
   const items=gpzCartRead(),key=`${item.product}|${item.variant}|${item.unitPrice}`.toLowerCase();
   const found=items.find(x=>x.key===key);
   if(found)found.quantity+=Math.max(1,Number(item.quantity)||1);
@@ -2528,6 +2544,15 @@ function gpzCartRender(){
 function gpzCartOpen(){gpzCartRender();document.getElementById("gpzCartDrawer").classList.add("open");document.body.style.overflow="hidden"}
 function gpzCartClose(){document.getElementById("gpzCartDrawer").classList.remove("open");document.body.style.overflow=""}
 function gpzCartReset(){if(!gpzCartRead().length)return;if(confirm("Reset cart and remove all saved products?")){localStorage.removeItem(GPZ_CART_KEY);gpzCartRender();gpzCartClose()}}
+async function gpzClearCacheAndCart(){
+  if(!confirm("Clear page cache and reset the cart?"))return;
+  localStorage.removeItem(GPZ_CART_KEY);
+  localStorage.removeItem("gp_order_summary");
+  sessionStorage.clear();
+  if("caches" in window){const names=await caches.keys();await Promise.all(names.map(name=>caches.delete(name)));}
+  if("serviceWorker" in navigator){const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(reg=>reg.unregister()));}
+  location.replace(`${location.pathname}?fresh=${Date.now()}`);
+}
 function gpzCartToast(){const el=document.getElementById("gpzCartToast");el.classList.add("show");clearTimeout(gpzCartToast.timer);gpzCartToast.timer=setTimeout(()=>el.classList.remove("show"),1600)}
 function gpzCartCheckout(){
   const cart=gpzCartRead();if(!cart.length){alert("Cart is empty.");return}
