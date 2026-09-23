@@ -1,27 +1,48 @@
-const CACHE_NAME="games-planet-live-v11";
-const APP_SHELL=[
-  "./","./index.html","./Simple.html","./order-prefill.html","./invoice.html","./manifest.webmanifest",
-  "./assets/html2canvas.min.js","./assets/jspdf.umd.min.js",
-  "./games-planet-logo-transparent.png","./games-planet-icon-192.png","./games-planet-icon-512.png",
-  "./01-Current-ac-qr.jpg",
-  "./images/jpeg/best-av-cable-for-ps2.jpeg","./images/png/best-av-cable-for-ps2.png",
-  "./images/jpeg/av-component-connector.jpeg","./images/png/av-component-connector.png",
-  "./images/jpeg/av-male-to-male-cable.jpeg","./images/png/av-male-to-male-cable.png"
+const CACHE_NAME = "games-planet-live-v12";
+const APP_SHELL = [
+  "./",
+  "./index.html",
+  "./Simple.html",
+  "./order-prefill.html",
+  "./invoice.html",
+  "./manifest.webmanifest"
 ];
-self.addEventListener("install",event=>{
-  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)).then(()=>self.skipWaiting()));
+
+self.addEventListener("install", event => {
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    await Promise.allSettled(APP_SHELL.map(async url => {
+      const response = await fetch(url, { cache: "reload" });
+      if (response.ok) await cache.put(url, response);
+    }));
+    await self.skipWaiting();
+  })());
 });
-self.addEventListener("activate",event=>{
-  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));
+
+self.addEventListener("activate", event => {
+  event.waitUntil((async () => {
+    const names = await caches.keys();
+    await Promise.all(names.filter(name => name !== CACHE_NAME).map(name => caches.delete(name)));
+    await self.clients.claim();
+  })());
 });
-self.addEventListener("fetch",event=>{
-  if(event.request.mode==="navigate"){
-    event.respondWith(fetch(new Request(event.request,{cache:"reload"})).then(response=>{
-      const copy=response.clone();
-      caches.open(CACHE_NAME).then(cache=>cache.put(event.request,copy));
-      return response;
-    }).catch(()=>caches.match(event.request).then(cached=>cached||caches.match("./index.html"))));
+
+self.addEventListener("fetch", event => {
+  if (event.request.method !== "GET") return;
+
+  if (event.request.mode === "navigate") {
+    event.respondWith((async () => {
+      try {
+        const response = await fetch(new Request(event.request, { cache: "no-store" }));
+        const cache = await caches.open(CACHE_NAME);
+        await cache.put(event.request, response.clone());
+        return response;
+      } catch (_) {
+        return (await caches.match(event.request)) || (await caches.match("./index.html"));
+      }
+    })());
     return;
   }
-  event.respondWith(fetch(new Request(event.request,{cache:"no-store"})).catch(()=>caches.match(event.request)));
+
+  event.respondWith(fetch(new Request(event.request, { cache: "no-store" })).catch(() => caches.match(event.request)));
 });
