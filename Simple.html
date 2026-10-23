@@ -1455,9 +1455,9 @@ body.wizard-popup-open{
   <section id="step1" class="model-selector wizard-modal hidden">
     <h2 class="model-title">Select Your PS2 Model</h2>
     <div class="ps2-gallery">
-<div><img src="Ps2fat.jpg" onclick="openImg(this.src)"><br>PS2 FAT</div>
-<div><img src="Ps2slim7x.jpg" onclick="openImg(this.src)"><br>PS2 Slim 70000 Series</div>
-<div><img src="Ps2slim90.jpg" onclick="openImg(this.src)"><br>PS2 Slim 90000 Series</div>
+<div><img src="images/Ps2fat.jpg" onclick="openImg(this.src)"><br>PS2 FAT</div>
+<div><img src="images/Ps2slim7x.jpg" onclick="openImg(this.src)"><br>PS2 Slim 70000 Series</div>
+<div><img src="images/Ps2slim90.jpg" onclick="openImg(this.src)"><br>PS2 Slim 90000 Series</div>
 </div>
 <p class="model-sub">अपना PS2 model चुनें ताकि सही FMCB/FunTuna या Combo दिखे।</p>
     <div class="model-btn-row">
@@ -1483,7 +1483,7 @@ body.wizard-popup-open{
 <section id="step2" class="model-selector wizard-modal hidden">
 <h2 class="model-title" data-i18n="matrixTitle">Step 2 — Matrix Chip</h2>
 <div class="wizard-help" data-i18n="matrixHelp">Matrix is a boot chip. If Matrix appears on screen when PS2 starts, choose Matrix. If not, choose No. If you do not know, choose Don't Know.</div>
-<img class="step-img" src="Matrixps2.jpg" onclick="openImg(this.src)">
+<img class="step-img" src="images/Matrixps2.jpg" onclick="openImg(this.src)">
 <div class="model-btn-row">
 <button class="model-btn" onclick="selectMatrix('yes')">Matrix</button>
 <button class="model-btn" onclick="selectMatrix('no')">No</button>
@@ -1494,7 +1494,7 @@ body.wizard-popup-open{
 <section id="step3" class="model-selector wizard-modal hidden">
 <h2 class="model-title" data-i18n="fmcbTitle">Step 3 — FMCB Type</h2>
 <div class="wizard-help" data-i18n="fmcbHelp">Choose FMCB with OPL Only for USB gameplay. Choose Full FMCB + Apps if you also need extra apps. If FMCB/OPL already works and you only need a USB with games, choose Need Only USB with Games.</div>
-<img class="step-img" src="Fmcb.jpeg" onclick="openImg(this.src)"><img class="step-img" src="OPL10.png" onclick="openImg(this.src)">
+<img class="step-img" src="images/Fmcb.jpeg" onclick="openImg(this.src)"><img class="step-img" src="images/OPL10.png" onclick="openImg(this.src)">
 <div class="model-btn-row">
 <button class="model-btn" onclick="selectFmcbType('opl')">FMCB with OPL Only</button>
 <button class="model-btn" onclick="selectFmcbType('full')">Full FMCB + Apps</button>
@@ -1542,7 +1542,7 @@ body.wizard-popup-open{
       <h2 class="title" id="fmcb-title">Memory Card for PS2 (Model-wise)</h2>
 
       <div class="card-images">
-        <img src="Fmcb.png" alt="FMCB 8MB Memory Card">
+        <img src="images/Fmcb.png" alt="FMCB 8MB Memory Card">
       </div>
 
       <div class="muted">Boot PS2 games from USB using preconfigured FMCB / FunTuna + OPL.</div>
@@ -1586,8 +1586,8 @@ body.wizard-popup-open{
       <h2 class="title" id="usb-title">USB for PlayStation 2 — Game-Loaded</h2>
 
       <div class="card-images">
-        <figure class="device-photo"><img src="Sandiscultra.png" alt="SanDisk Ultra 128GB USB 3.0 Pendrive for PS2"><small>SanDisk Ultra 128GB USB 3.0</small></figure>
-        <img src="Usbhdd.jpeg" alt="USB HDD for PS2">
+        <figure class="device-photo"><img src="images/Sandiscultra.png" alt="SanDisk Ultra 128GB USB 3.0 Pendrive for PS2"><small>SanDisk Ultra 128GB USB 3.0</small></figure>
+        <img src="images/Usbhdd.jpeg" alt="USB HDD for PS2">
       </div>
 
       <div class="muted">Requires FMCB card + latest OPL. Plug directly into PS2 (no hub/splitter).</div>
@@ -1605,9 +1605,9 @@ body.wizard-popup-open{
       <h2 class="title" id="combo-title">FMCB + USB Combo for PS2</h2>
 
       <div class="card-images">
-        <img src="Fmcb.png" alt="FMCB 8MB Memory Card">
-        <figure class="device-photo"><img src="Sandiscultra.png" alt="SanDisk Ultra 128GB USB 3.0 Pendrive"><small>SanDisk Ultra 128GB USB 3.0</small></figure>
-        <img src="Usbhdd.jpeg" alt="USB HDD">
+        <img src="images/Fmcb.png" alt="FMCB 8MB Memory Card">
+        <figure class="device-photo"><img src="images/Sandiscultra.png" alt="SanDisk Ultra 128GB USB 3.0 Pendrive"><small>SanDisk Ultra 128GB USB 3.0</small></figure>
+        <img src="images/Usbhdd.jpeg" alt="USB HDD">
       </div>
 
       <div class="muted">Fully Plug & Play. Works on PS2 Fat, Slim 7xxxx (FMCB) & Slim 9xxxx (FunTuna).</div>
@@ -2610,15 +2610,15 @@ function gpzCatalogCard({key,product,variant,name,price,weight,size,image}){
 }
 function gpzRenderOpenProductCatalog(){
   const fmcb=[
-    {key:"f0",product:"Memory Card",variant:"PS2 Fat (All Models) — FMCB",name:"FMCB Memory Card — PS2 Fat",price:600,weight:25,size:[12,9,2],image:"Fmcb.png"},
-    {key:"f1",product:"Memory Card",variant:"PS2 Slim 7xxxx (All) — FMCB",name:"FMCB Memory Card — PS2 Slim 7xxxx",price:600,weight:25,size:[12,9,2],image:"Fmcb.png"},
-    {key:"f2",product:"Memory Card",variant:"PS2 Slim 9xxxx (All) — FunTuna",name:"FunTuna Memory Card — PS2 Slim 9xxxx",price:600,weight:25,size:[12,9,2],image:"Fmcb.png"}
+    {key:"f0",product:"Memory Card",variant:"PS2 Fat (All Models) — FMCB",name:"FMCB Memory Card — PS2 Fat",price:600,weight:25,size:[12,9,2],image:"images/Fmcb.png"},
+    {key:"f1",product:"Memory Card",variant:"PS2 Slim 7xxxx (All) — FMCB",name:"FMCB Memory Card — PS2 Slim 7xxxx",price:600,weight:25,size:[12,9,2],image:"images/Fmcb.png"},
+    {key:"f2",product:"Memory Card",variant:"PS2 Slim 9xxxx (All) — FunTuna",name:"FunTuna Memory Card — PS2 Slim 9xxxx",price:600,weight:25,size:[12,9,2],image:"images/Fmcb.png"}
   ];
   const fmcbGrid=document.getElementById("gpzFmcbProductGrid");if(fmcbGrid)fmcbGrid.innerHTML=fmcb.map(gpzCatalogCard).join("");
   const usb=[];
   usbVariants.forEach((v,index)=>{
     const weight=gpzCartWeight("USB for PS2",v.v),size=[12,8,3];
-    const image=/^32GB/i.test(v.v)?"32gb.jpg":(/HDD|SSD/i.test(v.v)?"Usbhdd.jpeg":(/3\.0/i.test(v.v)?"Sandiscultra.png":"Usb.jpg"));
+    const image=/^32GB/i.test(v.v)?"images/32gb.jpg":(/HDD|SSD/i.test(v.v)?"images/Usbhdd.jpeg":(/3\.0/i.test(v.v)?"images/Sandiscultra.png":"images/Usb.jpg"));
     usb.push({key:`ut${index}`,product:"USB for PS2 (Game-Loaded)",variant:`${v.v} — Top ${v.count} Games`,name:`${usbDisplayName(v.v)} — Top ${v.count} Games`,price:v.top,weight,size,image});
     usb.push({key:`uo${index}`,product:"USB for PS2 (Game-Loaded)",variant:`${v.v} — Optional Games`,name:`${usbDisplayName(v.v)} — Optional Games`,price:v.opt,weight,size,image});
   });

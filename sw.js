@@ -1,4 +1,4 @@
-const CACHE_NAME = "games-planet-live-v12";
+const CACHE_NAME = "games-planet-images-20261023";
 const APP_SHELL = [
   "./",
   "./index.html",
