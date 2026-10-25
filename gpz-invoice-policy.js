@@ -3,7 +3,7 @@
   const POLICY='No return, replacement or refund. Please inspect the product before purchase. Confirm warranty before purchase. Classic and Chinese items generally carry no warranty.';
   const $=id=>document.getElementById(id);
   function gstOn(){const v=($('gstMode')?.value||$('type')?.value||'').toLowerCase();return v==='yes'||v==='gst'}
-  function qr(){return gstOn()?'images/GSTcurrentQR.png':'images/Qr (1).jpg'}
+  function qr(){return gstOn()?'GSTcurrentQR.png':'Qr (1).jpg'}
   function customerNumber(){return (($('mobile')?.value||'').replace(/\D/g,'').slice(-10))}
   function enhance(){
     const root=$('invoiceContent')||$('preview'); if(!root)return;
