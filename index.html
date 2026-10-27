@@ -2351,6 +2351,7 @@ function gpzCatalogCard({key,product,variant,name,price,weight,size,image}){
     <div class="accessory-meta"><span class="accessory-price">${gpzCartMoney(price)}</span><span>⚖️ ${weight}g</span></div>
     <div class="gpz-product-specs"><span>Size ${size.join(" × ")} cm</span><span>PS2 Product</span></div>
     ${/Top/i.test(variant)?`<button type="button" class="variant-pack-link" onclick="openTopGamesList('${variant.replace(/'/g,"\\'")}')">📋 View Top Games List</button>`:""}
+    ${/Optional Games/i.test(variant)?`<button type="button" class="variant-pack-link" onclick="openGameSelectorWarning('https://gamesplanet13.github.io/ps2gameselector/')">🎮 Select Optional PS2 Games</button>`:""}
     <div class="accessory-actions">
       <div class="qty-control"><button type="button" onclick="gpzCatalogSetQty('${key}',-1)">−</button><output id="gpzCatalogQty${key}">${gpzCatalogQty[key]}</output><button type="button" onclick="gpzCatalogSetQty('${key}',1)">+</button></div>
       <button type="button" class="accessory-cart" onclick="gpzCatalogAdd(${args},false)">Add to Cart</button>
