@@ -1399,7 +1399,7 @@ body.wizard-popup-open{
   <!-- Top navigation shortcuts -->
   <div class="controls">
     <button type="button" class="linkbtn hidden" id="changeProductChoice" onclick="showOpenCatalog()">⬅ All Products</button>
-    <a class="linkbtn optional-selector-link hidden" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
+    <a class="linkbtn optional-selector-link" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
     <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">▶️ Setup Video</a>
     <button type="button" class="linkbtn hidden" onclick="toggleVoice()" id="voiceToggle">🔊 Voice ON</button>
   </div>
@@ -1770,7 +1770,7 @@ function makeVariantBuyCard(label,top,opt,count,onTopBuy,onOptionalBuy){
           Buy ${label} with Optional Games
           <span class="pack-price">${fmt(opt)}</span>
         </button>
-        <a class="variant-pack-link optional-selector-link hidden" href="${optionalGamesSelectorUrl}" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
+        <a class="variant-pack-link optional-selector-link" href="${optionalGamesSelectorUrl}" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
       </div>
     </div>`;
   card.querySelector('.js-top-buy').onclick=onTopBuy;
@@ -2435,11 +2435,11 @@ function continueToGameSelector(){
   if(url) window.open(url, '_blank', 'noopener');
 }
 document.addEventListener('DOMContentLoaded', function(){
-  document.querySelectorAll('.optional-selector-link').forEach(function(link){
-    link.addEventListener('click', function(event){
-      event.preventDefault();
-      openGameSelectorWarning(link.href);
-    });
+  document.addEventListener('click', function(event){
+    const link = event.target.closest('.optional-selector-link');
+    if(!link) return;
+    event.preventDefault();
+    openGameSelectorWarning(link.href);
   });
   const popup = document.getElementById('gameSelectorWarning');
   if(popup){
@@ -2601,6 +2601,7 @@ function gpzCatalogCard({key,product,variant,name,price,weight,size,image}){
     <div class="accessory-meta"><span class="accessory-price">${gpzCartMoney(price)}</span><span>⚖️ ${weight}g</span></div>
     <div class="gpz-product-specs"><span>Size ${size.join(" × ")} cm</span><span>PS2 Product</span></div>
     ${/Top/i.test(variant)?`<button type="button" class="variant-pack-link" onclick="openTopGamesList('${variant.replace(/'/g,"\\'")}')">📋 View Top Games List</button>`:""}
+    ${/Optional Games/i.test(variant)?`<button type="button" class="variant-pack-link" onclick="openGameSelectorWarning('https://gamesplanet13.github.io/ps2gameselector/')">🎮 Select Optional PS2 Games</button>`:""}
     <div class="accessory-actions">
       <div class="qty-control"><button type="button" onclick="gpzCatalogSetQty('${key}',-1)">−</button><output id="gpzCatalogQty${key}">${gpzCatalogQty[key]}</output><button type="button" onclick="gpzCatalogSetQty('${key}',1)">+</button></div>
       <button type="button" class="accessory-cart" onclick="gpzCatalogAdd(${args},false)">Add to Cart</button>
