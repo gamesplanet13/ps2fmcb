@@ -1314,7 +1314,7 @@ body.wizard-popup-open{
 
   <!-- Top navigation shortcuts -->
   <div class="controls">
-    <a class="linkbtn optional-selector-link hidden" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
+    <a class="linkbtn optional-selector-link" href="https://gamesplanet13.github.io/ps2gameselector/" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
     <a class="linkbtn" href="https://youtu.be/bpGm0IAeyek" target="_blank" rel="noopener">▶️ Setup Video</a>
     <button type="button" class="linkbtn hidden" onclick="toggleVoice()" id="voiceToggle">🔊 Voice ON</button>
   </div>
@@ -1628,7 +1628,7 @@ function makeVariantBuyCard(label,top,opt,count,onTopBuy,onOptionalBuy){
           Buy ${label} with Optional Games
           <span class="pack-price">${fmt(opt)}</span>
         </button>
-        <a class="variant-pack-link optional-selector-link hidden" href="${optionalGamesSelectorUrl}" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
+        <a class="variant-pack-link optional-selector-link" href="${optionalGamesSelectorUrl}" target="_blank" rel="noopener">🟨 Optional Games Selector</a>
       </div>
     </div>`;
   card.querySelector('.js-top-buy').onclick=onTopBuy;
@@ -2190,11 +2190,11 @@ function continueToGameSelector(){
   if(url) window.open(url, '_blank', 'noopener');
 }
 document.addEventListener('DOMContentLoaded', function(){
-  document.querySelectorAll('.optional-selector-link').forEach(function(link){
-    link.addEventListener('click', function(event){
-      event.preventDefault();
-      openGameSelectorWarning(link.href);
-    });
+  document.addEventListener('click', function(event){
+    const link = event.target.closest('.optional-selector-link');
+    if(!link) return;
+    event.preventDefault();
+    openGameSelectorWarning(link.href);
   });
   const popup = document.getElementById('gameSelectorWarning');
   if(popup){
