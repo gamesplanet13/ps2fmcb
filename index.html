@@ -2258,8 +2258,13 @@ function gpzSanitizeCartItem(item){
   }
   return next;
 }
-function gpzCartRead(){try{const v=JSON.parse(localStorage.getItem(GPZ_CART_KEY)||"[]");if(!Array.isArray(v))return[];const clean=v.map(gpzSanitizeCartItem);if(JSON.stringify(clean)!==JSON.stringify(v))localStorage.setItem(GPZ_CART_KEY,JSON.stringify(clean));return clean}catch(e){return []}}
-function gpzCartSave(items){localStorage.setItem(GPZ_CART_KEY,JSON.stringify(items));gpzCartRender()}
+function gpzCartRead(){try{
+ const raw=localStorage.getItem('gp_shared_cart_v2'),reset=localStorage.getItem('gp_shared_cart_reset_v2');
+ if(raw!==null||reset!==null){const shared=JSON.parse(raw||'{}');return(shared.fmcb?.items||[]).map(gpzSanitizeCartItem)}
+ const v=JSON.parse(localStorage.getItem(GPZ_CART_KEY)||'[]');
+ return Array.isArray(v)?v.map(gpzSanitizeCartItem):[];
+ }catch(e){return []}}
+function gpzCartSave(items){localStorage.setItem(GPZ_CART_KEY,JSON.stringify(items));window.GPSharedStore?.save('fmcb',items);gpzCartRender()}
 function gpzCartEsc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function gpzCartMoney(n){return "₹"+Math.round(Number(n)||0).toLocaleString("en-IN")}
 function gpzCartWeight(product,variant){const t=`${product} ${variant}`.toUpperCase();let w=25;if(t.includes("500GB"))w=175;else if(t.includes("256GB"))w=71;else if(t.includes("128GB"))w=41;else if(t.includes("64GB"))w=21;if(t.includes("COMBO"))w+=25;return w}
