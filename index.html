@@ -2226,10 +2226,57 @@ document.addEventListener('DOMContentLoaded', function(){
 .grid{grid-template-columns:1fr!important}.model-guard{grid-column:1/-1}.gpz-open-product-section{margin-bottom:14px}
 @media(max-width:520px){.gpz-cart-fixed{top:33px;right:5px}.gpz-cart-fixed button{height:25px;padding:0 6px;font-size:9px}.accessory-actions{grid-template-columns:1fr 1fr}.accessory-actions .qty-control{grid-column:1/-1}.buy-confirm-actions{grid-template-columns:1fr}.gpz-cart-toast{top:68px}}
 </style>
+
+<style id="gp-ps2fmcb-mobile-fix">
+/* PS2 FMCB has its own editable cart; avoid the duplicate global fixed dock. */
+#gpSharedCartDock{display:none!important}
+.gpz-cart-fixed{
+ position:static!important;inset:auto!important;z-index:auto!important;top:auto!important;right:auto!important;
+ background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;
+ padding:0!important;margin:12px 0 16px!important;width:100%;display:flex!important;justify-content:flex-end!important;
+}
+.gpz-cart-fixed>button{height:43px!important;padding:0 19px!important;border-radius:12px!important;
+ font-size:14px!important;letter-spacing:0!important;background:#0e4164!important;color:white!important;
+ border:1px solid #167bb3!important;box-shadow:0 4px 12px #154f7620!important;max-width:210px;
+}
+.gpz-cart-fixed button:hover{background:#155c89!important}
+.gpz-cart-tools{margin-top:13px;border-top:1px solid #345269;padding-top:11px;font-size:12px;color:#a7c3d8}
+.gpz-cart-tools summary{cursor:pointer;font-weight:750;padding:7px 0}
+.gpz-cart-tools>div{display:flex;gap:9px;flex-wrap:wrap;margin-top:7px}
+.gpz-cart-tools button{background:#203c53;color:#fff;border:1px solid #456277;border-radius:8px;padding:9px 12px;min-height:38px}
+.gpz-cart-tools button:last-child{border-color:#925656;background:#4c2b32}
+.gpz-catalog-note{font-size:11px;line-height:1.5;color:#64748b;margin-top:3px}
+@media(max-width:760px){
+  .accessories-grid{grid-template-columns:1fr!important;gap:12px!important}
+  .accessory-item.gpz-catalog-product{display:grid!important;grid-template-columns:92px minmax(0,1fr);
+    gap:7px 12px;padding:13px!important;align-content:start;min-width:0}
+  .gpz-catalog-product>img{width:92px!important;height:95px!important;object-fit:contain;grid-column:1;grid-row:1/5;
+    border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc}
+  .gpz-catalog-product>.accessory-name{grid-column:2;min-height:0!important;font-size:15px!important;line-height:1.28;margin:0;overflow-wrap:anywhere}
+  .gpz-catalog-product>.accessory-meta{grid-column:2;display:flex!important;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:10px;font-size:12px}
+  .gpz-catalog-product .accessory-price{font-size:19px}
+  .gpz-catalog-product>.gpz-product-specs{grid-column:2;margin:0;display:flex!important;gap:5px;flex-wrap:wrap}
+  .gpz-catalog-product .gpz-product-specs span{font-size:10px;padding:4px 7px}
+  .gpz-catalog-product>.gpz-catalog-note{grid-column:2}
+  .gpz-catalog-product>.variant-pack-link{grid-column:1/-1}
+  .gpz-catalog-product>.accessory-actions{grid-column:1/-1;grid-row:auto;
+    display:grid!important;grid-template-columns:98px minmax(0,1fr) minmax(0,1fr)!important;
+    gap:8px;align-items:stretch;margin-top:7px}
+  .gpz-catalog-product .qty-control{grid-template-columns:28px minmax(27px,1fr) 28px!important;min-width:0}
+  .gpz-catalog-product .qty-control button{height:43px}
+  .gpz-catalog-product .accessory-cart,.gpz-catalog-product .accessory-buy{
+    width:100%;min-width:0;padding:8px 5px!important;font-size:12px!important;line-height:1.2;min-height:43px}
+}
+@media(max-width:370px){
+  .gpz-catalog-product>.accessory-actions{grid-template-columns:1fr 1fr!important}
+  .gpz-catalog-product .qty-control{grid-column:1/-1;grid-template-columns:1fr 55px 1fr!important}
+  .gpz-catalog-product>img{width:80px!important;height:84px!important}
+  .accessory-item.gpz-catalog-product{grid-template-columns:80px minmax(0,1fr)}
+}
+</style>
+
 <div class="gpz-cart-fixed" aria-label="Shopping cart controls">
-  <button type="button" onclick="gpzCartOpen()">🛒 Cart <span id="gpzCartCount">0</span></button>
-  <button type="button" class="gpz-reset-tiny" onclick="gpzCartReset()">Reset</button>
-  <button type="button" class="gpz-reset-tiny" onclick="gpzClearCacheAndCart()">Clear Cache</button>
+  <button type="button" onclick="gpzCartOpen()" aria-label="Open PS2 shopping cart">🛒 View Cart <span id="gpzCartCount">0</span></button>
 </div>
 <div id="gpzCartDrawer" class="gpz-cart-drawer" onclick="if(event.target===this)gpzCartClose()">
   <aside class="gpz-cart-panel" role="dialog" aria-modal="true" aria-labelledby="gpzCartTitle">
@@ -2238,6 +2285,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <div class="gpz-cart-foot">
       <div class="gpz-cart-total"><span>Total</span><span id="gpzCartTotal">₹0</span></div>
       <div class="gpz-cart-actions"><button class="gpz-cart-continue" onclick="gpzCartClose()">Continue Shopping</button><button class="gpz-cart-checkout" onclick="gpzCartCheckout()">Checkout</button></div>
+      <details class="gpz-cart-tools"><summary>Cart options</summary><div><button type="button" onclick="gpzCartReset()">Reset Cart</button><button type="button" onclick="gpzClearCacheAndCart()">Clear Cache</button></div></details>
     </div>
   </aside>
 </div>
@@ -2355,6 +2403,7 @@ function gpzCatalogCard({key,product,variant,name,price,weight,size,image}){
     <div class="accessory-name">${gpzCartEsc(name)}</div>
     <div class="accessory-meta"><span class="accessory-price">${gpzCartMoney(price)}</span><span>⚖️ ${weight}g</span></div>
     <div class="gpz-product-specs"><span>Size ${size.join(" × ")} cm</span><span>PS2 Product</span></div>
+    ${key==="f2"?'<p class="gpz-catalog-note">FunTuna setup for Slim 9xxxx. Photo shows the standard memory-card shell; software differs.</p>':""}
     ${/Top/i.test(variant)?`<button type="button" class="variant-pack-link" onclick="openTopGamesList('${variant.replace(/'/g,"\\'")}')">📋 View Top Games List</button>`:""}
     ${/Optional Games/i.test(variant)?`<button type="button" class="variant-pack-link" onclick="openGameSelectorWarning('https://gamesplanet13.github.io/ps2gameselector/')">🎮 Select Optional PS2 Games</button>`:""}
     <div class="accessory-actions">
@@ -2380,7 +2429,12 @@ function gpzRenderOpenProductCatalog(){
   });
   const usbGrid=document.getElementById("gpzUsbProductGrid");if(usbGrid)usbGrid.innerHTML=usb.map(gpzCatalogCard).join("");
 }
-document.addEventListener("DOMContentLoaded",()=>{gpzCartRender();gpzRenderOpenProductCatalog();gpzEnhanceProductCards()});window.addEventListener("storage",gpzCartRender);
+document.addEventListener("DOMContentLoaded",()=>{gpzCartRender();gpzRenderOpenProductCatalog();gpzEnhanceProductCards()});
+document.addEventListener("DOMContentLoaded",()=>{
+ const toolbar=document.querySelector(".gpz-cart-fixed"),nav=document.querySelector(".controls");
+ if(toolbar&&nav)nav.insertAdjacentElement("afterend",toolbar);
+});
+window.addEventListener("storage",gpzCartRender);
 </script>
 <script src="https://gamesplanet13.github.io/arcade-accessories-/site-navigation.js?v=20261030-unified-v4"></script><style id="gp-fmcb-footer-style">#gp-ps2-style-footer{box-sizing:border-box;clear:both;display:block!important;position:relative;width:calc(100% - 24px);max-width:900px;margin:32px auto 200px;padding:26px 20px;border:1px solid #e1e7ef;border-radius:16px;background:#fff;color:#273444;font-family:Arial,system-ui,sans-serif;font-size:14px;line-height:1.65;text-align:center;letter-spacing:normal;box-shadow:0 8px 26px #1228400a}#gp-ps2-style-footer *{box-sizing:border-box}#gp-ps2-style-footer section{display:block;margin:0;padding:0;border:0;background:none;box-shadow:none}#gp-ps2-style-footer h2{color:#152b45;font-size:22px;font-weight:800;margin:0 0 12px;line-height:1.3;background:none;-webkit-text-fill-color:initial}#gp-ps2-style-footer h3{color:#273444;font-size:19px;line-height:1.4;font-weight:700;margin:28px 0 16px;text-align:center}#gp-ps2-style-footer p{color:#4b5969;font-size:14px;margin:10px 0;line-height:1.7}#gp-ps2-style-footer .gp-channel-buttons{display:flex;flex-direction:column;gap:15px;align-items:center}#gp-ps2-style-footer a.gp-channel,#gp-ps2-style-footer a.gp-instagram{display:flex;align-items:center;justify-content:center;width:90%;max-width:400px;min-height:44px;padding:10px 20px;border:0;border-radius:6px;color:#fff!important;text-decoration:none;font:700 14px/1.5 Arial,system-ui,sans-serif;box-shadow:none;background:#d90000;text-align:center;margin:0}#gp-ps2-style-footer a.gp-channel:nth-child(1){background:#ff0000}#gp-ps2-style-footer a.gp-channel:nth-child(2){background:#2ecc71;color:#07371a!important}#gp-ps2-style-footer a.gp-channel:nth-child(3){background:#3498db}#gp-ps2-style-footer a.gp-channel:nth-child(4){background:#f39c12;color:#382300!important}#gp-ps2-style-footer a.gp-instagram{display:inline-flex;width:auto;max-width:100%;background:#e4405f;margin-top:25px;padding:10px 25px;font-size:16px}#gp-ps2-style-footer .gp-video-frame{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;width:100%;max-width:100%;border-radius:10px;box-shadow:0 0 10px #0002;background:#101827}#gp-ps2-style-footer .gp-video-frame iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}#gp-ps2-style-footer .gp-contact-buttons{display:flex;justify-content:center;flex-wrap:wrap;gap:10px}#gp-ps2-style-footer .gp-contact-buttons a,#gp-ps2-style-footer a.gp-map-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;width:auto;max-width:100%;margin:0;padding:10px 16px;border:1px solid #d9e3ee;border-radius:9px;color:#173651;background:#f0f6fc;text-decoration:none;font:700 13px/1.5 Arial,system-ui,sans-serif;box-shadow:none}#gp-ps2-style-footer a.gp-map-link{margin:10px auto 16px;background:#2563eb;color:white;border-color:#2563eb}#gp-ps2-style-footer .gp-map-frame{display:block;width:100%;height:300px;max-width:100%;border:0;border-radius:10px;background:#edf2f8}#gp-ps2-style-footer .gp-rights{font-size:12px;color:#758294;margin-top:25px}@media(max-width:480px){#gp-ps2-style-footer{width:calc(100% - 12px);padding:20px 12px;margin-top:22px}#gp-ps2-style-footer .gp-map-frame{height:260px}}@media print{#gp-ps2-style-footer{display:none!important}}</style><footer id="gp-ps2-style-footer" aria-label="GAMES PLANET channels, FMCB videos and shop location"><h2>GAMES PLANET</h2><section><h3>Our YouTube Channels</h3><div class="gp-channel-buttons"><a class="gp-channel" href="https://youtube.com/@singhtechgaming" target="_blank" rel="noopener">Singh Tech Gaming</a><a class="gp-channel" href="https://youtube.com/@gamesplanet13" target="_blank" rel="noopener">Games Planet 13</a><a class="gp-channel" href="https://youtube.com/@gamesvallah" target="_blank" rel="noopener">Games Vallah</a><a class="gp-channel" href="https://youtube.com/@gamingtechindi" target="_blank" rel="noopener">Gaming Tech India</a></div><a class="gp-instagram" href="https://www.instagram.com/singhtech1/" target="_blank" rel="noopener">Follow us on Instagram</a></section><section id="gp-fmcb-static-videos"><h3>FMCB, OPL, FunTuna &amp; USB Games — Videos</h3><div class="gp-video-frame"><iframe title="Play PS2 Games in 2026 | FMCB OPL NES Ulaunch HDL Funtuna" src="https://www.youtube.com/embed/AyABil_bHnw?rel=0" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><p><a href="https://www.youtube.com/watch?v=AyABil_bHnw" target="_blank" rel="noopener">Watch on YouTube ↗</a></p><details style="margin:16px 0;padding:12px;border:1px solid #dce5ef;border-radius:10px"><summary style="cursor:pointer;font-weight:bold;color:#173651">Now Play Games in Ps2 unlimited</summary><div class="gp-video-frame"><iframe title="Now Play Games in Ps2 unlimited" src="https://www.youtube.com/embed/9nMquCUJO8A?rel=0" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><p><a href="https://www.youtube.com/watch?v=9nMquCUJO8A" target="_blank" rel="noopener">Watch on YouTube ↗</a></p></details><details style="margin:16px 0;padding:12px;border:1px solid #dce5ef;border-radius:10px"><summary style="cursor:pointer;font-weight:bold;color:#173651">अब सिर्फ USB से PS2 पर गेम  🎮 PS2 पर USB से गेम कैसे खेलें</summary><div class="gp-video-frame"><iframe title="अब सिर्फ USB से PS2 पर गेम  🎮 PS2 पर USB से गेम कैसे खेलें" src="https://www.youtube.com/embed/OqE3QgBPwBQ?rel=0" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><p><a href="https://www.youtube.com/watch?v=OqE3QgBPwBQ" target="_blank" rel="noopener">Watch on YouTube ↗</a></p></details><details style="margin:16px 0;padding:12px;border:1px solid #dce5ef;border-radius:10px"><summary style="cursor:pointer;font-weight:bold;color:#173651">PS2 GAME DRIVE FOR ALL MODELS</summary><div class="gp-video-frame"><iframe title="PS2 GAME DRIVE FOR ALL MODELS" src="https://www.youtube.com/embed/M3259_uGFrw?rel=0" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><p><a href="https://www.youtube.com/watch?v=M3259_uGFrw" target="_blank" rel="noopener">Watch on YouTube ↗</a></p></details><details style="margin:16px 0;padding:12px;border:1px solid #dce5ef;border-radius:10px"><summary style="cursor:pointer;font-weight:bold;color:#173651">FMCB CARD for PS2 play Games via USB</summary><div class="gp-video-frame"><iframe title="FMCB CARD for PS2 play Games via USB" src="https://www.youtube.com/embed/x7RMAJzkvKw?rel=0" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><p><a href="https://www.youtube.com/watch?v=x7RMAJzkvKw" target="_blank" rel="noopener">Watch on YouTube ↗</a></p></details><details style="margin:16px 0;padding:12px;border:1px solid #dce5ef;border-radius:10px"><summary style="cursor:pointer;font-weight:bold;color:#173651">What is FMCB card? Why should you buy! PS2</summary><div class="gp-video-frame"><iframe title="What is FMCB card? Why should you buy! PS2" src="https://www.youtube.com/embed/bpGm0IAeyek?rel=0" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><p><a href="https://www.youtube.com/watch?v=bpGm0IAeyek" target="_blank" rel="noopener">Watch on YouTube ↗</a></p></details><details style="margin:16px 0;padding:12px;border:1px solid #dce5ef;border-radius:10px"><summary style="cursor:pointer;font-weight:bold;color:#173651">Plug &amp; Play PlayStation 2   Mod   Play Games Without LAG PS2 Upgrade HDD FMCB Card OPL Ulaunch HDL 2</summary><div class="gp-video-frame"><iframe title="Plug &amp; Play PlayStation 2   Mod   Play Games Without LAG PS2 Upgrade HDD FMCB Card OPL Ulaunch HDL 2" src="https://www.youtube.com/embed/YF6MXVTToH4?rel=0" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><p><a href="https://www.youtube.com/watch?v=YF6MXVTToH4" target="_blank" rel="noopener">Watch on YouTube ↗</a></p></details></section><section><h3>Contact Us</h3><div class="gp-contact-buttons"><a href="tel:+917983624797">Call · 7983624797</a><a href="https://wa.me/917983624797" target="_blank" rel="noopener">WhatsApp</a><a href="mailto:gamesplanet.7983624797@gmail.com">Email</a></div></section><section><h3>Our Shop Location</h3><p>Near JK’s Tyre, Front of Raza Sugar Mill Gate,<br>Gurudwara Road, Civil Lines, Rampur, U.P. 244901</p><a class="gp-map-link" href="https://maps.app.goo.gl/JTaBzF9TTqFH9X2L9" target="_blank" rel="noopener">Open Google Map Location ↗</a><iframe class="gp-map-frame" title="GAMES PLANET shop location — Rampur" src="https://www.google.com/maps?q=28.7831285,79.0245045&z=21&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></section><p class="gp-rights">All rights reserved © 2017–2026 · GAMES PLANET</p></footer><script src="https://gamesplanet13.github.io/arcade-accessories-/shared-store.js?v=20261030-unified-v4"></script></body>
 </html>
