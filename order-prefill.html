@@ -1,1 +1,45 @@
-<!doctype html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GAMES PLANET — Shared Checkout</title><script>(function(){const q=new URLSearchParams(location.search);q.set("storeSource","fmcb");try{const rows=JSON.parse(q.get("cart")||"null");if(Array.isArray(rows)){rows.forEach(i=>{if(i.image)i.image=new URL(i.image,location.href).href});q.set("cart",JSON.stringify(rows))}}catch(_){}location.replace("https://gamesplanet13.github.io/arcade-accessories-/order-prefill.html?"+q)})();</script></head><body><p>आपका साझा checkout खुल रहा है…</p><a href="https://gamesplanet13.github.io/arcade-accessories-/order-prefill.html?source=cart&amp;shared=1">Open Shared Checkout</a></body></html>
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GAMES PLANET — Opening Checkout</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:#edf5fb;color:#17394e}
+body{min-height:100dvh;display:grid;place-items:center;padding:18px}
+main{text-align:center;width:min(100%,410px);padding:30px 22px;border-radius:20px;border:1px solid #d9e7f0;background:#fff;box-shadow:0 18px 46px #132e4519}
+small{letter-spacing:2px;color:#117b95;font-weight:850}
+.spinner{margin:26px auto 18px;width:58px;height:58px;border-radius:50%;border:5px solid #d4e9ee;border-top-color:#09a977;border-right-color:#0997bb;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.spinner{animation-duration:2s}}
+h1{font-size:22px;margin:0 0 12px}p{font-size:14px;color:#617789;margin:0 0 15px}
+a{display:inline-block;padding:10px 14px;border-radius:10px;background:#0b8663;color:white;text-decoration:none;font-weight:750}
+</style>
+</head>
+<body>
+<main role="status" aria-live="polite">
+ <small>GAMES PLANET</small>
+ <div class="spinner" aria-hidden="true"></div>
+ <h1>Opening Your Checkout…</h1>
+ <p>आपका ऑर्डर चेकआउट खुल रहा है। कृपया पेज खुलने दें।</p>
+ <a id="gpCheckoutManual" href="https://gamesplanet13.github.io/arcade-accessories-/order-prefill.html?source=cart&amp;shared=1">Open Checkout Manually</a>
+</main>
+<script>
+(function(){
+ const q=new URLSearchParams(location.search);
+ q.set('storeSource','fmcb');
+ try{
+  const rows=JSON.parse(q.get('cart')||'null');
+  if(Array.isArray(rows)){
+   rows.forEach(i=>{if(i.image)i.image=new URL(i.image,location.href).href});
+   q.set('cart',JSON.stringify(rows));
+  }
+ }catch(_){}
+ const target='https://gamesplanet13.github.io/arcade-accessories-/order-prefill.html?'+q.toString();
+ document.getElementById('gpCheckoutManual').href=target;
+ // Give the loading screen a chance to paint before navigating across repositories.
+ requestAnimationFrame(()=>requestAnimationFrame(()=>location.replace(target)));
+})();
+</script>
+</body>
+</html>
